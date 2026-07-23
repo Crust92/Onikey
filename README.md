@@ -1,172 +1,75 @@
-IBus Bamboo - Bộ gõ tiếng Việt cho Linux/BSD
-===================================
-[![GitHub release](https://img.shields.io/github/release/BambooEngine/ibus-bamboo.svg)](https://github.com/BambooEngine/ibus-bamboo/releases/latest)
+Onikey — Bộ gõ tiếng Việt không gạch chân cho GNOME Wayland
+===========================================================
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/BambooEngine/ibus-bamboo)
 
-## Lưu ý 🚧:
+**Onikey** là bản **fork của [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)** (BambooEngine), tinh chỉnh để **gõ tiếng Việt không có gạch chân dưới từ đang gõ** trên **GNOME Wayland**, kèm một số bản vá ổn định. Toàn bộ công lao cốt lõi thuộc về các tác giả gốc; kho này giữ nguyên giấy phép **GPLv3**.
 
-Dự án đã bị đình trệ trong 1 thời gian khá dài và có thể sẽ không được duy trì trong tương lai. Các bạn có thể sử dụng fcitx5-unikey là giải pháp thay thế khác (gần như tính năng đã hoàn thành và hỗ trợ Wayland tốt hơn).
-Nếu bạn muốn cứu sống ibus-bamboo hoặc thảo luận về tương lai của dự án tại đây https://github.com/BambooEngine/ibus-bamboo/issues/590
+> Onikey giữ nguyên tên engine nội bộ là **Bamboo** — trong *Settings → Keyboard → Input Sources* bạn sẽ chọn engine tên **Bamboo**.
 
 ## Mục lục
-
-- [Sơ lược tính năng](#sơ-lược-tính-năng)
-- [Hướng dẫn cài đặt](#hướng-dẫn-cài-đặt)
-	- [Dành cho Ubuntu, Mint và các distro tương tự](#ubuntu-và-các-distro-tương-tự)
-	- [Dành cho Arch Linux và các distro tương tự](#arch-linux-và-các-distro-tương-tự)
-	- [NixOS](#nixos)
-	- [Void Linux](#void-linux)
-	- [Cài đặt từ OpenBuildService](#cài-đặt-từ-openbuildservice)
-	- [Cài đặt từ mã nguồn](https://github.com/BambooEngine/ibus-bamboo/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-c%C3%A0i-%C4%91%E1%BA%B7t-t%E1%BB%AB-m%C3%A3-ngu%E1%BB%93n)
+- [Điểm khác biệt của Onikey](#điểm-khác-biệt-của-onikey)
+- [Tính năng](#tính-năng)
+- [Cài đặt từ mã nguồn](#cài-đặt-từ-mã-nguồn)
 - [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
+- [Giới hạn trên GNOME Wayland](#giới-hạn-trên-gnome-wayland)
 - [Báo lỗi](#báo-lỗi)
 - [Giấy phép](#giấy-phép)
 
-## Sơ lược tính năng
-* Hỗ trợ tất cả các bảng mã phổ biến:
-  * Unicode, TCVN (ABC)
-  * VIQR, VNI, VPS, VISCII, BK HCM1, BK HCM2,…
-  * Unicode UTF-8, Unicode NCR - for Web editors.
-* Các kiểu gõ thông dụng:
-  * Telex, Telex W, Telex 2, Telex + VNI + VIQR
-  * VNI, VIQR, Microsoft layout
-* Nhiều tính năng hữu ích, dễ dàng tùy chỉnh:
-  * Kiểm tra chính tả (sử dụng từ điển/luật ghép vần)
-  * Dấu thanh chuẩn và dấu thanh kiểu mới
-  * Bỏ dấu tự do, Gõ tắt,...
-  * 2666 emojis từ [emojiOne](https://github.com/joypixels/emojione)
-* Sử dụng phím tắt <kbd>Shift</kbd>+<kbd>~</kbd> để loại trừ ứng dụng không dùng bộ gõ, chuyển qua lại giữa các chế độ gõ:
-  	* Pre-edit (default)
-  	* Surrounding text, IBus ForwardKeyEvent,...
-   ![ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/raw/gh-resources/demo.gif)
+## Điểm khác biệt của Onikey
 
-## Hướng dẫn cài đặt
-### Ubuntu và các distro tương tự
+So với ibus-bamboo gốc, fork này:
 
+1. **Mặc định không gạch chân.** Chế độ mặc định là *Surrounding Text* (commit trực tiếp) thay vì *Pre-edit*, nên từ đang gõ không bị gạch chân.
+2. **Vá crash khi chuyển ứng dụng.** `x11GetFocusWindowClass()` thiếu null-check con trỏ `Display` → segfault khi focus vào app native-Wayland (Edge/Electron), làm chết engine và mất gõ toàn hệ thống. Đã thêm null-check và bỏ gọi X11 introspection trên phiên Wayland.
+3. **Vá panic của hộp thoại cấu hình** khi thiếu file macro (chạy standalone).
+4. **Đồng bộ theo sự kiện, giảm lỗi dấu khi máy lag.** Thay việc chờ cứng giữa `DeleteSurroundingText` và `CommitText` bằng cơ chế hỏi–chờ app xác nhận (có timeout dự phòng và tự rút gọn khi app không phản hồi).
+
+## Tính năng
+Kế thừa đầy đủ từ ibus-bamboo:
+* Bảng mã: Unicode, TCVN (ABC), VIQR, VNI, VPS, VISCII, BK HCM1/2, Unicode UTF-8, Unicode NCR…
+* Kiểu gõ: Telex, Telex W, Telex 2, VNI, VIQR, Microsoft layout…
+* Kiểm tra chính tả (từ điển/luật ghép vần), dấu thanh chuẩn & kiểu mới, bỏ dấu tự do, gõ tắt, 2666 emoji.
+* Nhiều **chế độ gõ**: Pre-edit (có gạch chân) và các chế độ không gạch chân (Surrounding Text, ForwardKeyEvent…). Chuyển nhanh bằng <kbd>Shift</kbd>+<kbd>~</kbd>.
+
+## Cài đặt từ mã nguồn
+
+**Yêu cầu (Ubuntu/Debian và tương tự):**
 ```sh
-sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo
-sudo apt-get update
-sudo apt-get install ibus ibus-bamboo --install-recommends
+sudo apt install -y golang git make gcc libgtk-3-dev libxtst-dev libx11-dev
+```
+
+**Build & cài đặt:**
+```sh
+git clone https://github.com/xtcnet/Onikey.git
+cd Onikey
+make
+sudo make install PREFIX=/usr
 ibus restart
-# Đặt ibus-bamboo làm bộ gõ mặc định
-env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['BambooUs', 'Bamboo']" && gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
 ```
 
-### Arch Linux và các distro tương tự
-`ibus-bamboo` hiện đã có mặt trên [AUR](https://aur.archlinux.org/packages/ibus-bamboo). Đừng quên để lại 1 vote cho các maintainer để 1 ngày không xa nó được vào kho repo chính thức của Arch nhé!
-
-### NixOS
-
-#### Nixpkgs
-
-`ibus-bamboo` đã có mặt trên repo chính của Nixpkgs. Để cài đặt hãy chắc chắn rằng code sau đã có trong file cấu hình NixOS của bạn.
-
-```nix
-{
- i18n.inputMethod = {
-  enabled = "ibus";
-  ibus.engines = with pkgs.ibus-engines; [
-    bamboo
-  ];
- };
-}
-```
-
-#### Ibus-bamboo flake
-
-Nếu bạn không thích sử dụng package từ Nixpkgs, bạn có thể sử dụng bản mới nhất flake từ repo ibus-bamboo. Lưu ý rằng phương pháp này chỉ hoạt động với flake.
-
-Đầu tiên hãy chắc chắn rằng bạn đã thêm repo path vào trong nixos flake của bạn.
-
-Code ví dụ ở `flake.nix`:
-```nix
-{
-  inputs = {
-    nixpkgs = {
-      url = "github:nixos/nixpkgs/nixos-24.05";
-    };
-
-    ibus-bamboo = {
-      url = "github:BambooEngine/ibus-bamboo";
-    };
-  };
-
-  outputs = {
-    self,
-    nixpkgs,
-    ibus-bamboo
-  }@inputs:
-  let
-    inherit (self) outputs;
-
-    system = "x86_64-linux";
-  in
-  {
-    nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs outputs system; };
-
-        # Some nixos config
-      };
-    };
-  }
-}
-```
-
-Tiếp theo bạn hãy tạo biến và thêm nó vào `ibus.engines`
-
-Code ví dụ ở `input-method.nix`:
-```nix
-{ inputs, system, ... }:
-
-let
-  bamboo = inputs.ibus-bamboo.packages."${system}".default;
-in
-{
-  i18n.inputMethod = {
-    enabled = "ibus";
-    ibus.engines = [
-      bamboo
-    ];
-  };
-}
-```
-
-Bước cuối cùng là cập nhập lại flake và chuyển đổi hệ thống sang cấu hình mới là xong.
-
-### Void Linux
-`ibus-bamboo` đã có mặt trên repo chính của Void Linux. Các bạn có thể cài đặt trực tiếp.
-
+**Chọn bộ gõ:** vào *Settings → Keyboard → Input Sources → +* → *Vietnamese* → **Bamboo**. Hoặc đặt nhanh bằng lệnh:
 ```sh
-sudo xbps-install -S ibus-bamboo
+gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
 ```
+Chuyển giữa tiếng Anh (`us`) và tiếng Việt (`Bamboo`) bằng <kbd>Super</kbd>+<kbd>Space</kbd>.
 
-### Cài đặt từ OpenBuildService
-[![OpenBuildService](https://github.com/BambooEngine/ibus-bamboo/raw/gh-resources/obs.png)](https://software.opensuse.org//download.html?project=home%3Alamlng&package=ibus-bamboo)
+**Gỡ cài đặt:** trong thư mục mã nguồn chạy `sudo make uninstall`.
 
 ## Hướng dẫn sử dụng
-Điểm khác biệt giữa `ibus-bamboo` và các bộ gõ khác là `ibus-bamboo` cung cấp nhiều chế độ gõ khác nhau (1 chế độ gõ có gạch chân và 5 chế độ gõ không gạch chân; tránh nhầm lẫn **chế độ gõ** với **kiểu gõ**, các kiểu gõ bao gồm `telex`, `vni`, ...).
+- Mặc định là **Telex, Unicode, không gạch chân**. Gõ ngay được, ví dụ `Tieengs Vieejt` → *Tiếng Việt*.
+- Onikey có nhiều **chế độ gõ** (đừng nhầm với **kiểu gõ** như telex/vni). Nhấn vào một khung nhập rồi bấm <kbd>Shift</kbd>+<kbd>~</kbd> để chọn chế độ khác.
+- Một app có thể hợp với chế độ này mà không hợp chế độ khác; dùng *Thêm vào danh sách loại trừ* để tắt tiếng Việt cho một app.
+- Để gõ ký tự `~`, bấm <kbd>Shift</kbd>+<kbd>~</kbd> hai lần.
 
-Để chuyển đổi giữa các chế độ gõ, chỉ cần nhấn vào một khung nhập liệu (một cái hộp để nhập văn bản) nào đó, sau đó nhấn tổ hợp <kbd>Shift</kbd>+<kbd>~</kbd>, một bảng với những chế độ gõ hiện có sẽ xuất hiện, bạn chỉ cần nhấn phím số tương ứng để lựa chọn.
-
-**Một số lưu ý:**
-- Một ứng dụng có thể hoạt động tốt với chế độ gõ này trong khi không hoạt động tốt với chế độ gõ khác.
-- Các chế độ gõ được lưu riêng biệt cho mỗi phần mềm (`firefox` có thể đang dùng chế độ 3, trong khi `libreoffice` thì lại dùng chế độ 2).
-- Bạn có thể dùng chế độ `Thêm vào danh sách loại trừ` để không gõ tiếng Việt trong một chương trình nào đó.
-- Để gõ ký tự `~` hãy nhấn tổ hợp <kbd>Shift</kbd>+<kbd>~</kbd> 2 lần.
-- Hỗ trợ Wayland trong IBus hiện chưa tốt lắm. Để có trải nghiệm gõ phím tốt hơn, hãy sử dụng Xorg.
+## Giới hạn trên GNOME Wayland
+Đây là **hạn chế của nền tảng**, không phải lỗi bộ gõ:
+- **Không nhận diện được cửa sổ app đang focus** (GNOME khóa `org.gnome.Shell.Eval`; app native-Wayland không có WM_CLASS qua X11) → không đặt được chế độ riêng theo từng app.
+- **Không dùng được cơ chế bơm phím giả (XTest)** như UniKey/Windows dùng `SendInput` — Wayland chặn vì lý do bảo mật (hiện hộp thoại *Remote Desktop*).
+- **App chạy bằng Wine** không hỗ trợ surrounding text → chữ bị nhân đôi. Giải pháp thực tế: chạy UniKey bản Windows *trong chính prefix Wine* của app đó.
+- Đánh đổi cố hữu: **không gạch chân** thì khi máy lag đôi lúc lỗi dấu/mất ký tự đầu; muốn **tin cậy tuyệt đối** thì dùng chế độ Pre-edit (có gạch chân). Không có ô "vừa không gạch chân vừa miễn nhiễm lag" vì Wayland đã khóa cơ chế injection.
 
 ## Báo lỗi
-Trước khi báo lỗi vui lòng đọc [những vấn đề thường gặp](https://github.com/BambooEngine/ibus-bamboo/wiki/C%C3%A1c-v%E1%BA%A5n-%C4%91%E1%BB%81-th%C6%B0%E1%BB%9Dng-g%E1%BA%B7p) và tìm vấn đề của mình ở trong đó.
-
-Nếu trang phía trên không giải quyết vấn đề của bạn, vui lòng [báo lỗi tại đây](https://github.com/BambooEngine/ibus-bamboo/issues)
-
-## Đóng góp cho dự án
-
-Nếu bạn muốn hiểu thêm về dự án có thể xem thêm ở file này. [HACKING.md](./docs/HACKING.adoc)
-
-Đừng ngần ngại nếu bạn có 1 Pull Request hữu dụng. Hãy gửi lại nếu bạn muốn đóng góp cho dự án.
+Mở issue tại [github.com/xtcnet/Onikey/issues](https://github.com/xtcnet/Onikey/issues). Với các vấn đề chung của engine, có thể tham khảo thêm [wiki của ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/wiki).
 
 ## Giấy phép
-ibus-bamboo là phần mềm tự do nguồn mở, được phát hành dưới các quy định ghi trong Giấy phép Công cộng GNU (GNU General Public License v3.0).
+GPLv3 — như dự án gốc [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo). Xem [LICENSE](LICENSE).

@@ -1,168 +1,30 @@
-IBus Bamboo - An open source Vietnamese IME for IBus using Bamboo Engine
-===================================
-[![GitHub release](https://img.shields.io/github/release/BambooEngine/ibus-bamboo.svg)](https://github.com/BambooEngine/ibus-bamboo/releases/latest)
+Onikey — Underline-free Vietnamese input for GNOME Wayland
+==========================================================
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/BambooEngine/ibus-bamboo)
 
-IBus Bamboo is a Vietnamese input method engine for IBus that translates key strokes into Vietnamese characters. For example, when you type `a`, an `a` will appear on the screen, but if one more `a` is typed, IBus Bamboo will replace the first `a` with the letter `â` according to [Telex](https://en.wikipedia.org/wiki/Telex_(input_method)) typing.
+**Onikey** is a **fork of [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)** (BambooEngine), tuned to type Vietnamese **without the preedit underline** on **GNOME Wayland**, plus reliability fixes. All core credit goes to the original authors; this repo keeps the **GPLv3** license.
 
-   ![ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/raw/gh-resources/demo.gif)
+> Onikey keeps the internal engine name **Bamboo** — in *Settings → Keyboard → Input Sources* you select the engine named **Bamboo**.
 
-## Note 🚧:
-The project has been stalled for quite a long time and may not be maintained in the future. You can use fcitx5-unikey as an alternative solution (almost all features are complete and it supports Wayland better).
+## What this fork changes
+1. **No underline by default** — defaults to *Surrounding Text* (direct commit) instead of *Pre-edit*.
+2. **Crash fix on app switch** — `x11GetFocusWindowClass()` lacked a NULL `Display` check, segfaulting when focusing a native-Wayland app and killing input system-wide. Added the null-check and skip X11 introspection on Wayland.
+3. **Setup-GUI panic fix** when the macro file is missing (standalone launch).
+4. **Event-based surrounding-text sync** — after `DeleteSurroundingText`, wait for the app to confirm before committing (capped timeout + adaptive fallback), so tone correction adapts to app/system lag.
 
-If you want to revive ibus-bamboo or discuss the project's future, please visit https://github.com/BambooEngine/ibus-bamboo/issues/590.
-
-## Getting Started
-
-- [Features](#features)
-- [Installation](#installation)
-	- [Ubuntu, Mint and derivatives](#ubuntu-and-derivatives)
-	- [Arch Linux and derivatives](#arch-linux-and-derivatives)
-	- [NixOS](#nixos)
-	- [Void Linux](#void-linux)
-	- [Install from OpenBuildService](#install-from-openbuildservice)
-	- [Install from source](https://github.com/BambooEngine/ibus-bamboo/wiki/H%C6%B0%E1%BB%9Bng-d%E1%BA%ABn-c%C3%A0i-%C4%91%E1%BA%B7t-t%E1%BB%AB-m%C3%A3-ngu%E1%BB%93n)
-- [Usage](#usage)
-- [Bug reports](#bug-reports)
-- [License](#license)
-
-## Features
-* Support many Vietnamese character sets/encodings:
-  * Unicode, TCVN (ABC)
-  * VIQR, VNI, VPS, VISCII, BK HCM1, BK HCM2,…
-  * Unicode UTF-8, Unicode NCR - for Web editors.
-* All popular typing methods:
-  * Telex, Telex W, Telex 2, Telex + VNI + VIQR
-  * VNI, VIQR, Microsoft layout
-* Using shortcut <kbd>Shift</kbd>+<kbd>~</kbd> to switch between typing modes for an application or add it to the exclusion list:
-  	* Pre-edit (default)
-  	* Surrounding text, IBus ForwardKeyEvent,...
-* Other useful futures, easy to use:
-  * Spelling check (using dictionary/rules)
-  * Use oà, uý (instead of òa, úy)
-  * Free tone making, macro,...
-  * 2666 emojis from [emojiOne](https://github.com/joypixels/emojione)
-
-## Installation
-### Ubuntu and derivatives
-
+## Build & install from source
+Requirements (Ubuntu/Debian): `golang git make gcc libgtk-3-dev libxtst-dev libx11-dev`.
 ```sh
-sudo add-apt-repository ppa:bamboo-engine/ibus-bamboo
-sudo apt-get update
-sudo apt-get install ibus-bamboo
+git clone https://github.com/xtcnet/Onikey.git
+cd Onikey
+make
+sudo make install PREFIX=/usr
 ibus restart
-# Make ibus-bamboo your default input method, this will remove other existing input layouts
-env DCONF_PROFILE=ibus dconf write /desktop/ibus/general/preload-engines "['xkb:us::eng', 'Bamboo']" && gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
 ```
+Then add the **Bamboo** engine under *Settings → Keyboard → Input Sources*. Switch English/Vietnamese with <kbd>Super</kbd>+<kbd>Space</kbd>. Cycle input modes with <kbd>Shift</kbd>+<kbd>~</kbd>. Uninstall with `sudo make uninstall`.
 
-### Arch Linux and derivatives
-`ibus-bamboo` is now available on the [AUR](https://aur.archlinux.org/packages/ibus-bamboo). Don't forget to leave a vote for the maintainers so that one day it can be included in the official Arch repository!
-
-### NixOS
-
-#### Nixpkgs
-
-`ibus-bamboo` is available on the main Nixpkgs repo. Make sure your NixOS configuration must contain this code to install it.
-
-```nix
-{
- i18n.inputMethod = {
-  enabled = "ibus";
-  ibus.engines = with pkgs.ibus-engines; [
-    bamboo
-  ];
- };
-}
-```
-
-#### Ibus-bamboo flake
-
-If you don't like to use package from Nixpkgs, you can use latest version flake package from Ibus-bamboo repo. Note that this approach only work for flake.
-
-First, make sure you have added repo path in your nixos flake config.
-
-Example code at `flake.nix`
-```nix
-{
-  inputs = {
-    nixpkgs = {
-      url = "github:nixos/nixpkgs/nixos-24.05";
-    };
-
-    ibus-bamboo = {
-      url = "github:BambooEngine/ibus-bamboo";
-    };
-  };
-
-  outputs = {
-    self,
-    nixpkgs,
-    ibus-bamboo
-  }@inputs:
-  let
-    inherit (self) outputs;
-
-    system = "x86_64-linux";
-  in
-  {
-    nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs outputs system; };
-
-        # Some nixos config
-      };
-    };
-  }
-}
-}
-```
-
-Next, you need to declare a variable and add it to `ibus.engines`
-
-Example code at `input-method.nix`
-```nix
-{ inputs, system, ... }:
-
-let
-  bamboo = inputs.ibus-bamboo.packages."${system}".default;
-in
-{
-  i18n.inputMethod = {
-    enabled = "ibus";
-    ibus.engines = [
-      bamboo
-    ];
-  };
-}
-```
-
-Final step is update flake and switch your system to new config.
-
-### Void Linux
-`ibus-bamboo` is available on the main Void Linux repo. You can install it directly.
-
-```sh
-sudo xbps-install -S ibus-bamboo
-```
-
-### Install from OpenBuildService
-[![OpenBuildService](https://github.com/BambooEngine/ibus-bamboo/raw/gh-resources/obs.png)](https://software.opensuse.org//download.html?project=home%3Alamlng&package=ibus-bamboo)
-
-## Usage
-The difference between `ibus-bamboo` and other input methods is that `ibus-bamboo` provides different typing modes (1 underlined and 5 non-underlined typing modes - don't confuse **typing mode** with **typing method**, typing methods are `telex`, `vni`, ...).
-
-To switch between typing modes, simply click on an input box (a box to enter text), then press the combination <kbd>Shift</kbd>+<kbd>~</kbd>, a table with the available typing modes will appear, you just need to press the corresponding number key to select.
-
-**Note:**
- - An app may work well with one typing mode while not working well with another.
- - Typing modes are saved separately for each software (`firefox` is probably using mode 5, while `libreoffice` is using mode 2).
- - You can use `Add to the exclusion list` mode to not type Vietnamese in a certain program.
- - To type the character `~`, press the combination <kbd>Shift</kbd>+<kbd>~</kbd> twice.
- - Support for Wayland in IBus is not yet ideal. For a better typing experience, please use Xorg.
-
-## Bug reports
-Before submitting a question or bug report, please ensure you have read through [these common issues](https://github.com/BambooEngine/ibus-bamboo/wiki/C%C3%A1c-v%E1%BA%A5n-%C4%91%E1%BB%81-th%C6%B0%E1%BB%9Dng-g%E1%BA%B7p) and see if you can resolve the problem on your own. If you still encounter issues after trying these steps, or you don't see something similar to your issue listed, please submit a bug report in the [Bamboo issue tracker](https://github.com/BambooEngine/ibus-bamboo/issues)
+## Known GNOME Wayland limits
+Platform limitations, not engine bugs: no focused-window detection (`Shell.Eval` is locked; native-Wayland apps have no X WM_CLASS); no synthetic key injection (XTest is blocked by Wayland — triggers the *Remote Desktop* prompt); Wine apps don't support surrounding text (characters get doubled). The underline-free approach trades perfect lag-immunity for no underline; use Pre-edit mode if you need the former.
 
 ## License
-IBus Bamboo is released under the GNU General Public License v3.0
+GPLv3, same as the upstream [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo). See [LICENSE](LICENSE).
