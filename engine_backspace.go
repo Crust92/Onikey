@@ -288,10 +288,16 @@ func (e *IBusBambooEngine) SendBackSpace(n int) {
 		sleep()
 		time.Sleep(time.Duration(n) * (10 + BACKSPACE_INTERVAL) * time.Millisecond)
 	} else if e.checkInputMode(config.SurroundingTextIM) {
+		// Đồng bộ theo sự kiện (thay cho chờ cứng): sau khi xóa, hỏi app lấy
+		// surrounding text mới và CHỜ app trả lời rồi mới cho commit -> app
+		// phản hồi nhanh thì ghi ngay (nhanh hơn chờ cứng), app chậm thì chờ.
+		// TRẦN CHỜ CỐ Ý THẤP (60ms): chờ lâu hơn sẽ dồn phím trong hàng đợi
+		// gây "bấm không ra chữ", tệ hơn là lỗi dấu. Đây là số cần chỉnh nếu
+		// muốn đánh đổi lại (cao hơn = che lag tốt hơn nhưng dễ mất chữ).
 		time.Sleep(20 * time.Millisecond)
 		log.Printf("Sendding %d backspace via SurroundingText\n", n)
 		e.DeleteSurroundingText(-int32(n), uint32(n))
-		time.Sleep(20 * time.Millisecond)
+		e.waitForSurroundingTextSync(60 * time.Millisecond)
 	} else if e.checkInputMode(config.ForwardAsCommitIM) {
 		time.Sleep(20 * time.Millisecond)
 		log.Printf("Sendding %d backspace via forwardAsCommitIM\n", n)

@@ -90,7 +90,9 @@ func OpenGUI(engName string) {
 	)
 	mText, err := ioutil.ReadFile(macroFilePath)
 	if err != nil {
-		panic(err)
+		// Macro file may not exist yet (e.g. standalone/GUI launched before
+		// initConfigFiles ran). Don't crash the process -> just start empty.
+		mText = []byte("")
 	}
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {

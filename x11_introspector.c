@@ -70,7 +70,11 @@ char * x11GetFocusWindowClassByProp(Display *display, char * propName) {
     XGetInputFocus(display, &w, &revertTo);
     for (int i=0; i<MaxWmClassesLen; i++) {
         char * strClass = x11GetStringProperty(display, w, propName);
-        if (strClass != NULL && strstr(strClass, "FocusProxy") == NULL) {
+        // Skip IM/compositor-internal windows so a focused native-Wayland app
+        // doesn't get misdetected as an X11 (XWayland) app.
+        if (strClass != NULL && strstr(strClass, "FocusProxy") == NULL
+                && strstr(strClass, "ibus-x11") == NULL
+                && strstr(strClass, "mutter-x11-frames") == NULL) {
             return strClass;
         }
         Window * childrenWindows;
@@ -99,6 +103,11 @@ char * x11GetFocusWindowClassByDpy(Display *display) {
 char * x11GetFocusWindowClass() {
     Display * dpy;
     dpy = XOpenDisplay(NULL);
+    if (dpy == NULL) {
+        // No X server reachable (e.g. native Wayland focus). Bail out
+        // instead of passing NULL into Xlib -> segfault.
+        return NULL;
+    }
     char * wm = x11GetFocusWindowClassByDpy(dpy);
     XCloseDisplay(dpy);
     return wm;

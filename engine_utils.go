@@ -553,7 +553,13 @@ func (e *IBusBambooEngine) getLatestWmClass() string {
 	} else if isWayland {
 		wmClass = wlAppId
 	}
-	if wmClass == "" {
+	// Chỉ dùng X11 introspection trên phiên X11 thật. Trên Wayland KHÔNG gọi:
+	// (1) từng segfault khi focus app native-Wayland (đã null-check nhưng vẫn
+	// vô ích vì Shell.Eval bị khóa), (2) nhận diện chập chờn do XWayland nhảy
+	// focus qua ibus-x11, (3) quan trọng nhất: nếu nhận diện được app XWayland
+	// thì sẽ kích hoạt XTest, mà GNOME 50/Wayland coi XTest là "điều khiển từ
+	// xa" và bật hộp thoại xin quyền Remote Desktop -> không dùng được.
+	if wmClass == "" && !isWayland {
 		wmClass = x11GetFocusWindowClass()
 	}
 	wmClass = strings.Replace(wmClass, "\"", "", -1)

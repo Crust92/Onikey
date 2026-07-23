@@ -26,6 +26,8 @@ import (
 	"reflect"
 	"strconv"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	"github.com/BambooEngine/bamboo-core"
 	ibus "github.com/BambooEngine/goibus"
@@ -62,14 +64,22 @@ type IBusBambooEngine struct {
 	shouldRestoreKeyStrokes bool
 	// enqueue key strokes to process later
 	shouldEnqueuKeyStrokes bool
+	// event-based confirmation for SurroundingText mode: after
+	// DeleteSurroundingText we ask the app for the updated surrounding text
+	// and wait for its reply before committing (instead of a blind fixed
+	// sleep), so tone correctness adapts to app/system lag.
+	stConfirmCh       chan struct{}
+	awaitingSTConfirm int32
+	stConfirmTimeouts int32
 }
 
 func NewIbusBambooEngine(name string, cfg *config.Config, base IEngine, preeditor bamboo.IEngine) *IBusBambooEngine {
 	return &IBusBambooEngine{
-		engineName: name,
-		IEngine:    base,
-		preeditor:  preeditor,
-		config:     cfg,
+		engineName:  name,
+		IEngine:     base,
+		preeditor:   preeditor,
+		config:      cfg,
+		stConfirmCh: make(chan struct{}, 1),
 	}
 }
 
@@ -154,6 +164,16 @@ func (e *IBusBambooEngine) Disable() *dbus.Error {
 
 // @method(in_signature="vuu")
 func (e *IBusBambooEngine) SetSurroundingText(text dbus.Variant, cursorPos uint32, anchorPos uint32) *dbus.Error {
+	if atomic.CompareAndSwapInt32(&e.awaitingSTConfirm, 1, 0) {
+		// This callback is the app acknowledging our DeleteSurroundingText.
+		// Signal the waiter and skip the buffer repopulation below (it would
+		// clobber the in-progress composition).
+		select {
+		case e.stConfirmCh <- struct{}{}:
+		default:
+		}
+		return nil
+	}
 	if !e.isSurroundingTextReady {
 		//fmt.Println("Surrounding Text is not ready yet.")
 		return nil
@@ -184,6 +204,39 @@ func (e *IBusBambooEngine) SetSurroundingText(text dbus.Variant, cursorPos uint3
 		}
 	}
 	return nil
+}
+
+// waitForSurroundingTextSync asks the app for its (post-delete) surrounding
+// text and blocks until the app answers or maxWait elapses. This replaces a
+// blind fixed sleep between DeleteSurroundingText and CommitText, so the commit
+// only fires after the app has actually applied the deletion — making tone
+// correctness resilient to app/system lag. If the app repeatedly fails to
+// answer, the wait is capped short so typing stays responsive.
+func (e *IBusBambooEngine) waitForSurroundingTextSync(maxWait time.Duration) {
+	if e.stConfirmCh == nil {
+		time.Sleep(45 * time.Millisecond)
+		return
+	}
+	// drain any stale confirmation
+	select {
+	case <-e.stConfirmCh:
+	default:
+	}
+	atomic.StoreInt32(&e.awaitingSTConfirm, 1)
+	e.RequireSurroundingText()
+	wait := maxWait
+	if atomic.LoadInt32(&e.stConfirmTimeouts) >= 3 {
+		// App doesn't seem to report surrounding text back; don't stall the
+		// full maxWait on every correction.
+		wait = 45 * time.Millisecond
+	}
+	select {
+	case <-e.stConfirmCh:
+		atomic.StoreInt32(&e.stConfirmTimeouts, 0)
+	case <-time.After(wait):
+		atomic.StoreInt32(&e.awaitingSTConfirm, 0)
+		atomic.AddInt32(&e.stConfirmTimeouts, 1)
+	}
 }
 
 func (e *IBusBambooEngine) PageUp() *dbus.Error {
