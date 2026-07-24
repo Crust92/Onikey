@@ -59,7 +59,12 @@ func GetIBusEngineCreator() func(*dbus.Conn, string) dbus.ObjectPath {
 			ui.OpenGUI(engine.engineName)
 			os.Exit(0)
 		}
-		go engine.init()
+		// Chạy ĐỒNG BỘ (không phải "go engine.init()"): chính init() gán biến
+		// toàn cục keyPressHandler. Nếu chạy async, lúc đăng nhập engine có thể
+		// nhận phím TRƯỚC khi goroutine kịp gán -> phím rơi vào hàm rỗng -> "mất
+		// tiếng Việt cho tới khi chuyển bộ gõ". init() chỉ làm việc cục bộ (I/O
+		// file, tạo macro/emoji) nên chạy đồng bộ ở đây an toàn, không deadlock.
+		engine.init()
 
 		return objectPath
 	}
