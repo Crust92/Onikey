@@ -50,7 +50,11 @@ const (
 	_IBmouseCapturing           //deprecated
 	IBworkaroundForFBMessenger
 	IBworkaroundForWPS
+	// Onikey: ô địa chỉ trình duyệt (content purpose = URL) luôn gõ ở chế độ
+	// không gạch chân, kể cả khi chế độ mặc định là Pre-edit — vì pre-edit làm
+	// hỏng danh sách gợi ý của thanh địa chỉ.
+	IBnoUnderlineForURL
 	IBstdFlags = IBspellCheckEnabled | IBspellCheckWithRules | IBautoNonVnRestore | IBddFreeStyle |
-		IBautoCapitalizeMacro | IBnoUnderline | IBworkaroundForWPS
+		IBautoCapitalizeMacro | IBnoUnderline | IBworkaroundForWPS | IBnoUnderlineForURL
 	IBUsStdFlags = 0
 )

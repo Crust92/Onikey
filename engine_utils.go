@@ -276,6 +276,43 @@ func (e *IBusBambooEngine) runeCount() int {
 }
 
 func (e *IBusBambooEngine) getInputMode() int {
+	var im = e.getConfiguredInputMode()
+	// Ô địa chỉ trình duyệt: pre-edit làm hỏng danh sách gợi ý nên chuyển sang
+	// chế độ không gạch chân. Chỉ "nâng cấp" từ Pre-edit — nếu người dùng đã
+	// chọn sẵn một chế độ không gạch chân hoặc loại trừ app thì giữ nguyên.
+	if im == config.PreeditIM && e.urlInputMode != 0 {
+		return e.urlInputMode
+	}
+	return im
+}
+
+// updateURLInputMode chốt chế độ gõ dùng cho ô địa chỉ mỗi khi đổi ô nhập hoặc
+// đổi capability, thay vì tính lại ở từng phím — để chế độ không nhảy giữa
+// chừng lúc đang gõ dở một từ.
+func (e *IBusBambooEngine) updateURLInputMode() {
+	var mode int
+	if e.config.IBflags&config.IBnoUnderlineForURL != 0 && e.isURLBar() {
+		// Surrounding Text là chế độ không gạch chân ổn nhất, nhưng cần app
+		// cung cấp được surrounding text; app nào không có (cap thiếu bit đó)
+		// thì lùi về Forward as commit — cũng không gạch chân.
+		if e.capabilities&IBusCapSurroundingText != 0 {
+			mode = config.SurroundingTextIM
+		} else {
+			mode = config.ForwardAsCommitIM
+		}
+	}
+	if mode == e.urlInputMode {
+		return
+	}
+	// Xả bộ đệm THEO CHẾ ĐỘ CŨ rồi mới đổi.
+	e.resetBuffer()
+	e.resetFakeBackspace()
+	e.urlInputMode = mode
+	dbg("updateURLInputMode: purpose=%d cap=0x%x -> urlInputMode=%d inputMode=%d",
+		e.contentPurpose, e.capabilities, mode, e.getInputMode())
+}
+
+func (e *IBusBambooEngine) getConfiguredInputMode() int {
 	if e.getWmClass() != "" {
 		if im, ok := e.config.InputModeMapping[e.getWmClass()]; ok && config.ImLookupTable[im] != "" {
 			return im
@@ -285,6 +322,24 @@ func (e *IBusBambooEngine) getInputMode() int {
 		return e.config.DefaultInputMode
 	}
 	return config.PreeditIM
+}
+
+// isURLBar cho biết ô nhập đang focus là ô địa chỉ (thanh URL của trình duyệt,
+// ô nhập <input type="url">...) theo content type mà client báo cho IBus.
+func (e *IBusBambooEngine) isURLBar() bool {
+	return e.contentPurpose == IBusInputPurposeURL
+}
+
+// checkContentPurpose xả bộ đệm khi ô nhập đổi kiểu nội dung (vd nhảy từ ô
+// địa chỉ sang ô văn bản thường), vì hai ô có thể chạy hai chế độ gõ khác nhau.
+func (e *IBusBambooEngine) checkContentPurpose(purpose, hints uint32) {
+	if e.contentPurpose != purpose {
+		e.resetBuffer()
+		e.resetFakeBackspace()
+		e.contentPurpose = purpose
+	}
+	e.contentHints = hints
+	e.updateURLInputMode()
 }
 
 func (e *IBusBambooEngine) openLookupTable() {
