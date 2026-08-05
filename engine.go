@@ -54,6 +54,12 @@ type IBusBambooEngine struct {
 	inputModeLookupTable   *ibus.LookupTable
 	capabilities           uint32
 	keyPressDelay          int
+	// Kiểu nội dung của ô nhập hiện tại, do client báo qua IBus SetContentType
+	// (purpose theo IBusInputPurpose: URL / email / password...).
+	contentPurpose uint32
+	contentHints   uint32
+	// Chế độ gõ chốt cho ô địa chỉ (0 = ô hiện tại không phải ô địa chỉ).
+	urlInputMode int
 	nFakeBackSpace         int32
 	isFirstTimeSendingBS   bool
 	emoji                  *EmojiEngine
@@ -135,11 +141,14 @@ func (e *IBusBambooEngine) FocusIn() *dbus.Error {
 		dictionary, _ = loadDictionary(DictVietnameseCm)
 	}
 	fmt.Printf("WM_CLASS=(%s)\n", e.getWmClass())
+	dbg("FocusIn: wm=%q cap=0x%x purpose=%d hints=0x%x inputMode=%d",
+		e.getWmClass(), e.capabilities, e.contentPurpose, e.contentHints, e.getInputMode())
 	return nil
 }
 
 func (e *IBusBambooEngine) FocusOut() *dbus.Error {
 	log.Print("FocusOut.")
+	dbg("FocusOut: purpose=%d hints=0x%x cap=0x%x", e.contentPurpose, e.contentHints, e.capabilities)
 	return nil
 }
 
@@ -292,7 +301,9 @@ func (e *IBusBambooEngine) CandidateClicked(index uint32, button uint32, state u
 }
 
 func (e *IBusBambooEngine) SetCapabilities(cap uint32) *dbus.Error {
+	dbg("SetCapabilities: cap=0x%x", cap)
 	e.capabilities = cap
+	e.updateURLInputMode()
 	return nil
 }
 
@@ -301,7 +312,40 @@ func (e *IBusBambooEngine) SetCursorLocation(x int32, y int32, w int32, h int32)
 }
 
 func (e *IBusBambooEngine) SetContentType(purpose uint32, hints uint32) *dbus.Error {
+	dbg("SetContentType: purpose=%d hints=0x%x wm=%q", purpose, hints, e.getWmClass())
+	e.checkContentPurpose(purpose, hints)
 	return nil
+}
+
+// Set nhận org.freedesktop.DBus.Properties.Set. Từ IBus 1.5, kiểu nội dung của
+// ô nhập KHÔNG gửi qua phương thức SetContentType nữa mà gửi bằng thuộc tính
+// DBus "ContentType" kiểu (uu) = (purpose, hints) — thiếu hàm này thì bộ gõ
+// không bao giờ biết ô đang gõ là ô địa chỉ hay ô văn bản thường.
+func (e *IBusBambooEngine) Set(iface string, propName string, value dbus.Variant) *dbus.Error {
+	dbg("Properties.Set: iface=%s prop=%s value=%v", iface, propName, value)
+	if propName != "ContentType" {
+		return nil
+	}
+	purpose, hints, ok := parseContentType(value)
+	if !ok {
+		return nil
+	}
+	dbg("ContentType: purpose=%d hints=0x%x wm=%q", purpose, hints, e.getWmClass())
+	e.checkContentPurpose(purpose, hints)
+	return nil
+}
+
+func parseContentType(value dbus.Variant) (uint32, uint32, bool) {
+	fields, ok := value.Value().([]interface{})
+	if !ok || len(fields) != 2 {
+		return 0, 0, false
+	}
+	purpose, ok1 := fields[0].(uint32)
+	hints, ok2 := fields[1].(uint32)
+	if !ok1 || !ok2 {
+		return 0, 0, false
+	}
+	return purpose, hints, true
 }
 
 // @method(in_signature="su")

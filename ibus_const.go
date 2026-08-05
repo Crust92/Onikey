@@ -88,3 +88,19 @@ const (
 	IBusOrientationVertical   = 1
 	IBusOrientationSystem     = 2
 )
+
+// IBusInputPurpose — kiểu nội dung của ô nhập, client báo qua SetContentType.
+// Giá trị trùng GtkInputPurpose và text-input-v3 của Wayland.
+const (
+	IBusInputPurposeFreeForm uint32 = iota
+	IBusInputPurposeAlpha
+	IBusInputPurposeDigits
+	IBusInputPurposeNumber
+	IBusInputPurposePhone
+	IBusInputPurposeURL
+	IBusInputPurposeEmail
+	IBusInputPurposeName
+	IBusInputPurposePassword
+	IBusInputPurposePin
+	IBusInputPurposeTerminal
+)
