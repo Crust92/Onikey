@@ -126,6 +126,7 @@ func (e *IBusBambooEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state 
 
 func (e *IBusBambooEngine) FocusIn() *dbus.Error {
 	log.Print("FocusIn.")
+	var start = time.Now()
 	var latestWm = e.getLatestWmClass()
 	e.checkWmClass(latestWm)
 	e.RegisterProperties(e.propList)
@@ -141,8 +142,8 @@ func (e *IBusBambooEngine) FocusIn() *dbus.Error {
 		dictionary, _ = loadDictionary(DictVietnameseCm)
 	}
 	fmt.Printf("WM_CLASS=(%s)\n", e.getWmClass())
-	dbg("FocusIn: wm=%q cap=0x%x purpose=%d hints=0x%x inputMode=%d",
-		e.getWmClass(), e.capabilities, e.contentPurpose, e.contentHints, e.getInputMode())
+	dbg("FocusIn: wm=%q cap=0x%x purpose=%d hints=0x%x inputMode=%d took=%s",
+		e.getWmClass(), e.capabilities, e.contentPurpose, e.contentHints, e.getInputMode(), time.Since(start))
 	return nil
 }
 
