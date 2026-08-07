@@ -129,6 +129,9 @@ func (e *IBusBambooEngine) FocusIn() *dbus.Error {
 	var start = time.Now()
 	var latestWm = e.getLatestWmClass()
 	e.checkWmClass(latestWm)
+	// Chốt lại chế độ ngay lúc focus: capability và kiểu ô nhập tới rải rác từ
+	// nhiều input context, tới đây mới là trạng thái của ô đang thực sự gõ.
+	e.updateURLInputMode()
 	e.RegisterProperties(e.propList)
 	e.RequireSurroundingText()
 	if e.isShortcutKeyEnable(KSEmojiDialog) && emojiTrie != nil && len(emojiTrie.Children) == 0 {
