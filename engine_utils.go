@@ -291,15 +291,14 @@ func (e *IBusBambooEngine) getInputMode() int {
 // chừng lúc đang gõ dở một từ.
 func (e *IBusBambooEngine) updateURLInputMode() {
 	var mode int
-	if e.config.IBflags&config.IBnoUnderlineForURL != 0 && e.isURLBar() {
-		// Surrounding Text là chế độ không gạch chân ổn nhất, nhưng cần app
-		// cung cấp được surrounding text; app nào không có (cap thiếu bit đó)
-		// thì lùi về Forward as commit — cũng không gạch chân.
-		if e.capabilities&IBusCapSurroundingText != 0 {
-			mode = config.SurroundingTextIM
-		} else {
-			mode = config.ForwardAsCommitIM
-		}
+	// CHỈ đổi chế độ khi app cung cấp được surrounding text. KHÔNG lùi về
+	// Forward as commit: Edge nuốt phím ở chế độ đó nên ô địa chỉ gõ không ra
+	// chữ. Vả lại lúc mới focus, Edge báo cap=0x9 rồi mới nâng lên 0x29 ngay
+	// sau đó — thiếu bit thì cứ giữ Pre-edit, SetCapabilities gọi lại hàm này
+	// và chuyển sang không gạch chân sau.
+	if e.config.IBflags&config.IBnoUnderlineForURL != 0 && e.isURLBar() &&
+		e.capabilities&IBusCapSurroundingText != 0 {
+		mode = config.SurroundingTextIM
 	}
 	if mode == e.urlInputMode {
 		return
