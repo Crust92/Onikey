@@ -27,8 +27,13 @@ OLD=$(dpkg-query -W -f='${Version}' onikey 2>/dev/null || echo "chua-cai")
 echo "==> Dong goi .deb..."
 DEB=$(sh scripts/build-deb)
 
+# Copy sang /tmp (world-readable) de user '_apt' cua apt doc duoc -> tranh
+# canh bao "Download is performed unsandboxed as root" khi file nam trong home.
+TMPDEB="/tmp/$(basename "$DEB")"
+cp -f "$DEB" "$TMPDEB"
 echo "==> Cai goi: $(basename "$DEB")  (can quyen sudo)"
-sudo apt-get install -y --allow-downgrades "$DEB"
+sudo apt-get install -y --allow-downgrades "$TMPDEB"
+rm -f "$TMPDEB"
 
 NEW=$(dpkg-query -W -f='${Version}' onikey 2>/dev/null || echo "?")
 echo "==> Khoi dong lai IBus..."
