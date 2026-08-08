@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# onikey-update — cap nhat Onikey len ban moi nhat tu GitHub, dong goi .deb roi cai.
+#   Dung:  onikey-update
+#   Bien moi truong ONIKEY_SRC de doi thu muc ma nguon (mac dinh ~/.cache/onikey-src).
+set -euo pipefail
+
+REPO_URL="https://github.com/xtcnet/Onikey.git"
+SRC="${ONIKEY_SRC:-$HOME/.cache/onikey-src}"
+
+need() { command -v "$1" >/dev/null 2>&1 || { echo "Thieu '$1'. Cai: sudo apt install $2"; exit 1; }; }
+need git   git
+need go    golang
+need gcc   gcc
+need dpkg-deb dpkg
+
+echo "==> Lay ma nguon moi nhat tu GitHub ($REPO_URL)..."
+if [ -d "$SRC/.git" ]; then
+  git -C "$SRC" fetch --quiet origin master
+  git -C "$SRC" reset --hard --quiet origin/master
+else
+  git clone --quiet "$REPO_URL" "$SRC"
+fi
+
+cd "$SRC"
+OLD=$(dpkg-query -W -f='${Version}' onikey 2>/dev/null || echo "chua-cai")
+
+echo "==> Dong goi .deb..."
+DEB=$(sh scripts/build-deb)
+
+echo "==> Cai goi: $(basename "$DEB")  (can quyen sudo)"
+sudo apt-get install -y --allow-downgrades "$DEB"
+
+NEW=$(dpkg-query -W -f='${Version}' onikey 2>/dev/null || echo "?")
+echo "==> Khoi dong lai IBus..."
+ibus restart >/dev/null 2>&1 || true
+
+echo "==> Xong:  onikey  $OLD  ->  $NEW"
+echo "    Neu dang go do co the can chon lai bo go (Super+Space) hoac dang xuat/dang nhap."
