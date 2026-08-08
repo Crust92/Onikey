@@ -56,6 +56,19 @@ Chuyển giữa tiếng Anh (`us`) và tiếng Việt (`Bamboo`) bằng <kbd>Sup
 
 **Gỡ cài đặt:** trong thư mục mã nguồn chạy `sudo make uninstall`.
 
+## Cập nhật bằng gói (.deb)
+Onikey đóng gói được thành `.deb` để cài/cập nhật gọn qua dpkg/apt:
+```sh
+sh scripts/build-deb              # tạo onikey_<phiên-bản>_<arch>.deb
+sudo apt install ./onikey_*.deb   # cài (dpkg quản lý)
+ibus restart
+```
+Sau lần cài đầu, gói kèm sẵn lệnh **`onikey-update`** — chạy bất cứ lúc nào để tự lấy bản mới nhất từ GitHub, đóng gói lại và cài đè:
+```sh
+onikey-update
+```
+Phiên bản gói tăng dần theo giờ commit nên `apt` luôn nhận ra bản mới hơn. Gỡ: `sudo apt remove onikey`.
+
 ## Hướng dẫn sử dụng
 - Mặc định là **Telex, Unicode, không gạch chân**. Gõ ngay được, ví dụ `Tieengs Vieejt` → *Tiếng Việt*.
 - Onikey có nhiều **chế độ gõ** (đừng nhầm với **kiểu gõ** như telex/vni). Nhấn vào một khung nhập rồi bấm <kbd>Shift</kbd>+<kbd>~</kbd> để chọn chế độ khác.

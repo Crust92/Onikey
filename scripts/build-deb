@@ -1,0 +1,46 @@
+#!/bin/sh
+# build-deb — dong goi Onikey thanh .deb bang dpkg-deb (khong can debhelper).
+# In ra duong dan tuyet doi cua file .deb tao duoc (de script khac dung).
+set -e
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"   # ve goc repo
+
+BASE=$(grep -m1 '^version=' Makefile | cut -d= -f2)
+# Phien ban tang dan theo NGAY GIO commit -> apt luon coi la ban moi hon.
+GITD=$(git show -s --format=%cd --date=format:'%Y%m%d%H%M%S' HEAD 2>/dev/null || echo 0)
+GITH=$(git rev-parse --short HEAD 2>/dev/null || echo local)
+VERSION="${BASE}+git${GITD}.${GITH}"
+ARCH=$(dpkg --print-architecture)
+PKG=onikey
+
+STAGE=$(mktemp -d)
+trap 'rm -rf "$STAGE"' EXIT
+
+# 1) Build binary + stage file theo layout /usr (dung script install san co)
+sh scripts/build
+sh scripts/install /usr "$STAGE"
+
+# 2) Kem lenh 'onikey-update' vao /usr/bin
+install -Dm755 scripts/onikey-update "$STAGE/usr/bin/onikey-update"
+
+# 3) Metadata goi
+mkdir -p "$STAGE/DEBIAN"
+cat > "$STAGE/DEBIAN/control" <<EOF
+Package: $PKG
+Version: $VERSION
+Architecture: $ARCH
+Maintainer: xtcnet <xtczone000000@gmail.com>
+Section: utils
+Priority: optional
+Depends: ibus, libgtk-3-0, libx11-6, libxtst6
+Conflicts: ibus-bamboo
+Provides: ibus-bamboo
+Replaces: ibus-bamboo
+Homepage: https://github.com/xtcnet/Onikey
+Description: Onikey - Vietnamese input method, no preedit underline (fork of ibus-bamboo)
+ Vietnamese input method tuned for typing without the preedit underline on
+ GNOME Wayland. Ships 'onikey-update' to update to the latest GitHub build.
+EOF
+
+OUT="$(pwd)/${PKG}_${VERSION}_${ARCH}.deb"
+dpkg-deb --build --root-owner-group "$STAGE" "$OUT" >/dev/null
+echo "$OUT"
