@@ -22,8 +22,8 @@ debian/*
 *_linux
 *.tar.gz
 ibus-engine-*
-onikey-engine
-onikey-config
+/onikey-engine
+/onikey-config
 keyboard-shortcut-editor
 macro-editor
 *.deb
