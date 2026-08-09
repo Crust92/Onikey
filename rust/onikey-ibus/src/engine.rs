@@ -191,7 +191,20 @@ impl OnikeyEngine {
         state: u32,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) -> bool {
-        match self.decide(keyval, state) {
+        let action = self.decide(keyval, state);
+        crate::debug::log(format_args!(
+            "phím 0x{keyval:04x} {:?} state=0x{state:x} -> {}",
+            char::from_u32(keyval).unwrap_or('?'),
+            match &action {
+                Action::Ignore => "bỏ qua".to_string(),
+                Action::Passthrough(s) => format!("cho qua, chốt {s:?}"),
+                Action::Preedit(s) => format!("pre-edit {s:?}"),
+                Action::Rewrite { backspaces, tail } => {
+                    format!("sửa: xoá {backspaces}, ghi {tail:?}")
+                }
+            }
+        ));
+        match action {
             Action::Ignore => false,
             Action::Passthrough(pending) => {
                 if let Some(s) = pending {
