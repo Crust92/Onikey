@@ -4,7 +4,7 @@ Onikey — Underline-free Vietnamese input for GNOME Wayland
 
 **Onikey** is a **fork of [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)** (BambooEngine), tuned to type Vietnamese **without the preedit underline** on **GNOME Wayland**, plus reliability fixes. All core credit goes to the original authors; this repo keeps the **GPLv3** license.
 
-> Onikey keeps the internal engine name **Bamboo** — in *Settings → Keyboard → Input Sources* you select the engine named **Bamboo**.
+> Since 0.9.0 the engine is named **Onikey** (it used to be *Bamboo*) — pick **Onikey** in *Settings → Keyboard → Input Sources*. An existing `~/.config/ibus-bamboo` config is migrated to `~/.config/onikey` on first run.
 
 ## What this fork changes
 1. **Per-field hybrid mode** — regular fields use *Pre-edit* (underlined, most reliable under lag), while the **browser address bar automatically switches to an underline-free mode** so URL suggestions keep working. Toggle it in the setup dialog.
@@ -22,13 +22,13 @@ make
 sudo make install PREFIX=/usr
 ibus restart
 ```
-Then add the **Bamboo** engine under *Settings → Keyboard → Input Sources*. Switch English/Vietnamese with <kbd>Super</kbd>+<kbd>Space</kbd>. Cycle input modes with <kbd>Shift</kbd>+<kbd>~</kbd>. Uninstall with `sudo make uninstall`.
+Then add the **Onikey** engine under *Settings → Keyboard → Input Sources*. Switch English/Vietnamese with <kbd>Super</kbd>+<kbd>Space</kbd>. Cycle input modes with <kbd>Shift</kbd>+<kbd>~</kbd>. Uninstall with `sudo make uninstall`.
 
 ## Known GNOME Wayland limits
 Platform limitations, not engine bugs: no focused-window detection (`Shell.Eval` is locked; native-Wayland apps have no X WM_CLASS); no synthetic key injection (XTest is blocked by Wayland — triggers the *Remote Desktop* prompt); Wine apps don't support surrounding text (characters get doubled). The underline-free approach trades perfect lag-immunity for no underline; use Pre-edit mode if you need the former. The hybrid mode also can't help Firefox's own address bar: Chromium reports it as a URL field, Firefox only reports content types for in-page inputs.
 
 ## Debugging
-The engine is spawned by ibus-daemon, so its stdout is invisible. Enable a log file with `touch ~/.config/ibus-bamboo/onikey-debug && ibus restart`; it writes focus, capability, content-type and input-mode events to `~/.config/ibus-bamboo/onikey-debug.log`. Remove the flag file and restart ibus to turn it off.
+The engine is spawned by ibus-daemon, so its stdout is invisible. Enable a log file with `touch ~/.config/onikey/onikey-debug && ibus restart`; it writes focus, capability, content-type and input-mode events to `~/.config/onikey/onikey-debug.log`. Remove the flag file and restart ibus to turn it off.
 
 ## License
 GPLv3, same as the upstream [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo). See [LICENSE](LICENSE).

@@ -5,13 +5,13 @@
 %define ibus_comp_dir /usr/share/ibus/component
 %define _unpackaged_files_terminate_build 0
 
-Name: ibus-bamboo
+Name: onikey
 Version: 0.8.5
 Release: 1%{?dist}
 Summary: A Vietnamese input method for IBus
 
 License: GPL-3.0+
-URL: https://github.com/BambooEngine/ibus-bamboo
+URL: https://github.com/xtcrust/Onikey
 Source0: %{name}-%{version}.tar.gz
 
 BuildRequires: go, ibus-devel, libX11-devel, libXtst-devel, gtk3-devel

@@ -4,7 +4,7 @@ Onikey — Bộ gõ tiếng Việt không gạch chân cho GNOME Wayland
 
 **Onikey** là bản **fork của [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)** (BambooEngine), tinh chỉnh để **gõ tiếng Việt không có gạch chân dưới từ đang gõ** trên **GNOME Wayland**, kèm một số bản vá ổn định. Toàn bộ công lao cốt lõi thuộc về các tác giả gốc; kho này giữ nguyên giấy phép **GPLv3**.
 
-> Onikey giữ nguyên tên engine nội bộ là **Bamboo** — trong *Settings → Keyboard → Input Sources* bạn sẽ chọn engine tên **Bamboo**.
+> Từ bản 0.9.0, engine mang tên **Onikey** (trước đây là *Bamboo*) — trong *Settings → Keyboard → Input Sources* bạn chọn engine tên **Onikey**. Cấu hình cũ ở `~/.config/ibus-bamboo` được tự chuyển sang `~/.config/onikey` ở lần chạy đầu.
 
 ## Mục lục
 - [Điểm khác biệt của Onikey](#điểm-khác-biệt-của-onikey)
@@ -48,11 +48,11 @@ sudo make install PREFIX=/usr
 ibus restart
 ```
 
-**Chọn bộ gõ:** vào *Settings → Keyboard → Input Sources → +* → *Vietnamese* → **Bamboo**. Hoặc đặt nhanh bằng lệnh:
+**Chọn bộ gõ:** vào *Settings → Keyboard → Input Sources → +* → *Vietnamese* → **Onikey**. Hoặc đặt nhanh bằng lệnh:
 ```sh
-gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Bamboo')]"
+gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Onikey')]"
 ```
-Chuyển giữa tiếng Anh (`us`) và tiếng Việt (`Bamboo`) bằng <kbd>Super</kbd>+<kbd>Space</kbd>.
+Chuyển giữa tiếng Anh (`us`) và tiếng Việt (`Onikey`) bằng <kbd>Super</kbd>+<kbd>Space</kbd>.
 
 **Gỡ cài đặt:** trong thư mục mã nguồn chạy `sudo make uninstall`.
 
@@ -86,9 +86,9 @@ Phiên bản gói tăng dần theo giờ commit nên `apt` luôn nhận ra bản
 ## Gỡ rối
 Engine do ibus-daemon khởi chạy nên không xem được stdout. Bật log:
 ```sh
-touch ~/.config/ibus-bamboo/onikey-debug && ibus restart
+touch ~/.config/onikey/onikey-debug && ibus restart
 ```
-Log ghi vào `~/.config/ibus-bamboo/onikey-debug.log` (focus, capabilities, kiểu ô nhập, chế độ gõ đang dùng). Tắt bằng cách xóa file cờ rồi `ibus restart`.
+Log ghi vào `~/.config/onikey/onikey-debug.log` (focus, capabilities, kiểu ô nhập, chế độ gõ đang dùng). Tắt bằng cách xóa file cờ rồi `ibus restart`.
 
 ## Báo lỗi
 Mở issue tại [github.com/XTCRust/Onikey/issues](https://github.com/XTCRust/Onikey/issues). Với các vấn đề chung của engine, có thể tham khảo thêm [wiki của ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/wiki).

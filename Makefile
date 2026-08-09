@@ -19,11 +19,11 @@
 CC=cc
 SHELL=sh
 
-engine_name=bamboo
-engine_gui_name=ibus-setup-Bamboo.desktop
-ibus_e_name=ibus-engine-$(engine_name)
-pkg_name=ibus-$(engine_name)
-version=0.8.5
+engine_name=onikey
+engine_gui_name=onikey-setup.desktop
+ibus_e_name=onikey-engine
+pkg_name=$(engine_name)
+version=0.9.0
 
 engine_dir=$(PREFIX)/share/$(pkg_name)
 ibus_dir=$(PREFIX)/share/ibus
@@ -44,12 +44,12 @@ test:
 	$(SHELL) scripts/test
 
 clean:
-	rm -f ibus-engine-bamboo
+	rm -f onikey-engine
 	rm -f *_linux *_cover.html go_test_* go_build_* test *.gz test
 	rm -f debian/files
 	rm -rf debian/debhelper*
 	rm -rf debian/.debhelper
-	rm -rf debian/ibus-bamboo*
+	rm -rf debian/onikey*
 
 
 install: build
@@ -57,7 +57,7 @@ install: build
 
 uninstall:
 	rm -rf $(DESTDIR)$(engine_dir)
-	rm -rf $(DESTDIR)$(PREFIX)/lib/ibus-$(engine_name)/
+	rm -rf $(DESTDIR)$(PREFIX)/lib/$(engine_name)/
 	rm -f $(DESTDIR)$(ibus_dir)/component/$(engine_name).xml
 	rm -rf $(DESTDIR)$(PREFIX)/share/applications/$(engine_gui_name)
 

@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	ComponentName = "org.freedesktop.IBus.bamboo"
-	EngineName    = "Bamboo"
+	ComponentName = "org.freedesktop.IBus.Onikey"
+	EngineName    = "Onikey"
 )
 
 var embedded = flag.Bool("ibus", false, "Run the embedded ibus component")

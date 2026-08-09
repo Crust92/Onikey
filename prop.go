@@ -20,7 +20,7 @@
 package main
 
 import (
-	"ibus-bamboo/config"
+	"onikey/config"
 
 	"github.com/BambooEngine/bamboo-core"
 	ibus "github.com/BambooEngine/goibus"

@@ -33,33 +33,33 @@ import (
 	ibus "github.com/BambooEngine/goibus"
 	"github.com/godbus/dbus/v5"
 
-	"ibus-bamboo/config"
-	"ibus-bamboo/ui"
+	"onikey/config"
+	"onikey/ui"
 )
 
-type IBusBambooEngine struct {
+type OnikeyEngine struct {
 	sync.Mutex
 	IEngine
-	preeditor              bamboo.IEngine
-	engineName             string
-	config                 *config.Config
-	propList               *ibus.PropList
-	englishMode            bool
-	macroTable             *MacroTable
-	wmClasses              string
-	isInputModeLTOpened    bool
-	isEmojiLTOpened        bool
-	isInHexadecimal        bool
-	emojiLookupTable       *ibus.LookupTable
-	inputModeLookupTable   *ibus.LookupTable
-	capabilities           uint32
-	keyPressDelay          int
+	preeditor            bamboo.IEngine
+	engineName           string
+	config               *config.Config
+	propList             *ibus.PropList
+	englishMode          bool
+	macroTable           *MacroTable
+	wmClasses            string
+	isInputModeLTOpened  bool
+	isEmojiLTOpened      bool
+	isInHexadecimal      bool
+	emojiLookupTable     *ibus.LookupTable
+	inputModeLookupTable *ibus.LookupTable
+	capabilities         uint32
+	keyPressDelay        int
 	// Kiểu nội dung của ô nhập hiện tại, do client báo qua IBus SetContentType
 	// (purpose theo IBusInputPurpose: URL / email / password...).
 	contentPurpose uint32
 	contentHints   uint32
 	// Chế độ gõ chốt cho ô địa chỉ (0 = ô hiện tại không phải ô địa chỉ).
-	urlInputMode int
+	urlInputMode           int
 	nFakeBackSpace         int32
 	isFirstTimeSendingBS   bool
 	emoji                  *EmojiEngine
@@ -79,8 +79,8 @@ type IBusBambooEngine struct {
 	stConfirmTimeouts int32
 }
 
-func NewIbusBambooEngine(name string, cfg *config.Config, base IEngine, preeditor bamboo.IEngine) *IBusBambooEngine {
-	return &IBusBambooEngine{
+func NewOnikeyEngine(name string, cfg *config.Config, base IEngine, preeditor bamboo.IEngine) *OnikeyEngine {
+	return &OnikeyEngine{
 		engineName:  name,
 		IEngine:     base,
 		preeditor:   preeditor,
@@ -108,7 +108,7 @@ Return:
 
 This function gets called whenever a key is pressed.
 */
-func (e *IBusBambooEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
+func (e *OnikeyEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
 	if state&IBusReleaseMask != 0 {
 		// fmt.Println("Ignore key-up event")
 		return false, nil
@@ -124,7 +124,7 @@ func (e *IBusBambooEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state 
 	return e.preeditProcessKeyEvent(keyVal, keyCode, state)
 }
 
-func (e *IBusBambooEngine) FocusIn() *dbus.Error {
+func (e *OnikeyEngine) FocusIn() *dbus.Error {
 	log.Print("FocusIn.")
 	var start = time.Now()
 	var latestWm = e.getLatestWmClass()
@@ -150,13 +150,13 @@ func (e *IBusBambooEngine) FocusIn() *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) FocusOut() *dbus.Error {
+func (e *OnikeyEngine) FocusOut() *dbus.Error {
 	log.Print("FocusOut.")
 	dbg("FocusOut: purpose=%d hints=0x%x cap=0x%x", e.contentPurpose, e.contentHints, e.capabilities)
 	return nil
 }
 
-func (e *IBusBambooEngine) Reset() *dbus.Error {
+func (e *OnikeyEngine) Reset() *dbus.Error {
 	fmt.Print("Reset.\n")
 	if e.checkInputMode(config.PreeditIM) {
 		e.preeditor.Reset()
@@ -164,19 +164,19 @@ func (e *IBusBambooEngine) Reset() *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) Enable() *dbus.Error {
+func (e *OnikeyEngine) Enable() *dbus.Error {
 	fmt.Print("Enable.")
 	e.RequireSurroundingText()
 	return nil
 }
 
-func (e *IBusBambooEngine) Disable() *dbus.Error {
+func (e *OnikeyEngine) Disable() *dbus.Error {
 	fmt.Print("Disable.")
 	return nil
 }
 
 // @method(in_signature="vuu")
-func (e *IBusBambooEngine) SetSurroundingText(text dbus.Variant, cursorPos uint32, anchorPos uint32) *dbus.Error {
+func (e *OnikeyEngine) SetSurroundingText(text dbus.Variant, cursorPos uint32, anchorPos uint32) *dbus.Error {
 	if atomic.CompareAndSwapInt32(&e.awaitingSTConfirm, 1, 0) {
 		// This callback is the app acknowledging our DeleteSurroundingText.
 		// Signal the waiter and skip the buffer repopulation below (it would
@@ -225,7 +225,7 @@ func (e *IBusBambooEngine) SetSurroundingText(text dbus.Variant, cursorPos uint3
 // only fires after the app has actually applied the deletion — making tone
 // correctness resilient to app/system lag. If the app repeatedly fails to
 // answer, the wait is capped short so typing stays responsive.
-func (e *IBusBambooEngine) waitForSurroundingTextSync(maxWait time.Duration) {
+func (e *OnikeyEngine) waitForSurroundingTextSync(maxWait time.Duration) {
 	if e.stConfirmCh == nil {
 		time.Sleep(45 * time.Millisecond)
 		return
@@ -252,7 +252,7 @@ func (e *IBusBambooEngine) waitForSurroundingTextSync(maxWait time.Duration) {
 	}
 }
 
-func (e *IBusBambooEngine) PageUp() *dbus.Error {
+func (e *OnikeyEngine) PageUp() *dbus.Error {
 	if e.isEmojiLTOpened && e.emojiLookupTable.PageUp() {
 		e.updateEmojiLookupTable()
 	}
@@ -262,7 +262,7 @@ func (e *IBusBambooEngine) PageUp() *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) PageDown() *dbus.Error {
+func (e *OnikeyEngine) PageDown() *dbus.Error {
 	if e.isEmojiLTOpened && e.emojiLookupTable.PageDown() {
 		e.updateEmojiLookupTable()
 	}
@@ -272,7 +272,7 @@ func (e *IBusBambooEngine) PageDown() *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) CursorUp() *dbus.Error {
+func (e *OnikeyEngine) CursorUp() *dbus.Error {
 	if e.isEmojiLTOpened && e.emojiLookupTable.CursorUp() {
 		e.updateEmojiLookupTable()
 	}
@@ -282,7 +282,7 @@ func (e *IBusBambooEngine) CursorUp() *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) CursorDown() *dbus.Error {
+func (e *OnikeyEngine) CursorDown() *dbus.Error {
 	if e.isEmojiLTOpened && e.emojiLookupTable.CursorDown() {
 		e.updateEmojiLookupTable()
 	}
@@ -292,7 +292,7 @@ func (e *IBusBambooEngine) CursorDown() *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) CandidateClicked(index uint32, button uint32, state uint32) *dbus.Error {
+func (e *OnikeyEngine) CandidateClicked(index uint32, button uint32, state uint32) *dbus.Error {
 	if e.isEmojiLTOpened && e.updateCursorPosInEmojiTable(index) {
 		e.commitEmojiCandidate()
 		e.closeEmojiCandidates()
@@ -304,18 +304,18 @@ func (e *IBusBambooEngine) CandidateClicked(index uint32, button uint32, state u
 	return nil
 }
 
-func (e *IBusBambooEngine) SetCapabilities(cap uint32) *dbus.Error {
+func (e *OnikeyEngine) SetCapabilities(cap uint32) *dbus.Error {
 	dbg("SetCapabilities: cap=0x%x", cap)
 	e.capabilities = cap
 	e.updateURLInputMode()
 	return nil
 }
 
-func (e *IBusBambooEngine) SetCursorLocation(x int32, y int32, w int32, h int32) *dbus.Error {
+func (e *OnikeyEngine) SetCursorLocation(x int32, y int32, w int32, h int32) *dbus.Error {
 	return nil
 }
 
-func (e *IBusBambooEngine) SetContentType(purpose uint32, hints uint32) *dbus.Error {
+func (e *OnikeyEngine) SetContentType(purpose uint32, hints uint32) *dbus.Error {
 	dbg("SetContentType: purpose=%d hints=0x%x wm=%q", purpose, hints, e.getWmClass())
 	e.checkContentPurpose(purpose, hints)
 	return nil
@@ -325,7 +325,7 @@ func (e *IBusBambooEngine) SetContentType(purpose uint32, hints uint32) *dbus.Er
 // ô nhập KHÔNG gửi qua phương thức SetContentType nữa mà gửi bằng thuộc tính
 // DBus "ContentType" kiểu (uu) = (purpose, hints) — thiếu hàm này thì bộ gõ
 // không bao giờ biết ô đang gõ là ô địa chỉ hay ô văn bản thường.
-func (e *IBusBambooEngine) Set(iface string, propName string, value dbus.Variant) *dbus.Error {
+func (e *OnikeyEngine) Set(iface string, propName string, value dbus.Variant) *dbus.Error {
 	dbg("Properties.Set: iface=%s prop=%s value=%v", iface, propName, value)
 	if propName != "ContentType" {
 		return nil
@@ -353,7 +353,7 @@ func parseContentType(value dbus.Variant) (uint32, uint32, bool) {
 }
 
 // @method(in_signature="su")
-func (e *IBusBambooEngine) PropertyActivate(propName string, propState uint32) *dbus.Error {
+func (e *OnikeyEngine) PropertyActivate(propName string, propState uint32) *dbus.Error {
 	if propName == PropKeyAbout {
 		exec.Command("xdg-open", HomePage).Start()
 		return nil

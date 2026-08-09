@@ -24,15 +24,15 @@ import (
 	"path/filepath"
 	"sync"
 
-	"ibus-bamboo/config"
+	"onikey/config"
 )
 
 // Engine do ibus-daemon khởi chạy nên stdout/stderr thường không xem được.
 // Bật log gỡ rối bằng cách tạo file cờ:
 //
-//	touch ~/.config/ibus-bamboo/onikey-debug
+//	touch ~/.config/onikey/onikey-debug
 //
-// rồi `ibus restart`. Log ghi vào ~/.config/ibus-bamboo/onikey-debug.log.
+// rồi `ibus restart`. Log ghi vào ~/.config/onikey/onikey-debug.log.
 // Không có file cờ thì hàm dbg() không làm gì cả (không tốn I/O).
 const (
 	debugFlagFile = "onikey-debug"
@@ -53,7 +53,7 @@ func dbg(format string, args ...interface{}) {
 }
 
 func initDbgLogger() {
-	var dir = config.GetConfigDir("bamboo")
+	var dir = config.GetConfigDir("onikey")
 	if _, err := os.Stat(filepath.Join(dir, debugFlagFile)); err != nil {
 		return
 	}

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Onikey Setup
+Type=Application
+Exec=/usr/lib/onikey/onikey-engine -gui
+Icon=/usr/share/onikey/icons/vi.svg
+NoDisplay=true
+StartupNotify=true

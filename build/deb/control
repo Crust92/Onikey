@@ -15,18 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-Source: ibus-bamboo
+Source: onikey
 Section: utils
 Priority: optional
 Maintainer: Luong Thanh Lam <ltlam93@gmail.com>
 Build-Depends: debhelper, golang, libibus-1.0-dev, libx11-dev, libxtst-dev, libgtk-3-dev
 Standards-Version: 0.8.5
-Homepage: https://github.com/BambooEngine/ibus-bamboo
+Homepage: https://github.com/xtcrust/Onikey
 
-Package: ibus-bamboo
+Package: onikey
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ibus, libgtk-3-0
-Description: A Vietnamese IME for IBus using Bamboo Engine.
+Description: Onikey - Vietnamese IME for IBus (fork of ibus-bamboo).
  Bộ gõ tiếng Việt mã nguồn mở hỗ trợ hầu hết các bảng mã thông dụng,
  các kiểu gõ tiếng Việt phổ biến, bỏ dấu thông minh, kiểm tra chính tả, gõ tắt,...
  .

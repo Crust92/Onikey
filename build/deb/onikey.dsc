@@ -2,17 +2,17 @@
 Hash: SHA512
 
 Format: 3.0 (quilt)
-Source: ibus-bamboo
-Binary: ibus-bamboo
+Source: onikey
+Binary: onikey
 Architecture: any
 Version: 0.8.5-0
 Maintainer: Luong Thanh Lam <ltlam93@gmail.com>
-Homepage: https://github.com/BambooEngine/ibus-bamboo
+Homepage: https://github.com/xtcrust/Onikey
 Build-Depends: debhelper (>= 9), golang, libibus-1.0-dev, libx11-dev, libgtk-3-dev, libxt-dev, libxtst-dev, libselinux1-dev
 Files:
- 0 0 ibus-bamboo-0.8.5.tar.gz
+ 0 0 onikey-0.8.5.tar.gz
 DEBTRANSFORM-TAR:
- ibus-bamboo-0.8.5.tar.gz
+ onikey-0.8.5.tar.gz
 
 -----BEGIN PGP SIGNATURE-----
 

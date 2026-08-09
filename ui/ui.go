@@ -9,8 +9,8 @@ extern int openGUI(guint flags, int mode, guint32 *s, int size, char *mtext, cha
 import "C"
 import (
 	"encoding/json"
-	"ibus-bamboo/config"
 	"io/ioutil"
+	"onikey/config"
 	"os"
 	"unsafe"
 )
