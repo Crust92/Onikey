@@ -5,6 +5,8 @@
 //! chọn lại "Onikey" là gõ tiếp được — đó là điều kiện để dám thay dần.
 
 mod bus;
+mod config;
+mod debug;
 mod engine;
 mod ibus_text;
 
@@ -30,8 +32,18 @@ impl Factory {
         let obj = OwnedObjectPath::try_from(path.clone())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
 
-        eprintln!("tạo engine: {engine_name} -> {path}");
-        let e = engine::OnikeyEngine::new("Telex", engine::default_flags());
+        crate::debug::log(format_args!("tạo engine: {engine_name} -> {path}"));
+        // Đọc lại cấu hình cho mỗi engine: người dùng đổi kiểu gõ rồi khởi
+        // động lại ibus là có hiệu lực, không cần đăng xuất.
+        let cfg = crate::config::load();
+        crate::debug::log(format_args!(
+            "cấu hình: kiểu gõ {:?}, cờ lõi {}, cờ IBus {} (không gạch chân: {})",
+            cfg.input_method,
+            cfg.flags,
+            cfg.ib_flags,
+            cfg.ib_flags & crate::config::ibflag::NO_UNDERLINE != 0
+        ));
+        let e = engine::OnikeyEngine::new(cfg);
         self.conn
             .object_server()
             .at(&obj, e)
@@ -47,7 +59,7 @@ impl Factory {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let embedded = std::env::args().any(|a| a == "--ibus");
     let address = bus::address()?;
-    eprintln!("nối tới ibus: {address}");
+    debug::log(format_args!("nối tới ibus: {address}"));
 
     let conn = Builder::address(address.as_str())?
         .name(COMPONENT_NAME)?
@@ -60,10 +72,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     conn.object_server().at(FACTORY_PATH, factory).await?;
 
-    eprintln!(
+    debug::log(format_args!(
         "onikey-engine-rs sẵn sàng (chế độ {}).",
         if embedded { "ibus" } else { "độc lập" }
-    );
+    ));
     tokio::signal::ctrl_c().await?;
     Ok(())
 }
