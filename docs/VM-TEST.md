@@ -79,9 +79,32 @@ sudo virsh screenshot onikey /tmp/vm.ppm && convert /tmp/vm.ppm /tmp/vm.png
 | Môi trường | Cài từ | Kết quả |
 |---|---|---|
 | Fedora 42, GNOME 48 Wayland | RPM `onikey-0.9.0-1.fc42` | Gõ `tieengs Vieejt Fedora` → nhận đúng **`tiếng Việt Fedora`**, chạy chế độ Pre-edit (`mode=1`) |
-| Fedora 42, GNOME X11 | RPM | **Chưa kiểm được** — xem dưới |
+| Fedora 42, GNOME X11 | RPM | Chưa kiểm được (xem dưới) |
+| **Ubuntu 24.04, GNOME X11** | `.deb` | Gõ `tieengs Vieejt X11` → nhận đúng **`tiếng Việt X11`** |
 
-## Chưa làm được: phiên X11 trong máy ảo
+## Bơm phím: X11 dùng xdotool, Wayland dùng ydotool
+
+Trên **X11 thì `xdotool` tốt hơn hẳn**: nó bơm qua XTEST (vẫn đi qua IBus như
+phím thật) và quan trọng hơn là `xdotool windowactivate` chọn được đúng cửa sổ,
+hết luôn chuyện đoán xem cửa sổ nào đang focus.
+
+```sh
+sudo apt install -y xdotool
+WID=$(xdotool search --name onikeytest | head -1)
+xdotool windowactivate --sync $WID
+xdotool type --delay 100 "tieengs Vieejt"
+```
+
+Hai cái bẫy đã dính, ghi lại cho khỏi mất công:
+
+- **Ubuntu không đóng gói `ydotoold`.** Thiếu daemon thì mỗi lệnh `ydotool` tự
+  tạo một thiết bị ảo tạm, và sự kiện **nhả phím bị hiểu thành nhấn** — vòng
+  "nhả hết phím cho an toàn" của tôi gõ ra một tràng số vào ô tìm kiếm.
+- **Overview của GNOME nuốt bàn phím.** Chữ vẫn ra đúng nhưng rơi vào ô tìm
+  kiếm của Overview chứ không vào cửa sổ. Chụp màn hình bằng `virsh screenshot`
+  là cách nhanh nhất để biết chữ đang đi đâu.
+
+## Chưa làm được: phiên X11 trên FEDORA
 
 Fedora 42 đã bỏ phiên GNOME X11 khỏi GDM (đặt `WaylandEnable=false` cũng bị
 lờ), nên phải đổi sang SDDM mới vào được X11. Nhưng khi đó phiên thiếu phần
