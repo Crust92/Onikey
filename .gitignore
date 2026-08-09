@@ -27,3 +27,6 @@ ibus-engine-*
 keyboard-shortcut-editor
 macro-editor
 *.deb
+
+# Rust
+/rust/target/
