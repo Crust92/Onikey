@@ -18,7 +18,7 @@ use zbus::connection::Builder;
 use zbus::interface;
 use zvariant::OwnedObjectPath;
 
-const COMPONENT_NAME: &str = "org.freedesktop.IBus.OnikeyRust";
+const COMPONENT_NAME: &str = "org.freedesktop.IBus.Onikey";
 const FACTORY_PATH: &str = "/org/freedesktop/IBus/Factory";
 
 struct Factory {
@@ -30,7 +30,7 @@ struct Factory {
 impl Factory {
     async fn create_engine(&self, engine_name: String) -> zbus::fdo::Result<OwnedObjectPath> {
         let n = self.counter.fetch_add(1, Ordering::SeqCst);
-        let path = format!("/org/freedesktop/IBus/Engine/onikeyrust/{n}");
+        let path = format!("/org/freedesktop/IBus/Engine/onikey/{n}");
         let obj = OwnedObjectPath::try_from(path.clone())
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
 

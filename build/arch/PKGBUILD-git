@@ -18,7 +18,7 @@
 # Maintainer: xtcrust <xtczone000000@gmail.com>
 # Bản fork của ibus-bamboo (Luong Thanh Lam)
 pkgname=onikey-git
-pkgver=0.9.0
+pkgver=1.0.0
 pkgrel=2
 pkgdesc='Bộ gõ tiếng Việt cho IBus, không gạch chân khi gõ (fork của ibus-bamboo)'
 arch=('x86_64' 'aarch64')

@@ -26,7 +26,7 @@ engine_name=onikey
 engine_gui_name=onikey-setup.desktop
 ibus_e_name=onikey-engine
 pkg_name=$(engine_name)
-version=0.9.0
+version=1.0.0
 
 engine_dir=$(PREFIX)/share/$(pkg_name)
 ibus_dir=$(PREFIX)/share/ibus
@@ -56,7 +56,7 @@ corpus:
 	go run -mod=vendor ./tools/check-corpus
 
 clean:
-	rm -f onikey-engine onikey-config
+	rm -f onikey-engine onikey-config onikey-engine-rs
 	rm -f *_linux *_cover.html go_test_* go_build_* test *.gz test
 	rm -f debian/files
 	rm -rf debian/debhelper*
@@ -64,13 +64,17 @@ clean:
 	rm -rf debian/onikey*
 
 
-install: build
+# install KHÔNG phụ thuộc build: 'sudo make install' mà build lại dưới root
+# thì cargo/go trong PATH của root thường không có -> Error 127. Build bằng
+# user thường trước, install chỉ chép file.
+install:
 	LIBEXECDIR=$(LIBEXECDIR) $(SHELL) scripts/install ${PREFIX} ${DESTDIR}
 
 uninstall:
 	rm -rf $(DESTDIR)$(engine_dir)
 	rm -rf $(DESTDIR)$(if $(LIBEXECDIR),$(LIBEXECDIR),$(PREFIX)/lib/$(engine_name))/
 	rm -f $(DESTDIR)$(ibus_dir)/component/$(engine_name).xml
+	rm -f $(DESTDIR)$(ibus_dir)/component/$(engine_name)-go.xml
 	rm -rf $(DESTDIR)$(PREFIX)/share/applications/$(engine_gui_name)
 
 

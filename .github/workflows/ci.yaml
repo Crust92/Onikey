@@ -43,13 +43,13 @@ jobs:
         include:
           - image: fedora:42
             # Fedora để helper ở /usr/libexec chứ không phải /usr/lib
-            setup: dnf -y install golang gcc make pkgconf-pkg-config gtk3-devel libX11-devel libXtst-devel
+            setup: dnf -y install golang gcc make pkgconf-pkg-config gtk3-devel libX11-devel libXtst-devel rust cargo
             makeargs: PREFIX=/usr LIBEXECDIR=/usr/libexec/onikey
           - image: archlinux:latest
-            setup: pacman -Sy --noconfirm go gcc make pkgconf gtk3 libx11 libxtst
+            setup: pacman -Sy --noconfirm go gcc make pkgconf gtk3 libx11 libxtst rust
             makeargs: PREFIX=/usr
           - image: debian:stable
-            setup: apt-get update && apt-get install -y golang gcc make pkg-config libgtk-3-dev libx11-dev libxtst-dev
+            setup: apt-get update && apt-get install -y golang gcc make pkg-config libgtk-3-dev libx11-dev libxtst-dev cargo
             makeargs: PREFIX=/usr
     container: ${{ matrix.image }}
     steps:

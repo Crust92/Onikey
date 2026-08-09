@@ -172,7 +172,7 @@ pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
         prop(
             KEY_ABOUT,
             PROP_TYPE_NORMAL,
-            &format!("IBus Onikey Rust {}", env!("CARGO_PKG_VERSION")),
+            &format!("IBus Onikey {}", env!("CARGO_PKG_VERSION")),
             STATE_UNCHECKED,
             None,
         ),

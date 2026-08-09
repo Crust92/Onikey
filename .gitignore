@@ -24,6 +24,7 @@ debian/*
 ibus-engine-*
 /onikey-engine
 /onikey-config
+/onikey-engine-rs
 keyboard-shortcut-editor
 macro-editor
 *.deb
