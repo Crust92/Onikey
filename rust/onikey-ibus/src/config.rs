@@ -9,6 +9,10 @@ use std::path::PathBuf;
 
 /// Các bit trong `IBflags` mà bản Rust hiện dùng tới.
 pub mod ibflag {
+    /// Bật gõ tắt (macro).
+    pub const MACRO_ENABLED: u32 = 1 << 1;
+    /// Tự chỉnh hoa thường của bản gõ tắt theo cách gõ khoá.
+    pub const AUTO_CAPITALIZE_MACRO: u32 = 1 << 15;
     /// Tự khôi phục chuỗi phím gốc khi từ không phải tiếng Việt
     /// (gõ "expression" không bị bẻ dấu).
     pub const AUTO_NON_VN_RESTORE: u32 = 1 << 5;

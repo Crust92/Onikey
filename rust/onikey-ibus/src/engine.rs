@@ -51,6 +51,7 @@ pub struct OnikeyEngine {
 struct State {
     core: Core,
     cfg: Config,
+    macros: crate::macros::MacroTable,
     /// Kiểu ô nhập do ứng dụng khai (IBusInputPurpose). Chỉ ghi nhận để gỡ rối.
     content_purpose: u32,
     capabilities: u32,
@@ -103,6 +104,21 @@ impl State {
     fn finish_word(&mut self) -> Action {
         let s = self.display_string();
         self.core.reset();
+        // Gõ tắt: chuỗi vừa gõ trùng khoá -> thay bằng bản mở rộng.
+        if !self.macros.is_empty() {
+            if let Some(expanded) = self.macros.expand(&s) {
+                let backspaces = if self.no_underline() {
+                    self.committed.chars().count() as u32
+                } else {
+                    0
+                };
+                self.committed.clear();
+                return Action::Expand {
+                    backspaces,
+                    text: expanded,
+                };
+            }
+        }
         if self.no_underline() {
             self.committed.clear();
             return Action::Passthrough(None);
@@ -125,6 +141,13 @@ impl OnikeyEngine {
         let core = Core::new(parse_input_method(&cfg.input_method), cfg.flags);
         OnikeyEngine {
             state: Mutex::new(State {
+                macros: if cfg.ib_flags & ibflag::MACRO_ENABLED != 0 {
+                    crate::macros::MacroTable::load(
+                        cfg.ib_flags & ibflag::AUTO_CAPITALIZE_MACRO != 0,
+                    )
+                } else {
+                    crate::macros::MacroTable::default()
+                },
                 core,
                 cfg,
                 content_purpose: 0,
@@ -166,9 +189,33 @@ enum Action {
     /// Chế độ KHÔNG gạch chân: xoá lùi `n` ký tự đã ghi rồi ghi thêm `tail`.
     /// Chữ nằm thẳng trong ứng dụng nên không có gạch chân nào cả.
     Rewrite { backspaces: u32, tail: String },
+    /// Gõ tắt vừa nở: xoá `backspaces` ký tự đã ghi (0 ở chế độ Pre-edit),
+    /// ghi bản mở rộng, rồi vẫn để phím ngắt từ rơi xuống ứng dụng.
+    Expand { backspaces: u32, text: String },
 }
 
 impl OnikeyEngine {
+    /// Xoá lùi `n` ký tự đã ghi rồi CHỜ ứng dụng xác nhận — trần chờ thấp:
+    /// app chậm quá thì thà ghi sớm còn hơn dồn phím (con số bản Go đã dò).
+    async fn delete_committed(&self, emitter: &SignalEmitter<'_>, backspaces: u32) {
+        if backspaces == 0 {
+            return;
+        }
+        self.awaiting_confirm.store(true, Ordering::SeqCst);
+        let _ = emitter
+            .emit(
+                "org.freedesktop.IBus.Engine",
+                "DeleteSurroundingText",
+                &(-(backspaces as i32), backspaces),
+            )
+            .await;
+        let _ = emitter
+            .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
+            .await;
+        let _ = tokio::time::timeout(Duration::from_millis(60), self.st_confirm.notified()).await;
+        self.awaiting_confirm.store(false, Ordering::SeqCst);
+    }
+
     /// Phần quyết định: THUẦN ĐỒNG BỘ, không await, không gọi ra ngoài.
     fn decide(&self, keyval: u32, state: u32) -> Action {
         if state & IBUS_RELEASE_MASK != 0 {
@@ -248,6 +295,9 @@ impl OnikeyEngine {
                 Action::Ignore => "bỏ qua".to_string(),
                 Action::Passthrough(s) => format!("cho qua, chốt {s:?}"),
                 Action::Preedit(s) => format!("pre-edit {s:?}"),
+                Action::Expand { backspaces, text } => {
+                    format!("gõ tắt: xoá {backspaces}, nở {text:?}")
+                }
                 Action::Rewrite { backspaces, tail } => {
                     format!("sửa: xoá {backspaces}, ghi {tail:?}")
                 }
@@ -265,29 +315,17 @@ impl OnikeyEngine {
                 let _ = update_preedit(&emitter, &s).await;
                 true
             }
-            Action::Rewrite { backspaces, tail } => {
-                if backspaces > 0 {
-                    self.awaiting_confirm.store(true, Ordering::SeqCst);
-                    let _ = emitter
-                        .emit(
-                            "org.freedesktop.IBus.Engine",
-                            "DeleteSurroundingText",
-                            &(-(backspaces as i32), backspaces),
-                        )
-                        .await;
-                    // Hỏi ứng dụng surrounding text mới rồi CHỜ nó trả lời —
-                    // trần chờ thấp: app chậm quá thì thà ghi sớm còn hơn dồn
-                    // phím (đúng con số bản Go đã dò được).
-                    let _ = emitter
-                        .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
-                        .await;
-                    let _ = tokio::time::timeout(
-                        Duration::from_millis(60),
-                        self.st_confirm.notified(),
-                    )
+            Action::Expand { backspaces, text } => {
+                self.delete_committed(&emitter, backspaces).await;
+                let _ = commit_raw(&emitter, &text).await;
+                // pre-edit đang treo (nếu có) đã bị thay bằng commit, ẩn đi
+                let _ = emitter
+                    .emit("org.freedesktop.IBus.Engine", "HidePreeditText", &())
                     .await;
-                    self.awaiting_confirm.store(false, Ordering::SeqCst);
-                }
+                false // phím ngắt từ vẫn rơi xuống ứng dụng
+            }
+            Action::Rewrite { backspaces, tail } => {
+                self.delete_committed(&emitter, backspaces).await;
                 if !tail.is_empty() {
                     let _ = commit_raw(&emitter, &tail).await;
                 }
