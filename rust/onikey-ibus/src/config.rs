@@ -9,6 +9,12 @@ use std::path::PathBuf;
 
 /// Các bit trong `IBflags` mà bản Rust hiện dùng tới.
 pub mod ibflag {
+    /// Tự khôi phục chuỗi phím gốc khi từ không phải tiếng Việt
+    /// (gõ "expression" không bị bẻ dấu).
+    pub const AUTO_NON_VN_RESTORE: u32 = 1 << 5;
+    /// Cho phép "dd" thành "đ" cả trong từ không có nguyên âm tiếng Việt
+    /// (viết tắt kiểu "dd" rất hay dùng).
+    pub const DD_FREE_STYLE: u32 = 1 << 6;
     /// Gõ không gạch chân ở mọi ô nhập (nếu ứng dụng hỗ trợ).
     pub const NO_UNDERLINE: u32 = 1 << 7;
 }
