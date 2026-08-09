@@ -320,6 +320,7 @@ name = "onikey-core-ffi"
 version = "1.0.0"
 dependencies = [
  "onikey-core",
+ "onikey-userconfig",
 ]
 
 [[package]]
@@ -327,9 +328,17 @@ name = "onikey-ibus"
 version = "1.0.0"
 dependencies = [
  "onikey-core",
+ "onikey-userconfig",
  "tokio",
  "zbus",
  "zvariant",
+]
+
+[[package]]
+name = "onikey-userconfig"
+version = "1.0.0"
+dependencies = [
+ "onikey-core",
 ]
 
 [[package]]

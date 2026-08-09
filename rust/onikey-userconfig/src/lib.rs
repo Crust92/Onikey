@@ -1,4 +1,5 @@
-//! Đọc tệp cấu hình dùng chung với bản Go: `~/.config/onikey/onikey.config.json`.
+//! Đọc/ghi tệp cấu hình người dùng Onikey — crate dùng chung cho mọi adapter
+//! (IBus, Fcitx5...). Trước nằm trong onikey-ibus; tách ra khi làm addon Fcitx5: `~/.config/onikey/onikey.config.json`.
 //!
 //! Bản Rust CỐ Ý đọc đúng tệp đó thay vì tự bịa định dạng riêng — hai engine
 //! cùng cài, người dùng đổi qua lại bằng chọn nguồn nhập, nên kiểu gõ và các
@@ -49,7 +50,12 @@ impl Default for Config {
             input_method: "Telex".into(),
             output_charset: "Unicode".into(),
             flags: onikey_core::flag::STD_FLAGS,
-            ib_flags: 0,
+            // Máy CHƯA TỪNG cấu hình phải có hành vi chuẩn: tự khôi phục tiếng
+            // Anh + dd viết tắt + tự viết hoa macro. ib_flags=0 từng làm addon
+            // Fcitx5 trên máy mới gõ "expression" thành "ẽpresion".
+            ib_flags: ibflag::AUTO_NON_VN_RESTORE
+                | ibflag::DD_FREE_STYLE
+                | ibflag::AUTO_CAPITALIZE_MACRO,
             shortcuts: [1, 126, 0, 0, 0, 0, 0, 0, 5, 117],
             default_input_mode: 1,
         }

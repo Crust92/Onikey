@@ -5,7 +5,9 @@
 //! chọn lại "Onikey" là gõ tiếp được — đó là điều kiện để dám thay dần.
 
 mod bus;
-mod config;
+use onikey_userconfig as config;
+#[allow(unused_imports)]
+use config as _config_keepalive;
 mod debug;
 mod engine;
 mod ibus_prop;

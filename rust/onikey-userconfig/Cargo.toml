@@ -1,0 +1,10 @@
+[package]
+name = "onikey-userconfig"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.85"
+license = "GPL-3.0-or-later"
+description = "Đọc/ghi tệp cấu hình người dùng của Onikey — dùng chung cho mọi adapter"
+
+[dependencies]
+onikey-core = { path = "../onikey-core" }

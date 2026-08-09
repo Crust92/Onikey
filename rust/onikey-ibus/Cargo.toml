@@ -12,6 +12,7 @@ path = "src/main.rs"
 
 [dependencies]
 onikey-core = { path = "../onikey-core" }
+onikey-userconfig = { path = "../onikey-userconfig" }
 zbus = { version = "5", default-features = false, features = ["tokio"] }
 zvariant = "5"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "time"] }

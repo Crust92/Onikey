@@ -54,6 +54,26 @@ void onikey_engine_remove_last_char(OnikeyEngine *engine, bool refresh_tone);
 void onikey_engine_restore_last_word(OnikeyEngine *engine, bool to_vietnamese);
 
 char *onikey_encode(const char *charset, const char *input);
+
+/* Chuỗi hiển thị: tiếng Việt bỏ dấu, hoặc phím gốc nếu từ không phải tiếng
+ * Việt (auto_restore). Logic dùng chung mọi adapter — đừng tự chế lại. */
+char *onikey_engine_display_string(const OnikeyEngine *engine,
+                                   bool auto_restore, bool dd_free_style);
+
+/* Cấu hình người dùng (~/.config/onikey/onikey.config.json) */
+typedef struct OnikeyUserConfig {
+  char input_method[64];
+  char output_charset[64];
+  unsigned int core_flags;
+  unsigned int ib_flags;
+  unsigned int default_input_mode; /* 1 = Pre-edit */
+} OnikeyUserConfig;
+
+bool onikey_load_user_config(OnikeyUserConfig *out);
+
+#define ONIKEY_IBFLAG_AUTO_NON_VN_RESTORE (1u << 5)
+#define ONIKEY_IBFLAG_DD_FREE_STYLE (1u << 6)
+
 void onikey_string_free(char *s);
 
 #ifdef __cplusplus
