@@ -162,6 +162,50 @@ fn json_number(data: &str, key: &str) -> Option<u64> {
     v[..end].parse().ok()
 }
 
+/// Ghi đè MỘT khoá chuỗi trong tệp cấu hình, giữ nguyên mọi phần khác (kể cả
+/// InputMethodDefinitions mà bản Rust không hiểu). Sửa chuỗi tại chỗ chứ không
+/// parse-rồi-ghi-lại: tệp này bản Go cũng đọc, phá cấu trúc là hỏng cả hai.
+pub fn save_string(key: &str, value: &str) -> std::io::Result<()> {
+    rewrite_value(key, &format!("\"{}\"", value.replace('"', "")))
+}
+
+pub fn save_number(key: &str, value: u32) -> std::io::Result<()> {
+    rewrite_value(key, &value.to_string())
+}
+
+fn rewrite_value(key: &str, new_raw: &str) -> std::io::Result<()> {
+    let path = config_path();
+    let data = std::fs::read_to_string(&path)?;
+    let pat = format!("\"{key}\"");
+    let Some(i) = data.find(&pat) else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!("không thấy khoá {key}"),
+        ));
+    };
+    let after_key = i + pat.len();
+    let Some(colon) = data[after_key..].find(':') else {
+        return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "thiếu dấu :"));
+    };
+    let vstart = after_key + colon + 1;
+    let rest = &data[vstart..];
+    let skip = rest.len() - rest.trim_start().len();
+    let vstart = vstart + skip;
+    let rest = &data[vstart..];
+    // giá trị là chuỗi "..." hoặc số
+    let vlen = if rest.starts_with('"') {
+        rest[1..].find('"').map(|e| e + 2)
+    } else {
+        Some(rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len()))
+    }
+    .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidData, "giá trị hỏng"))?;
+    let mut out = String::with_capacity(data.len() + 16);
+    out.push_str(&data[..vstart]);
+    out.push_str(new_raw);
+    out.push_str(&data[vstart + vlen..]);
+    std::fs::write(&path, out)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

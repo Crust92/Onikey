@@ -257,6 +257,17 @@ enum Action {
 }
 
 impl OnikeyEngine {
+    async fn register_props(&self, emitter: &SignalEmitter<'_>) {
+        let list = {
+            let st = self.state.lock().unwrap();
+            crate::ibus_prop::onikey_prop_list(&st.cfg)
+        };
+        let props = OwnedValue::try_from(Value::from(list)).expect("dựng PropList");
+        let _ = emitter
+            .emit("org.freedesktop.IBus.Engine", "RegisterProperties", &(props,))
+            .await;
+    }
+
     /// Xoá lùi `n` ký tự đã ghi rồi CHỜ ứng dụng xác nhận — trần chờ thấp:
     /// app chậm quá thì thà ghi sớm còn hơn dồn phím (con số bản Go đã dò).
     async fn delete_committed(&self, emitter: &SignalEmitter<'_>, backspaces: u32) {
@@ -437,13 +448,8 @@ impl OnikeyEngine {
         let _ = emitter
             .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
             .await;
-        // Đăng ký menu thuộc tính để bấm vào biểu tượng `vi` trên thanh trên
-        // là thấy mục cấu hình — như bản Go.
-        let props = OwnedValue::try_from(Value::from(crate::ibus_prop::onikey_prop_list()))
-            .expect("dựng PropList");
-        let _ = emitter
-            .emit("org.freedesktop.IBus.Engine", "RegisterProperties", &(props,))
-            .await;
+        // Đăng ký menu thuộc tính (dựng theo cấu hình hiện tại để radio đúng).
+        self.register_props(&emitter).await;
     }
 
     async fn focus_out(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
@@ -474,23 +480,71 @@ impl OnikeyEngine {
         }
     }
 
-    async fn property_activate(&self, name: String, _state: u32) {
-        crate::debug::log(format_args!("PropertyActivate: {name}"));
-        match name.as_str() {
-            crate::ibus_prop::KEY_CONFIGURATION => {
-                // spawn chứ không chờ: hộp thoại sống bao lâu kệ nó, engine
-                // không được đứng chờ trong handler DBus.
-                let _ = std::process::Command::new("/usr/lib/onikey/onikey-config")
-                    .arg("-engine")
-                    .arg("onikey")
-                    .spawn();
+    async fn property_activate(
+        &self,
+        name: String,
+        state: u32,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+    ) {
+        use crate::ibus_prop as pr;
+        crate::debug::log(format_args!("PropertyActivate: {name} state={state}"));
+
+        let mut changed = false;
+        if let Some(im) = name.strip_prefix(pr::PREFIX_INPUT_METHOD) {
+            let _ = crate::config::save_string("InputMethod", im);
+            let mut st = self.state.lock().unwrap();
+            st.cfg.input_method = im.to_string();
+            st.core = Core::new(parse_input_method(im), st.cfg.flags);
+            st.committed.clear();
+            changed = true;
+        } else if let Some(cs) = name.strip_prefix(pr::PREFIX_CHARSET) {
+            let _ = crate::config::save_string("OutputCharset", cs);
+            self.state.lock().unwrap().cfg.output_charset = cs.to_string();
+            changed = true;
+        } else {
+            match name.as_str() {
+                pr::KEY_MACRO_ENABLED | pr::KEY_AUTO_CAPITALIZE | pr::KEY_NON_VN_RESTORE => {
+                    let bit = match name.as_str() {
+                        pr::KEY_MACRO_ENABLED => ibflag::MACRO_ENABLED,
+                        pr::KEY_AUTO_CAPITALIZE => ibflag::AUTO_CAPITALIZE_MACRO,
+                        _ => ibflag::AUTO_NON_VN_RESTORE,
+                    };
+                    let mut st = self.state.lock().unwrap();
+                    if state != 0 {
+                        st.cfg.ib_flags |= bit;
+                    } else {
+                        st.cfg.ib_flags &= !bit;
+                    }
+                    let flags = st.cfg.ib_flags;
+                    st.macros = if flags & ibflag::MACRO_ENABLED != 0 {
+                        crate::macros::MacroTable::load(flags & ibflag::AUTO_CAPITALIZE_MACRO != 0)
+                    } else {
+                        crate::macros::MacroTable::default()
+                    };
+                    drop(st);
+                    let _ = crate::config::save_number("IBflags", flags);
+                    changed = true;
+                }
+                pr::KEY_CONFIGURATION | pr::KEY_MACRO_TABLE => {
+                    // spawn chứ không chờ: engine không được đứng trong handler DBus.
+                    let _ = std::process::Command::new("/usr/lib/onikey/onikey-config")
+                        .arg("-engine")
+                        .arg("onikey")
+                        .spawn();
+                }
+                pr::KEY_ABOUT => {
+                    let _ = std::process::Command::new("xdg-open")
+                        .arg("https://github.com/xtcrust/Onikey")
+                        .spawn();
+                }
+                _ => {}
             }
-            crate::ibus_prop::KEY_ABOUT => {
-                let _ = std::process::Command::new("xdg-open")
-                    .arg("https://github.com/xtcrust/Onikey")
-                    .spawn();
-            }
-            _ => {}
+        }
+        if changed {
+            // Cập nhật mtime đã lưu để FocusIn sau không nạp đè, rồi vẽ lại
+            // menu cho radio/toggle đúng trạng thái mới.
+            self.state.lock().unwrap().cfg_mtime = config_mtime();
+            self.register_props(&emitter).await;
         }
     }
 
