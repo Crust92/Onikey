@@ -67,9 +67,12 @@ Mục tiêu: bản Go vẫn là bản dùng hằng ngày, nhưng hết các gi�
 - [x] **Kiểm thử đóng gói thật** trong container: build + install sạch trên
       Fedora 42 (layout `/usr/libexec`) và Arch; `.deb` cài–gỡ sạch trên
       Ubuntu 24.04 (cũ hơn máy dựng gói).
-- [ ] **Ma trận kiểm thử tay** (mỗi bản: gõ ở ô thường, ô địa chỉ, xóa lùi,
-      chuyển app, đăng nhập lại): Ubuntu GNOME Wayland ✔ (máy chính) ·
-      Ubuntu GNOME X11 · Fedora GNOME · KDE Plasma. Cần máy ảo, chưa làm.
+- [x] **Fedora GNOME Wayland: kiểm thử gõ THẬT trong máy ảo** — cài từ RPM,
+      bơm phím qua uinput, `tieengs Vieejt Fedora` → nhận đúng
+      `tiếng Việt Fedora`. Cách làm ở [VM-TEST.md](VM-TEST.md), script ở
+      `scripts/vm/`.
+- [ ] **Còn lại của ma trận**: Ubuntu GNOME X11 · KDE Plasma · ô địa chỉ trình
+      duyệt trong máy ảo (cần cài Chromium vào VM).
 
 ### Giai đoạn B — `onikey-core` bằng Rust, chạy song song
 
