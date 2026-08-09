@@ -240,6 +240,8 @@ fn split_dsl(line: &str) -> Option<(Vec<char>, Vec<char>, String)> {
 }
 
 pub fn parse_toneless_rules(key: char, line: &str) -> Vec<Rule> {
+    // CHÚ Ý: chỉ hạ chữ thường ở nhánh DSL. Nhánh gõ-thẳng phải giữ nguyên hoa
+    // thường của định nghĩa, vì "_Ă" (hoa) là luật gõ ra chữ HOA, khác "__ă".
     let lower = line.to_lowercase();
     let mut rules = Vec::new();
     if let Some((effective_ons, results, tail)) = split_dsl(&lower) {
@@ -257,7 +259,7 @@ pub fn parse_toneless_rules(key: char, line: &str) -> Vec<Rule> {
         if let Some(rule) = appending_rule(key, &tail) {
             rules.push(rule);
         }
-    } else if let Some(rule) = appending_rule(key, &lower) {
+    } else if let Some(rule) = appending_rule(key, line) {
         rules.push(rule);
     }
     rules
