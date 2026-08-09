@@ -1,6 +1,6 @@
-# Ibus bamboo
-ibus_e_name="ibus-engine-bamboo"
-version="0.8.5"
+# Onikey
+ibus_e_name="onikey-engine"
+version="0.9.0"
 
 # Go flags
 LDFLAGS="-w -s -X main.Version=${version}"

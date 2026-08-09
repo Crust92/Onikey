@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Onikey startup fix
-Comment=Wake the Onikey/Bamboo IME after login (IBus on GNOME Wayland does not activate the engine at startup)
+Comment=Wake the Onikey IME after login (IBus on GNOME Wayland does not activate the engine at startup)
 Exec=onikey-startup-fix
 X-GNOME-Autostart-enabled=true
 NoDisplay=true

@@ -36,10 +36,10 @@ const (
 	VnCaseNoChange
 )
 const (
-	HomePage           = "https://github.com/BambooEngine/ibus-bamboo"
+	HomePage           = "https://github.com/xtcrust/Onikey"
 	CharsetConvertPage = "https://tools.jcisio.com/vietuni/"
 
-	DataDir          = "/usr/share/ibus-bamboo"
+	DataDir          = "/usr/share/onikey"
 	DictVietnameseCm = "data/vietnamese.cm.dict"
 	DictEmojiOne     = "data/emojione.json"
 )
@@ -79,7 +79,7 @@ func getEngineSubFile(fileName string) string {
 	}
 
 	// return installation data/macro.tpl.txt path
-	fileName = "../../share/ibus-bamboo/" + fileName
+	fileName = "../../share/onikey/" + fileName
 	return filepath.Join(filepath.Dir(os.Args[0]), fileName)
 }
 

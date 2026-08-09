@@ -21,7 +21,7 @@ package main
 
 import (
 	"bufio"
-	"ibus-bamboo/config"
+	"onikey/config"
 	"os"
 	"strings"
 	"sync"

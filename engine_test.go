@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ibus-bamboo/config"
+	"onikey/config"
 	"testing"
 
 	"github.com/BambooEngine/bamboo-core"
@@ -294,7 +294,7 @@ func assertEngine(t testing.TB, tc testCase, assertFn func(testing.TB, *fakeEngi
 	if tc.mTable != nil {
 		cfg.IBflags |= config.IBmacroEnabled
 	}
-	e := NewIbusBambooEngine(engineName, &cfg, fe, bamboo.NewEngine(inputMethod, cfg.Flags))
+	e := NewOnikeyEngine(engineName, &cfg, fe, bamboo.NewEngine(inputMethod, cfg.Flags))
 	if tc.mTable != nil {
 		e.macroTable = &MacroTable{
 			mTable: tc.mTable,

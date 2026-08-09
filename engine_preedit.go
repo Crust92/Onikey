@@ -20,8 +20,8 @@
 package main
 
 import (
-	"ibus-bamboo/config"
 	"log"
+	"onikey/config"
 	"strings"
 	"time"
 
@@ -30,7 +30,7 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
-func (e *IBusBambooEngine) preeditProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
+func (e *OnikeyEngine) preeditProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, *dbus.Error) {
 	var rawKeyLen = e.getRawKeyLen()
 	var keyRune = rune(keyVal)
 	var oldText = e.getPreeditString()
@@ -77,7 +77,7 @@ func (e *IBusBambooEngine) preeditProcessKeyEvent(keyVal uint32, keyCode uint32,
 	return isPrintableKey, nil
 }
 
-func (e *IBusBambooEngine) expandMacro(str string) string {
+func (e *OnikeyEngine) expandMacro(str string) string {
 	var macroText = e.macroTable.GetText(str)
 	if e.config.IBflags&config.IBautoCapitalizeMacro != 0 {
 		switch determineMacroCase(str) {
@@ -90,7 +90,7 @@ func (e *IBusBambooEngine) expandMacro(str string) string {
 	return macroText
 }
 
-func (e *IBusBambooEngine) updatePreedit(processedStr string) {
+func (e *OnikeyEngine) updatePreedit(processedStr string) {
 	var encodedStr = e.encodeText(processedStr)
 	var preeditLen = uint32(len([]rune(encodedStr)))
 	if preeditLen == 0 {
@@ -111,14 +111,14 @@ func (e *IBusBambooEngine) updatePreedit(processedStr string) {
 	e.UpdatePreeditTextWithMode(ibusText, preeditLen, true, ibus.IBUS_ENGINE_PREEDIT_COMMIT)
 }
 
-func (e *IBusBambooEngine) getBambooInputMode() bamboo.Mode {
+func (e *OnikeyEngine) getBambooInputMode() bamboo.Mode {
 	if e.shouldFallbackToEnglish(false) {
 		return bamboo.EnglishMode
 	}
 	return bamboo.VietnameseMode
 }
 
-func (e *IBusBambooEngine) shouldFallbackToEnglish(checkVnRune bool) bool {
+func (e *OnikeyEngine) shouldFallbackToEnglish(checkVnRune bool) bool {
 	if e.config.IBflags&config.IBautoNonVnRestore == 0 {
 		return false
 	}
@@ -141,7 +141,7 @@ func (e *IBusBambooEngine) shouldFallbackToEnglish(checkVnRune bool) bool {
 	return !e.preeditor.IsValid(false)
 }
 
-func (e *IBusBambooEngine) mustFallbackToEnglish() bool {
+func (e *OnikeyEngine) mustFallbackToEnglish() bool {
 	if e.config.IBflags&config.IBautoNonVnRestore == 0 {
 		return false
 	}
@@ -160,22 +160,22 @@ func (e *IBusBambooEngine) mustFallbackToEnglish() bool {
 	return !e.preeditor.IsValid(true)
 }
 
-func (e *IBusBambooEngine) getComposedString(oldText string) string {
+func (e *OnikeyEngine) getComposedString(oldText string) string {
 	if bamboo.HasAnyVietnameseRune(oldText) && e.mustFallbackToEnglish() {
 		return e.getProcessedString(bamboo.EnglishMode)
 	}
 	return oldText
 }
 
-func (e *IBusBambooEngine) encodeText(text string) string {
+func (e *OnikeyEngine) encodeText(text string) string {
 	return bamboo.Encode(e.config.OutputCharset, text)
 }
 
-func (e *IBusBambooEngine) getProcessedString(mode bamboo.Mode) string {
+func (e *OnikeyEngine) getProcessedString(mode bamboo.Mode) string {
 	return e.preeditor.GetProcessedString(mode)
 }
 
-func (e *IBusBambooEngine) getPreeditString() string {
+func (e *OnikeyEngine) getPreeditString() string {
 	if e.config.IBflags&config.IBmacroEnabled != 0 {
 		return e.getProcessedString(bamboo.PunctuationMode)
 	}
@@ -185,13 +185,13 @@ func (e *IBusBambooEngine) getPreeditString() string {
 	return e.getProcessedString(bamboo.VietnameseMode)
 }
 
-func (e *IBusBambooEngine) resetPreedit() {
+func (e *OnikeyEngine) resetPreedit() {
 	e.HidePreeditText()
 	e.HideAuxiliaryText()
 	e.preeditor.Reset()
 }
 
-func (e *IBusBambooEngine) commitPreeditAndResetForWBS(s string, isWBS bool) {
+func (e *OnikeyEngine) commitPreeditAndResetForWBS(s string, isWBS bool) {
 	if e.config.IBflags&config.IBworkaroundForFBMessenger != 0 || isWBS {
 		// Fix missing the first word while typing in FB Messager as FB prefers
 		// committing text before hiding preedit
@@ -206,7 +206,7 @@ func (e *IBusBambooEngine) commitPreeditAndResetForWBS(s string, isWBS bool) {
 	e.preeditor.Reset()
 }
 
-func (e *IBusBambooEngine) commitPreeditAndReset(s string) {
+func (e *OnikeyEngine) commitPreeditAndReset(s string) {
 	e.HidePreeditText()
 	e.HideAuxiliaryText()
 	e.HideLookupTable()
@@ -214,7 +214,7 @@ func (e *IBusBambooEngine) commitPreeditAndReset(s string) {
 	e.preeditor.Reset()
 }
 
-func (e *IBusBambooEngine) commitText(str string) {
+func (e *OnikeyEngine) commitText(str string) {
 	if str == "" {
 		return
 	}
@@ -224,10 +224,10 @@ func (e *IBusBambooEngine) commitText(str string) {
 	e.CommitText(ibus.NewText(e.encodeText(str)))
 }
 
-func (e *IBusBambooEngine) getVnSeq() string {
+func (e *OnikeyEngine) getVnSeq() string {
 	return e.preeditor.GetProcessedString(bamboo.VietnameseMode)
 }
 
-func (e *IBusBambooEngine) hasMacroKey(key string) bool {
+func (e *OnikeyEngine) hasMacroKey(key string) bool {
 	return e.macroTable.GetText(key) != ""
 }

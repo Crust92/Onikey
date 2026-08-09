@@ -1,5 +1,5 @@
 {
-  description = "A flake for ibus-bamboo";
+  description = "A flake for onikey";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -22,7 +22,7 @@
         in
         {
           default = pkgs.stdenv.mkDerivation {
-            pname = "ibus-bamboo";
+            pname = "onikey";
             inherit version;
 
             src = ./.;

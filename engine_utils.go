@@ -21,9 +21,9 @@ package main
 
 import (
 	"fmt"
-	"ibus-bamboo/config"
-	"ibus-bamboo/ui"
 	"io/ioutil"
+	"onikey/config"
+	"onikey/ui"
 	"os"
 	"strconv"
 	"strings"
@@ -47,11 +47,12 @@ func GetIBusEngineCreator() func(*dbus.Conn, string) dbus.ObjectPath {
 		var ngGroupName = strings.Split(ngName, "::")[0]
 		var engineName = strings.ToLower(ngGroupName)
 		fmt.Printf("Got engine name: %s", engineName)
+		config.MigrateLegacyConfig(engineName)
 		var cfg = config.LoadConfig(engineName)
 		var objectPath = dbus.ObjectPath(fmt.Sprintf("/org/freedesktop/IBus/Engine/%s/%d", engineName, time.Now().UnixNano()))
 		var inputMethod = bamboo.ParseInputMethod(cfg.InputMethodDefinitions, cfg.InputMethod)
 		baseEngine := ibus.BaseEngine(conn, objectPath)
-		var engine = NewIbusBambooEngine(engineName, config.LoadConfig(engineName), &baseEngine, bamboo.NewEngine(inputMethod, cfg.Flags))
+		var engine = NewOnikeyEngine(engineName, config.LoadConfig(engineName), &baseEngine, bamboo.NewEngine(inputMethod, cfg.Flags))
 		engine.propList = GetPropListByConfig(cfg)
 		engine.shouldEnqueuKeyStrokes = true
 		ibus.PublishEngine(conn, objectPath, engine)
@@ -72,7 +73,7 @@ func GetIBusEngineCreator() func(*dbus.Conn, string) dbus.ObjectPath {
 
 const KeypressDelayMs = 10
 
-func (e *IBusBambooEngine) isShortcutKeyEnable(ski uint) bool {
+func (e *OnikeyEngine) isShortcutKeyEnable(ski uint) bool {
 	if int(ski+2) > len(e.config.Shortcuts) {
 		return false
 	}
@@ -80,7 +81,7 @@ func (e *IBusBambooEngine) isShortcutKeyEnable(ski uint) bool {
 	return l[1] > 0
 }
 
-func (e *IBusBambooEngine) init() {
+func (e *OnikeyEngine) init() {
 	initConfigFiles(e.engineName)
 	e.emoji = NewEmojiEngine()
 	if e.macroTable == nil {
@@ -136,7 +137,7 @@ var sleep = func() {
 	}
 }
 
-func (e *IBusBambooEngine) resetBuffer() {
+func (e *OnikeyEngine) resetBuffer() {
 	if e.getRawKeyLen() == 0 {
 		return
 	}
@@ -147,7 +148,7 @@ func (e *IBusBambooEngine) resetBuffer() {
 	}
 }
 
-func (e *IBusBambooEngine) checkWmClass(newId string) {
+func (e *OnikeyEngine) checkWmClass(newId string) {
 	if e.wmClasses != newId {
 		e.wmClasses = newId
 		e.resetBuffer()
@@ -155,7 +156,7 @@ func (e *IBusBambooEngine) checkWmClass(newId string) {
 	}
 }
 
-func (e *IBusBambooEngine) isShortcutKeyPressed(keyVal, state uint32, shortcut uint) bool {
+func (e *OnikeyEngine) isShortcutKeyPressed(keyVal, state uint32, shortcut uint) bool {
 	if !e.isShortcutKeyEnable(shortcut) {
 		return false
 	}
@@ -170,7 +171,7 @@ func (e *IBusBambooEngine) isShortcutKeyPressed(keyVal, state uint32, shortcut u
 	return ret
 }
 
-func (e *IBusBambooEngine) processShortcutKey(keyVal, keyCode, state uint32) (bool, bool) {
+func (e *OnikeyEngine) processShortcutKey(keyVal, keyCode, state uint32) (bool, bool) {
 	if keyVal == IBusCapsLock {
 		return true, false
 	}
@@ -245,7 +246,7 @@ func (e *IBusBambooEngine) processShortcutKey(keyVal, keyCode, state uint32) (bo
 	return false, false
 }
 
-func (e *IBusBambooEngine) toUpper(keyRune rune) rune {
+func (e *OnikeyEngine) toUpper(keyRune rune) rune {
 	var keyMapping = map[rune]rune{
 		'[': '{',
 		']': '}',
@@ -259,7 +260,7 @@ func (e *IBusBambooEngine) toUpper(keyRune rune) rune {
 	return keyRune
 }
 
-func (e *IBusBambooEngine) updateLastKeyWithShift(keyVal, state uint32) {
+func (e *OnikeyEngine) updateLastKeyWithShift(keyVal, state uint32) {
 	if e.preeditor.CanProcessKey(rune(keyVal)) {
 		e.lastKeyWithShift = state&IBusShiftMask != 0
 	} else {
@@ -267,15 +268,15 @@ func (e *IBusBambooEngine) updateLastKeyWithShift(keyVal, state uint32) {
 	}
 }
 
-func (e *IBusBambooEngine) getRawKeyLen() int {
+func (e *OnikeyEngine) getRawKeyLen() int {
 	return len(e.preeditor.GetProcessedString(bamboo.EnglishMode | bamboo.FullText))
 }
 
-func (e *IBusBambooEngine) runeCount() int {
+func (e *OnikeyEngine) runeCount() int {
 	return utf8.RuneCountInString(e.getPreeditString())
 }
 
-func (e *IBusBambooEngine) getInputMode() int {
+func (e *OnikeyEngine) getInputMode() int {
 	var im = e.getConfiguredInputMode()
 	// Ô địa chỉ trình duyệt: pre-edit làm hỏng danh sách gợi ý nên chuyển sang
 	// chế độ không gạch chân. Chỉ "nâng cấp" từ Pre-edit — nếu người dùng đã
@@ -289,7 +290,7 @@ func (e *IBusBambooEngine) getInputMode() int {
 // updateURLInputMode chốt chế độ gõ dùng cho ô địa chỉ mỗi khi đổi ô nhập hoặc
 // đổi capability, thay vì tính lại ở từng phím — để chế độ không nhảy giữa
 // chừng lúc đang gõ dở một từ.
-func (e *IBusBambooEngine) updateURLInputMode() {
+func (e *OnikeyEngine) updateURLInputMode() {
 	var mode int
 	// CHỈ đổi chế độ khi app cung cấp được surrounding text. KHÔNG lùi về
 	// Forward as commit: Edge nuốt phím ở chế độ đó nên ô địa chỉ gõ không ra
@@ -311,7 +312,7 @@ func (e *IBusBambooEngine) updateURLInputMode() {
 		e.contentPurpose, e.capabilities, mode, e.getInputMode())
 }
 
-func (e *IBusBambooEngine) getConfiguredInputMode() int {
+func (e *OnikeyEngine) getConfiguredInputMode() int {
 	if e.getWmClass() != "" {
 		if im, ok := e.config.InputModeMapping[e.getWmClass()]; ok && config.ImLookupTable[im] != "" {
 			return im
@@ -325,13 +326,13 @@ func (e *IBusBambooEngine) getConfiguredInputMode() int {
 
 // isURLBar cho biết ô nhập đang focus là ô địa chỉ (thanh URL của trình duyệt,
 // ô nhập <input type="url">...) theo content type mà client báo cho IBus.
-func (e *IBusBambooEngine) isURLBar() bool {
+func (e *OnikeyEngine) isURLBar() bool {
 	return e.contentPurpose == IBusInputPurposeURL
 }
 
 // checkContentPurpose xả bộ đệm khi ô nhập đổi kiểu nội dung (vd nhảy từ ô
 // địa chỉ sang ô văn bản thường), vì hai ô có thể chạy hai chế độ gõ khác nhau.
-func (e *IBusBambooEngine) checkContentPurpose(purpose, hints uint32) {
+func (e *OnikeyEngine) checkContentPurpose(purpose, hints uint32) {
 	if e.contentPurpose != purpose {
 		e.resetBuffer()
 		e.resetFakeBackspace()
@@ -341,7 +342,7 @@ func (e *IBusBambooEngine) checkContentPurpose(purpose, hints uint32) {
 	e.updateURLInputMode()
 }
 
-func (e *IBusBambooEngine) openLookupTable() {
+func (e *OnikeyEngine) openLookupTable() {
 	var wmClasses = strings.Split(e.getWmClass(), ":")
 	var wmClass = e.getWmClass()
 	if len(wmClasses) == 2 {
@@ -370,7 +371,7 @@ func (e *IBusBambooEngine) openLookupTable() {
 	e.UpdateLookupTable(lt, true)
 }
 
-func (e *IBusBambooEngine) ltProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, bool) {
+func (e *OnikeyEngine) ltProcessKeyEvent(keyVal uint32, keyCode uint32, state uint32) (bool, bool) {
 	var wmClasses = e.getWmClass()
 	// e.HideLookupTable()
 	// e.HideAuxiliaryText()
@@ -417,7 +418,7 @@ func (e *IBusBambooEngine) ltProcessKeyEvent(keyVal uint32, keyCode uint32, stat
 	return true, false
 }
 
-func (e *IBusBambooEngine) commitInputModeCandidate() {
+func (e *OnikeyEngine) commitInputModeCandidate() {
 	var im = e.inputModeLookupTable.CursorPos + 1
 	e.config.InputModeMapping[e.getWmClass()] = int(im)
 
@@ -426,7 +427,7 @@ func (e *IBusBambooEngine) commitInputModeCandidate() {
 	e.RegisterProperties(e.propList)
 }
 
-func (e *IBusBambooEngine) closeInputModeCandidates() {
+func (e *OnikeyEngine) closeInputModeCandidates() {
 	e.inputModeLookupTable = nil
 	e.UpdateLookupTable(ibus.NewLookupTable(), true) // workaround for issue #18
 	e.HidePreeditText()
@@ -435,7 +436,7 @@ func (e *IBusBambooEngine) closeInputModeCandidates() {
 	e.isInputModeLTOpened = false
 }
 
-func (e *IBusBambooEngine) updateInputModeLT() {
+func (e *OnikeyEngine) updateInputModeLT() {
 	var visible = len(e.inputModeLookupTable.Candidates) > 0
 	e.UpdateLookupTable(e.inputModeLookupTable, visible)
 }
@@ -453,11 +454,11 @@ func isValidState(state uint32) bool {
 	return true
 }
 
-func (e *IBusBambooEngine) isPrintableKey(state, keyVal uint32) bool {
+func (e *OnikeyEngine) isPrintableKey(state, keyVal uint32) bool {
 	return isValidState(state) && e.isValidKeyVal(keyVal)
 }
 
-func (e *IBusBambooEngine) getCommitText(keyVal, keyCode, state uint32) (newText string, IsWordBreakSymbol bool) {
+func (e *OnikeyEngine) getCommitText(keyVal, keyCode, state uint32) (newText string, IsWordBreakSymbol bool) {
 	var keyRune = rune(keyVal)
 	isPrintableKey := e.isPrintableKey(state, keyVal)
 	oldText := e.getPreeditString()
@@ -527,7 +528,7 @@ func (e *IBusBambooEngine) getCommitText(keyVal, keyCode, state uint32) (newText
 	return e.handleNonVnWord(keyVal, keyCode, state), true
 }
 
-func (e *IBusBambooEngine) handleNonVnWord(keyVal, keyCode, state uint32) string {
+func (e *OnikeyEngine) handleNonVnWord(keyVal, keyCode, state uint32) string {
 	var (
 		keyS           string
 		keyRune        = rune(keyVal)
@@ -553,7 +554,7 @@ func (e *IBusBambooEngine) handleNonVnWord(keyVal, keyCode, state uint32) string
 	return oldText + keyS
 }
 
-func (e *IBusBambooEngine) getMacroText() (bool, string) {
+func (e *OnikeyEngine) getMacroText() (bool, string) {
 	if e.config.IBflags&config.IBmacroEnabled == 0 {
 		return false, ""
 	}
@@ -564,19 +565,19 @@ func (e *IBusBambooEngine) getMacroText() (bool, string) {
 	return false, ""
 }
 
-func (e *IBusBambooEngine) getFakeBackspace() int32 {
+func (e *OnikeyEngine) getFakeBackspace() int32 {
 	return atomic.LoadInt32(&e.nFakeBackSpace)
 }
 
-func (e *IBusBambooEngine) setFakeBackspace(n int32) {
+func (e *OnikeyEngine) setFakeBackspace(n int32) {
 	atomic.StoreInt32(&e.nFakeBackSpace, n)
 }
 
-func (e *IBusBambooEngine) addFakeBackspace(n int32) {
+func (e *OnikeyEngine) addFakeBackspace(n int32) {
 	atomic.AddInt32(&e.nFakeBackSpace, n)
 }
 
-func (e *IBusBambooEngine) isValidKeyVal(keyVal uint32) bool {
+func (e *OnikeyEngine) isValidKeyVal(keyVal uint32) bool {
 	var keyRune = rune(keyVal)
 	if keyVal == IBusBackSpace || bamboo.IsWordBreakSymbol(keyRune) {
 		return true
@@ -587,7 +588,7 @@ func (e *IBusBambooEngine) isValidKeyVal(keyVal uint32) bool {
 	return e.preeditor.CanProcessKey(keyRune)
 }
 
-func (e *IBusBambooEngine) inBackspaceWhiteList() bool {
+func (e *OnikeyEngine) inBackspaceWhiteList() bool {
 	var inputMode = e.getInputMode()
 	for _, im := range config.ImBackspaceList {
 		if im == inputMode {
@@ -597,15 +598,15 @@ func (e *IBusBambooEngine) inBackspaceWhiteList() bool {
 	return false
 }
 
-func (e *IBusBambooEngine) inBrowserList() bool {
+func (e *OnikeyEngine) inBrowserList() bool {
 	return inStringList(DefaultBrowserList, e.getWmClass())
 }
 
-func (e *IBusBambooEngine) getWmClass() string {
+func (e *OnikeyEngine) getWmClass() string {
 	return e.wmClasses
 }
 
-func (e *IBusBambooEngine) getLatestWmClass() string {
+func (e *OnikeyEngine) getLatestWmClass() string {
 	var wmClass string
 	if isGnome {
 		wmClass, _ = gnomeGetFocusWindowClass()
@@ -625,7 +626,7 @@ func (e *IBusBambooEngine) getLatestWmClass() string {
 	return wmClass
 }
 
-func (e *IBusBambooEngine) checkInputMode(im int) bool {
+func (e *OnikeyEngine) checkInputMode(im int) bool {
 	return e.getInputMode() == im
 }
 

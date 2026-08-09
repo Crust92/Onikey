@@ -1,4 +1,4 @@
-name: Release ibus-bamboo
+name: Release onikey
 run-name: ${{ github.actor }} is triggering on GitHub Actions 🚀
 on: [push]
 jobs:

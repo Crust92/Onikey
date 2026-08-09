@@ -1,4 +1,4 @@
-module ibus-bamboo
+module onikey
 
 go 1.13
 

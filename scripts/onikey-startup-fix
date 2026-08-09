@@ -1,5 +1,5 @@
 #!/bin/sh
-# onikey-startup-fix — danh thuc engine Onikey/Bamboo sau khi dang nhap.
+# onikey-startup-fix — danh thuc engine Onikey sau khi dang nhap.
 # Tren GNOME Wayland, IBus thuong khong kich hoat dung engine luc khoi dong
 # (phai chuyen nguon nhap moi go duoc). Restart IBus sau vai giay khac phuc.
 # Chi chay khi: phien Wayland, co ibus, va ibus-daemon dang chay.

@@ -4,7 +4,7 @@
 #   Bien moi truong ONIKEY_SRC de doi thu muc ma nguon (mac dinh ~/.cache/onikey-src).
 set -euo pipefail
 
-REPO_URL="https://github.com/xtcnet/Onikey.git"
+REPO_URL="https://github.com/xtcrust/Onikey.git"
 SRC="${ONIKEY_SRC:-$HOME/.cache/onikey-src}"
 
 need() { command -v "$1" >/dev/null 2>&1 || { echo "Thieu '$1'. Cai: sudo apt install $2"; exit 1; }; }
