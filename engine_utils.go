@@ -281,29 +281,16 @@ func (e *OnikeyEngine) getInputMode() int {
 	return im
 }
 
-// updateNoUnderlineMode chốt chế độ gõ không gạch chân mỗi khi đổi ô nhập hoặc
-// đổi capability, thay vì tính lại ở từng phím — để chế độ không nhảy giữa
-// chừng lúc đang gõ dở một từ.
-//
-// CHỈ đổi được khi app cung cấp surrounding text. KHÔNG lùi về Forward as
-// commit: Edge nuốt phím ở chế độ đó nên gõ không ra chữ. Lúc mới focus, app
-// còn báo cap thiếu bit rồi mới nâng lên ngay sau đó — thiếu thì cứ giữ
-// Pre-edit, khi SetCapabilities gọi lại hàm này thì mới chuyển.
+// updateNoUnderlineMode từng "nâng cấp" Pre-edit sang không gạch chân theo cờ
+// IBnoUnderline. Đã bỏ: chế độ gõ (DefaultInputMode) là nguồn chân lý duy nhất
+// — hai nguồn lệnh chồng nhau làm người dùng chọn chế độ 1 mà vẫn không thấy
+// gạch chân. Muốn không gạch chân thì chọn thẳng chế độ 2 trong hộp thoại.
 func (e *OnikeyEngine) updateNoUnderlineMode() {
-	var mode int
-	if e.config.IBflags&config.IBnoUnderline != 0 &&
-		e.capabilities&IBusCapSurroundingText != 0 {
-		mode = config.SurroundingTextIM
+	if e.noUnderlineMode != 0 {
+		e.resetBuffer()
+		e.resetFakeBackspace()
+		e.noUnderlineMode = 0
 	}
-	if mode == e.noUnderlineMode {
-		return
-	}
-	// Xả bộ đệm THEO CHẾ ĐỘ CŨ rồi mới đổi.
-	e.resetBuffer()
-	e.resetFakeBackspace()
-	e.noUnderlineMode = mode
-	dbg("updateNoUnderlineMode: cap=0x%x -> noUnderlineMode=%d inputMode=%d",
-		e.capabilities, mode, e.getInputMode())
 }
 
 func (e *OnikeyEngine) getConfiguredInputMode() int {

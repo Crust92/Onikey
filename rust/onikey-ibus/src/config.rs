@@ -19,7 +19,9 @@ pub mod ibflag {
     /// Cho phép "dd" thành "đ" cả trong từ không có nguyên âm tiếng Việt
     /// (viết tắt kiểu "dd" rất hay dùng).
     pub const DD_FREE_STYLE: u32 = 1 << 6;
-    /// Gõ không gạch chân ở mọi ô nhập (nếu ứng dụng hỗ trợ).
+    /// Bit "ẩn gạch chân" cũ. KHÔNG còn quyết định chế độ gõ — chế độ lấy từ
+    /// DefaultInputMode; giữ tên bit để khỏi ai dùng lại nhầm.
+    #[allow(dead_code)]
     pub const NO_UNDERLINE: u32 = 1 << 7;
 }
 
@@ -31,6 +33,11 @@ pub struct Config {
     pub flags: u32,
     /// Cờ tầng IBus (xem `ibflag`).
     pub ib_flags: u32,
+    /// Chế độ gõ do người dùng chọn trong hộp thoại — NGUỒN CHÂN LÝ DUY NHẤT
+    /// cho chuyện gạch chân: 1 = Pre-edit (có gạch chân), còn lại = các chế độ
+    /// không gạch chân. Từng có thêm một ô tick "không gạch chân" đè lên đây
+    /// và hậu quả là người dùng chọn chế độ 1 mà vẫn không thấy gạch chân.
+    pub default_input_mode: u32,
 }
 
 impl Default for Config {
@@ -39,7 +46,8 @@ impl Default for Config {
             input_method: "Telex".into(),
             output_charset: "Unicode".into(),
             flags: onikey_core::flag::STD_FLAGS,
-            ib_flags: ibflag::NO_UNDERLINE,
+            ib_flags: 0,
+            default_input_mode: 1,
         }
     }
 }
@@ -72,6 +80,9 @@ pub fn load() -> Config {
     }
     if let Some(v) = json_number(&data, "IBflags") {
         cfg.ib_flags = v as u32;
+    }
+    if let Some(v) = json_number(&data, "DefaultInputMode") {
+        cfg.default_input_mode = v as u32;
     }
     cfg
 }
@@ -121,8 +132,7 @@ mod tests {
         assert_eq!(json_string(MAU, "OutputCharset").unwrap(), "Unicode");
         assert_eq!(json_number(MAU, "Flags").unwrap(), 7);
         assert_eq!(json_number(MAU, "IBflags").unwrap(), 1081840);
-        // 1081840 có bit 7 -> đang bật gõ không gạch chân
-        assert_ne!(1081840u32 & ibflag::NO_UNDERLINE, 0);
+        assert_eq!(json_number(MAU, "DefaultInputMode").unwrap(), 1);
     }
 
     #[test]
