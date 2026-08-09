@@ -285,20 +285,14 @@ func (e *OnikeyEngine) getInputMode() int {
 // đổi capability, thay vì tính lại ở từng phím — để chế độ không nhảy giữa
 // chừng lúc đang gõ dở một từ.
 //
-// Hai đường dẫn tới "không gạch chân":
-//   - IBnoUnderline: người dùng bật "gõ không gạch chân" cho MỌI ô nhập.
-//   - IBnoUnderlineForURL: chỉ riêng ô địa chỉ trình duyệt.
-//
 // CHỈ đổi được khi app cung cấp surrounding text. KHÔNG lùi về Forward as
-// commit: Edge nuốt phím ở chế độ đó nên gõ không ra chữ. Lúc mới focus, Edge
-// còn báo cap=0x9 rồi mới nâng lên 0x29 — thiếu bit thì cứ giữ Pre-edit, khi
-// SetCapabilities gọi lại hàm này thì mới chuyển.
+// commit: Edge nuốt phím ở chế độ đó nên gõ không ra chữ. Lúc mới focus, app
+// còn báo cap thiếu bit rồi mới nâng lên ngay sau đó — thiếu thì cứ giữ
+// Pre-edit, khi SetCapabilities gọi lại hàm này thì mới chuyển.
 func (e *OnikeyEngine) updateNoUnderlineMode() {
-	var want = e.config.IBflags&config.IBnoUnderline != 0 ||
-		(e.config.IBflags&config.IBnoUnderlineForURL != 0 && e.isURLBar())
-
 	var mode int
-	if want && e.capabilities&IBusCapSurroundingText != 0 {
+	if e.config.IBflags&config.IBnoUnderline != 0 &&
+		e.capabilities&IBusCapSurroundingText != 0 {
 		mode = config.SurroundingTextIM
 	}
 	if mode == e.noUnderlineMode {
@@ -308,8 +302,8 @@ func (e *OnikeyEngine) updateNoUnderlineMode() {
 	e.resetBuffer()
 	e.resetFakeBackspace()
 	e.noUnderlineMode = mode
-	dbg("updateNoUnderlineMode: purpose=%d cap=0x%x -> noUnderlineMode=%d inputMode=%d",
-		e.contentPurpose, e.capabilities, mode, e.getInputMode())
+	dbg("updateNoUnderlineMode: cap=0x%x -> noUnderlineMode=%d inputMode=%d",
+		e.capabilities, mode, e.getInputMode())
 }
 
 func (e *OnikeyEngine) getConfiguredInputMode() int {
@@ -322,12 +316,6 @@ func (e *OnikeyEngine) getConfiguredInputMode() int {
 		return e.config.DefaultInputMode
 	}
 	return config.PreeditIM
-}
-
-// isURLBar cho biết ô nhập đang focus là ô địa chỉ (thanh URL của trình duyệt,
-// ô nhập <input type="url">...) theo content type mà client báo cho IBus.
-func (e *OnikeyEngine) isURLBar() bool {
-	return e.contentPurpose == IBusInputPurposeURL
 }
 
 // checkContentPurpose xả bộ đệm khi ô nhập đổi kiểu nội dung (vd nhảy từ ô
@@ -611,7 +599,7 @@ func (e *OnikeyEngine) getLatestWmClass() string {
 	// GNOME: KHÔNG dò cửa sổ nữa. Cách duy nhất từng có là org.gnome.Shell.Eval,
 	// mà GNOME 41+ khoá hẳn (luôn trả về rỗng) trong khi mỗi lời gọi vẫn tốn một
 	// vòng DBus ĐỒNG BỘ ngay trên đường xử lý focus. Việc nhận diện ô nhập nay
-	// dựa vào content type do ứng dụng khai báo (xem isURLBar).
+	// bỏ hẳn; nhận diện app trên GNOME Wayland là không làm được.
 	if isWayland {
 		wmClass = wlAppId
 	}

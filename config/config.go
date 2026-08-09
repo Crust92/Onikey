@@ -100,9 +100,9 @@ func DefaultCfg() Config {
 		Flags:                  bamboo.EstdFlags,
 		IBflags:                IBstdFlags,
 		Shortcuts:              [10]uint32{1, 126, 0, 0, 0, 0, 0, 0, 5, 117},
-		// Onikey: ô thường dùng Pre-edit (có gạch chân) vì tin cậy nhất khi máy
-		// lag; riêng ô địa chỉ trình duyệt tự chuyển sang không gạch chân nhờ
-		// cờ IBnoUnderlineForURL (xem getInputMode).
+		// Onikey: mặc định Pre-edit (có gạch chân) vì tin cậy nhất khi máy lag.
+		// Muốn gõ không gạch chân thì bật cờ IBnoUnderline — engine sẽ chuyển
+		// sang Surrounding Text ở những app hỗ trợ (xem updateNoUnderlineMode).
 		DefaultInputMode: PreeditIM,
 		InputModeMapping: map[string]int{},
 	}

@@ -19,7 +19,7 @@ Onikey — Bộ gõ tiếng Việt không gạch chân cho GNOME Wayland
 
 So với ibus-bamboo gốc, fork này:
 
-1. **Chế độ lai theo từng ô nhập.** Ô thường dùng *Pre-edit* (có gạch chân — tin cậy nhất khi máy lag), riêng **ô địa chỉ trình duyệt tự chuyển sang chế độ không gạch chân** để không phá danh sách gợi ý. Tắt/bật bằng ô tick *"Không gạch chân ở ô địa chỉ trình duyệt"* trong hộp thoại cấu hình.
+1. **"Không gạch chân" là thật.** Bật ô tick *"Gõ không gạch chân ở mọi ô nhập"* thì engine chuyển hẳn sang chế độ Surrounding Text ở những ứng dụng hỗ trợ, thay vì chỉ bỏ thuộc tính gạch chân của pre-edit như bản gốc (bỏ thuộc tính xong ứng dụng vẫn tự vẽ gạch chân). Ứng dụng không cung cấp surrounding text (Zalo/Electron cũ) thì giữ Pre-edit — thà gạch chân còn hơn nuốt phím.
 2. **Nhận được kiểu ô nhập từ ứng dụng.** Từ IBus 1.5, kiểu ô nhập (URL/email/mật khẩu…) gửi qua **thuộc tính DBus `ContentType`** chứ không qua phương thức `SetContentType`; thư viện `goibus` không xử lý thuộc tính DBus nên ibus-bamboo gốc chưa bao giờ nhận được. Onikey thêm handler `org.freedesktop.DBus.Properties.Set` — đây là cơ sở cho chế độ lai ở trên.
 3. **Vá crash khi chuyển ứng dụng.** `x11GetFocusWindowClass()` thiếu null-check con trỏ `Display` → segfault khi focus vào app native-Wayland (Edge/Electron), làm chết engine và mất gõ toàn hệ thống. Đã thêm null-check và bỏ gọi X11 introspection trên phiên Wayland.
 4. **Vá panic của hộp thoại cấu hình** khi thiếu file macro (chạy standalone).
@@ -94,7 +94,6 @@ Phiên bản gói tăng dần theo giờ commit nên `apt` luôn nhận ra bản
 - **Không dùng được cơ chế bơm phím giả (XTest)** như UniKey/Windows dùng `SendInput` — Wayland chặn vì lý do bảo mật (hiện hộp thoại *Remote Desktop*).
 - **App chạy bằng Wine** không hỗ trợ surrounding text → chữ bị nhân đôi. Giải pháp thực tế: chạy UniKey bản Windows *trong chính prefix Wine* của app đó.
 - Đánh đổi cố hữu: **không gạch chân** thì khi máy lag đôi lúc lỗi dấu/mất ký tự đầu; muốn **tin cậy tuyệt đối** thì dùng chế độ Pre-edit (có gạch chân). Không có ô "vừa không gạch chân vừa miễn nhiễm lag" vì Wayland đã khóa cơ chế injection.
-- **Ô địa chỉ Firefox không tự bỏ gạch chân.** Chế độ lai dựa vào việc ứng dụng khai báo kiểu ô nhập là URL. Chromium (Chrome/Edge) khai báo đúng cho ô địa chỉ; Firefox chỉ khai báo cho ô nhập trong trang web (`type=url`, `inputmode=url`) chứ không khai báo cho ô địa chỉ của chính nó, nên ô đó vẫn chạy Pre-edit.
 
 ## Gỡ rối
 Engine do ibus-daemon khởi chạy nên không xem được stdout. Bật log:
