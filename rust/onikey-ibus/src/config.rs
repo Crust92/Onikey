@@ -33,6 +33,9 @@ pub struct Config {
     pub flags: u32,
     /// Cờ tầng IBus (xem `ibflag`).
     pub ib_flags: u32,
+    /// 5 phím tắt, mỗi cái một cặp (mask, keyval); keyval 0 = tắt. Thứ tự:
+    /// chuyển chế độ gõ, khôi phục phím gốc, chuyển Anh–Việt, emoji, hexa.
+    pub shortcuts: [u32; 10],
     /// Chế độ gõ do người dùng chọn trong hộp thoại — NGUỒN CHÂN LÝ DUY NHẤT
     /// cho chuyện gạch chân: 1 = Pre-edit (có gạch chân), còn lại = các chế độ
     /// không gạch chân. Từng có thêm một ô tick "không gạch chân" đè lên đây
@@ -47,6 +50,7 @@ impl Default for Config {
             output_charset: "Unicode".into(),
             flags: onikey_core::flag::STD_FLAGS,
             ib_flags: 0,
+            shortcuts: [1, 126, 0, 0, 0, 0, 0, 0, 5, 117],
             default_input_mode: 1,
         }
     }
@@ -84,7 +88,41 @@ pub fn load() -> Config {
     if let Some(v) = json_number(&data, "DefaultInputMode") {
         cfg.default_input_mode = v as u32;
     }
+    if let Some(v) = json_u32_array(&data, "Shortcuts") {
+        if v.len() == 10 {
+            cfg.shortcuts.copy_from_slice(&v);
+        }
+    }
     cfg
+}
+
+/// Chỉ số phím tắt trong `Config::shortcuts` (nhân 2 ra vị trí cặp).
+pub mod shortcut {
+    #[allow(dead_code)]
+    pub const INPUT_MODE_SWITCH: usize = 0;
+    pub const RESTORE_KEY_STROKES: usize = 1;
+    pub const VI_EN_SWITCH: usize = 2;
+    #[allow(dead_code)]
+    pub const EMOJI: usize = 3;
+    #[allow(dead_code)]
+    pub const HEXADECIMAL: usize = 4;
+}
+
+impl Config {
+    /// Phím tắt thứ `idx` có khớp (mask, keyval) này không? keyval so ở dạng
+    /// chữ thường, mask chỉ so các phím bổ trợ chính (Ctrl/Shift/Alt/Super).
+    pub fn shortcut_matches(&self, idx: usize, keyval: u32, state: u32) -> bool {
+        let mask = self.shortcuts[idx * 2];
+        let key = self.shortcuts[idx * 2 + 1];
+        if key == 0 {
+            return false;
+        }
+        const RELEVANT: u32 = 1 | (1 << 2) | (1 << 3) | (1 << 26); // Shift|Ctrl|Alt|Super
+        let lower = char::from_u32(keyval)
+            .map(|c| c.to_lowercase().next().unwrap_or(c) as u32)
+            .unwrap_or(keyval);
+        state & RELEVANT == mask & RELEVANT && lower == key
+    }
 }
 
 // Bộ đọc JSON tối giản cho đúng bốn khoá phẳng ở trên. Không kéo cả thư viện
@@ -105,6 +143,17 @@ fn json_string(data: &str, key: &str) -> Option<String> {
     Some(v[..end].to_string())
 }
 
+fn json_u32_array(data: &str, key: &str) -> Option<Vec<u32>> {
+    let v = find_value(data, key)?;
+    let v = v.strip_prefix('[')?;
+    let end = v.find(']')?;
+    let mut out = Vec::new();
+    for part in v[..end].split(',') {
+        out.push(part.trim().parse().ok()?);
+    }
+    Some(out)
+}
+
 fn json_number(data: &str, key: &str) -> Option<u64> {
     let v = find_value(data, key)?;
     let end = v
@@ -119,6 +168,7 @@ mod tests {
 
     const MAU: &str = r#"{
   "InputMethod": "Telex 2",
+  "Shortcuts": [1, 126, 0, 0, 4, 32, 0, 0, 5, 117],
   "InputMethodDefinitions": { "Telex": { "a": "A_Â" } },
   "OutputCharset": "Unicode",
   "Flags": 7,
@@ -133,6 +183,17 @@ mod tests {
         assert_eq!(json_number(MAU, "Flags").unwrap(), 7);
         assert_eq!(json_number(MAU, "IBflags").unwrap(), 1081840);
         assert_eq!(json_number(MAU, "DefaultInputMode").unwrap(), 1);
+        assert_eq!(
+            json_u32_array(MAU, "Shortcuts").unwrap(),
+            vec![1, 126, 0, 0, 4, 32, 0, 0, 5, 117]
+        );
+        let mut c = Config::default();
+        c.shortcuts = [1, 126, 0, 0, 4, 32, 0, 0, 5, 117];
+        // Ctrl+Space bật/tắt tiếng Việt (mask 4 = Ctrl, key 32 = space)
+        assert!(c.shortcut_matches(shortcut::VI_EN_SWITCH, 32, 1 << 2));
+        assert!(!c.shortcut_matches(shortcut::VI_EN_SWITCH, 32, 0));
+        // keyval 0 = tắt, không bao giờ khớp
+        assert!(!c.shortcut_matches(shortcut::RESTORE_KEY_STROKES, 0, 0));
     }
 
     #[test]
