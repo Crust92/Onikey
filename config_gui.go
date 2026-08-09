@@ -36,6 +36,7 @@ func openConfigGUI(engineName string) {
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	if err := cmd.Run(); err != nil {
 		log.Printf("không mở được hộp thoại cấu hình (%s): %v", bin, err)
+		dbg("không mở được hộp thoại cấu hình (%s): %v", bin, err)
 	}
 }
 

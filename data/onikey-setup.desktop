@@ -1,7 +1,14 @@
 [Desktop Entry]
-Name=Onikey Setup
+Name=Onikey — Cấu hình bộ gõ
+Name[en]=Onikey Input Method Settings
+GenericName=Vietnamese input method settings
+Comment=Chọn kiểu gõ, bảng mã, gõ tắt và phím tắt cho bộ gõ Onikey
 Type=Application
 Exec=/usr/lib/onikey/onikey-config
 Icon=/usr/share/onikey/icons/vi.svg
-NoDisplay=true
+Terminal=false
+NoDisplay=false
 StartupNotify=true
+Categories=Settings;
+Keywords=onikey;vietnamese;tiếng việt;bộ gõ;telex;vni;ime;input method;
+X-GNOME-Settings-Panel=region

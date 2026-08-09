@@ -364,6 +364,7 @@ func (e *OnikeyEngine) PropertyActivate(propName string, propState uint32) *dbus
 		return nil
 	}
 	if propName == PropKeyConfiguration {
+		dbg("PropertyActivate: mở hộp thoại cấu hình")
 		openConfigGUI(e.engineName)
 		e.config = config.LoadConfig(e.engineName)
 		return nil
