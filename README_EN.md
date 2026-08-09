@@ -16,7 +16,7 @@ Onikey — Underline-free Vietnamese input for GNOME Wayland
 ## Build & install from source
 Requirements (Ubuntu/Debian): `golang git make gcc libgtk-3-dev libxtst-dev libx11-dev`.
 ```sh
-git clone https://github.com/xtcnet/Onikey.git
+git clone https://github.com/xtcrust/Onikey.git
 cd Onikey
 make
 sudo make install PREFIX=/usr

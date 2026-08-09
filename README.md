@@ -41,7 +41,7 @@ sudo apt install -y golang git make gcc libgtk-3-dev libxtst-dev libx11-dev
 
 **Build & cài đặt:**
 ```sh
-git clone https://github.com/xtcnet/Onikey.git
+git clone https://github.com/xtcrust/Onikey.git
 cd Onikey
 make
 sudo make install PREFIX=/usr
@@ -91,7 +91,7 @@ touch ~/.config/ibus-bamboo/onikey-debug && ibus restart
 Log ghi vào `~/.config/ibus-bamboo/onikey-debug.log` (focus, capabilities, kiểu ô nhập, chế độ gõ đang dùng). Tắt bằng cách xóa file cờ rồi `ibus restart`.
 
 ## Báo lỗi
-Mở issue tại [github.com/xtcnet/Onikey/issues](https://github.com/xtcnet/Onikey/issues). Với các vấn đề chung của engine, có thể tham khảo thêm [wiki của ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/wiki).
+Mở issue tại [github.com/xtcrust/Onikey/issues](https://github.com/xtcrust/Onikey/issues). Với các vấn đề chung của engine, có thể tham khảo thêm [wiki của ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/wiki).
 
 ## Giấy phép
 GPLv3 — như dự án gốc [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo). Xem [LICENSE](LICENSE).
