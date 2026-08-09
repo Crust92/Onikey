@@ -46,10 +46,20 @@ biết ngay nó có đọc đúng kiểu gõ của bạn không.
 | Chế độ không gạch chân | Xong phần cơ chế: xoá lùi phần khác nhau rồi ghi đuôi mới |
 | Đọc cấu hình chung với bản Go | Xong (kiểu gõ, cờ lõi, cờ IBus) |
 
+## Đã thêm sau lần gõ thật đầu tiên
+
+| Mảng | Ghi chú |
+|---|---|
+| Tự khôi phục tiếng Anh | `expression`/`password` không bị bẻ dấu; test tích hợp với lõi thật |
+| Đồng bộ xoá–ghi | Chờ ứng dụng xác nhận xoá lùi rồi mới ghi (trần 60ms) — sửa lỗi `password` → `passsowrd` khi gõ nhanh |
+| Menu thuộc tính | Bấm biểu tượng `vi` có mục "Cấu hình bộ gõ (bản Rust)" |
+| Gõ tắt (macro) | Đọc chung `onikey.macro.text`, tự chỉnh hoa theo cách gõ khoá (`vn`→Việt Nam, `VN`→VIỆT NAM) |
+
 ## Chưa có (nên chưa thay được bản Go)
 
-- Gõ tắt (macro), bảng emoji, gõ hexadecimal.
+- Bảng emoji, gõ hexadecimal.
 - Các phím tắt: chuyển chế độ gõ (Shift+~), tạm tắt bộ gõ, khôi phục phím gốc.
 - Bảng mã đầu ra (lõi có sẵn hàm `encode`, tầng IBus chưa gọi tới).
 - Danh sách loại trừ theo ứng dụng.
 - Hộp thoại cấu hình vẫn là bản GTK3 của engine Go.
+- Macro dạng tiền tố (gõ tiếp sau khoá) và theo dõi tệp macro đổi giữa chừng.
