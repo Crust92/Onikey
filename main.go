@@ -27,6 +27,8 @@ import (
 	"strings"
 
 	ibus "github.com/BambooEngine/goibus"
+
+	"onikey/config"
 )
 
 const (
@@ -52,6 +54,12 @@ func main() {
 		isGnome = true
 	}
 	flag.Parse()
+	if *gui {
+		// Tương thích ngược: onikey-engine -gui vẫn mở được hộp thoại, nhưng
+		// nay chỉ là gọi sang binary riêng onikey-config.
+		openConfigGUI(config.EngineID)
+		return
+	}
 	if *embedded {
 		os.Chdir(DataDir)
 	}

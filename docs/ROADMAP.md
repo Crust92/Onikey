@@ -56,19 +56,20 @@ engine và từng gây panic khi thiếu file macro.
 
 Mục tiêu: bản Go vẫn là bản dùng hằng ngày, nhưng hết các giả định "chỉ Ubuntu".
 
-- [ ] **Bỏ đường dẫn cứng**: `DataDir = "/usr/share/onikey"` phải nhận được từ
-      biến build (`-X main.DataDir=...`) và biến môi trường `ONIKEY_DATA_DIR`.
-      Fedora đặt engine IBus ở `/usr/libexec`, FreeBSD ở `/usr/local` — hiện
-      đang chết cứng ở `/usr`.
-- [ ] **Tách GUI khỏi engine**: `onikey-config` là binary riêng; engine chỉ gọi
-      `exec`. Hỏng GUI không được kéo theo hỏng gõ.
-- [ ] **Bỏ hẳn `Shell.Eval`** (đã ghim cờ tắt sau lần đầu); thay bằng: nếu cần
-      nhận diện app thì dùng `contentPurpose`/`hints` như đã làm cho ô địa chỉ.
-- [ ] **Kiểm thử đóng gói thật**: dựng `.deb` (đã có), `.rpm` trên Fedora,
-      `PKGBUILD` trên Arch trong container/VM; sửa cho tới khi cài–gỡ sạch.
-- [ ] **Ma trận kiểm thử tối thiểu** (mỗi bản: gõ ở ô thường, ô địa chỉ, xóa lùi,
-      chuyển app, đăng nhập lại):
-      Ubuntu GNOME Wayland · Ubuntu GNOME X11 · Fedora GNOME · Debian stable.
+- [x] **Bỏ đường dẫn cứng**: `DataDir` nay là biến, đặt lúc build bằng
+      `-X main.DataDir=$PREFIX/share/onikey`, đè lúc chạy bằng `ONIKEY_DATA_DIR`.
+      `scripts/install` sinh component XML + desktop file theo đúng prefix đang
+      cài, và nhận `LIBEXECDIR` riêng (Fedora dùng `/usr/libexec`).
+- [x] **Tách GUI khỏi engine**: `onikey-config` là binary riêng, engine chỉ
+      `exec` rồi chờ. Engine **không còn liên kết GTK** — chỉ còn libc + X11/Xtst.
+- [x] **Bỏ hẳn `Shell.Eval`**: xoá `gnome_introspector.go`. Nhận diện ô nhập nay
+      dựa vào content type ứng dụng khai báo (`isURLBar`).
+- [x] **Kiểm thử đóng gói thật** trong container: build + install sạch trên
+      Fedora 42 (layout `/usr/libexec`) và Arch; `.deb` cài–gỡ sạch trên
+      Ubuntu 24.04 (cũ hơn máy dựng gói).
+- [ ] **Ma trận kiểm thử tay** (mỗi bản: gõ ở ô thường, ô địa chỉ, xóa lùi,
+      chuyển app, đăng nhập lại): Ubuntu GNOME Wayland ✔ (máy chính) ·
+      Ubuntu GNOME X11 · Fedora GNOME · KDE Plasma. Cần máy ảo, chưa làm.
 
 ### Giai đoạn B — `onikey-core` bằng Rust, chạy song song
 

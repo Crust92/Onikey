@@ -15,16 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Maintainer: Luong Thanh Lam <ltlam93@gmail.com>
+# Maintainer: xtcrust <xtczone000000@gmail.com>
+# Bản fork của ibus-bamboo (Luong Thanh Lam)
 pkgname=onikey-git
-pkgver=0.8.5
+pkgver=0.9.0
 pkgrel=2
-pkgdesc='A Vietnamese IME for IBus'
-arch=(any)
+pkgdesc='Bộ gõ tiếng Việt cho IBus, không gạch chân khi gõ (fork của ibus-bamboo)'
+arch=('x86_64' 'aarch64')
 license=(GPL3)
 url="https://github.com/xtcrust/Onikey"
-optdepends=('ibus')
-makedepends=('go' 'libibus' 'libx11' 'gtk3' 'libxtst')
+depends=('ibus' 'gtk3' 'libx11' 'libxtst')
+makedepends=('go' 'gcc' 'pkgconf')
 source=("$pkgname"::git+"$url")
 md5sums=('SKIP')
 options=('!strip')
@@ -34,7 +35,7 @@ conflicts=(onikey)
 build() {
   cd "$pkgname"
 
-  make build
+  make build PREFIX=/usr
 }
 
 

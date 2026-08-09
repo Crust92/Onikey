@@ -15,17 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Maintainer: Luong Thanh Lam <ltlam93@gmail.com>
+# Maintainer: xtcrust <xtczone000000@gmail.com>
+# Bản fork của ibus-bamboo (Luong Thanh Lam)
 pkgname=onikey
-pkgver=0.8.5
+pkgver=0.9.0
 pkgrel=1
-pkgdesc='A Vietnamese IME for IBus'
-arch=(any)
+pkgdesc='Bộ gõ tiếng Việt cho IBus, không gạch chân khi gõ (fork của ibus-bamboo)'
+arch=('x86_64' 'aarch64')
 license=(GPL3)
 url="https://github.com/xtcrust/Onikey"
-optdepends=('ibus')
-makedepends=('go' 'ibus-devel' 'libx11' 'gtk3' 'libxtst')
-source=("$pkgname-$pkgver.tar.gz"::"https://github.com/BambooEngine/$pkgname/archive/v$pkgver.tar.gz")
+depends=('ibus' 'gtk3' 'libx11' 'libxtst')
+makedepends=('go' 'gcc' 'pkgconf')
+source=("$pkgname-$pkgver.tar.gz"::"$url/archive/v$pkgver.tar.gz")
 md5sums=('SKIP')
 options=('!strip')
 conflicts=(onikey-git)
@@ -33,12 +34,12 @@ conflicts=(onikey-git)
 build() {
   cd "$pkgname-$pkgver"
 
-  make build
+  make build PREFIX=/usr
 }
 
 
 package() {
   cd "$pkgname-$pkgver"
 
-  make DESTDIR="$pkgdir/" install
+  make install PREFIX=/usr DESTDIR="$pkgdir/"
 }

@@ -4,32 +4,36 @@ DESTDIR="$2"
 engine_name="onikey"
 engine_gui_name="onikey-setup.desktop"
 ibus_e_name="onikey-engine"
+config_name="onikey-config"
 pkg_name="${engine_name}"
 version="0.9.0"
 
 engine_dir=${PREFIX}/share/${pkg_name}
 ibus_dir=${PREFIX}/share/ibus
+# Fedora để loại helper này ở /usr/libexec, Debian/Arch ở /usr/lib -> cho phép
+# distro tự chọn: make install LIBEXECDIR=/usr/libexec/onikey
+libexec_dir=${LIBEXECDIR:-${PREFIX}/lib/${engine_name}}
+
+# Component XML và desktop file phải trỏ đúng PREFIX đang cài (Fedora/FreeBSD/
+# ~/.local đều khác /usr), nên sinh ra từ bản mẫu thay vì chép nguyên.
+gen_from_template() {
+	sed -e "s#/usr/lib/${engine_name}#${libexec_dir}#g" \
+	    -e "s#/usr/share/${engine_name}#${engine_dir}#g" "$1"
+}
 
 # Main script
 case $(uname) in
-	"Linux") mkdir -p ${DESTDIR}${engine_dir} \
-		${DESTDIR}${PREFIX}/lib/${engine_name} \
-		${DESTDIR}${ibus_dir}/component/ \
-		${DESTDIR}${PREFIX}/share/applications/
+	"Linux"|"FreeBSD")
+		mkdir -p ${DESTDIR}${engine_dir} \
+			${DESTDIR}${libexec_dir} \
+			${DESTDIR}${ibus_dir}/component/ \
+			${DESTDIR}${PREFIX}/share/applications/
 		cp -R -f icons data ${DESTDIR}${engine_dir}
-		cp -f ${ibus_e_name} ${DESTDIR}${PREFIX}/lib/${engine_name}/
-		cp -f data/${engine_name}.xml ${DESTDIR}${ibus_dir}/component/
-		cp -f data/${engine_gui_name} ${DESTDIR}${PREFIX}/share/applications/
-		;;
-	"FreeBSD") mkdir -p ${DESTDIR}${engine_dir} \
-		${DESTDIR}${PREFIX}/lib/${engine_name} \
-		${DESTDIR}${ibus_dir}/component/ \
-		${DESTDIR}${PREFIX}/share/applications/
-
-		cp -R -f icons data ${DESTDIR}${engine_dir}
-		cp -f ${ibus_e_name} ${DESTDIR}${PREFIX}/lib/${engine_name}/
-		cp -f data/${engine_name}-freebsd.xml ${DESTDIR}${ibus_dir}/component/
-		cp -f data/${engine_gui_name} ${DESTDIR}${PREFIX}/share/applications/
+		cp -f ${ibus_e_name} ${config_name} ${DESTDIR}${libexec_dir}/
+		gen_from_template data/${engine_name}.xml \
+			> ${DESTDIR}${ibus_dir}/component/${engine_name}.xml
+		gen_from_template data/${engine_gui_name} \
+			> ${DESTDIR}${PREFIX}/share/applications/${engine_gui_name}
 		;;
 	*)	echo "Hiện tại chưa hỗ trợ hệ điều hành này!"
 		;;

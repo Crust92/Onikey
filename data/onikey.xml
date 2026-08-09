@@ -38,7 +38,7 @@
               <layout>default</layout>
               <longname>Onikey</longname>
               <description>Vietnamese input method editor</description>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
               <rank>1</rank>
           </engine>
           <engine>
@@ -52,7 +52,7 @@
               <longname>Onikey (US layout)</longname>
               <description>Vietnamese input method editor with US keyboard layout</description>
               <rank>1</rank>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
           </engine>
 	  <!-- Vietnamese Icons -->
           <engine>
@@ -66,7 +66,7 @@
               <longname>Onikey Candy</longname>
               <description>Vietnamese input method editor with US keyboard layout with Candy Icon</description>
               <rank>1</rank>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
           </engine>
           <engine>
               <symbol>vi</symbol>
@@ -79,7 +79,7 @@
               <longname>Onikey Flag</longname>
               <description>Vietnamese input method editor with US keyboard layout with Flag Icon</description>
               <rank>1</rank>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
           </engine>
 	  <!-- English (US) Icons -->
           <engine>
@@ -93,7 +93,7 @@
               <longname>Onikey English (US)</longname>
               <description>Vietnamese input method editor with US keyboard layout with US Normal Icon</description>
               <rank>2</rank>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
           </engine>
           <engine>
               <symbol>en</symbol>
@@ -106,7 +106,7 @@
               <longname>Onikey English (US) Candy</longname>
               <description>Vietnamese input method editor with US keyboard layout with US Candy Icon</description>
               <rank>2</rank>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
           </engine>
           <engine>
               <symbol>en</symbol>
@@ -119,7 +119,7 @@
               <longname>Onikey English (US) Flag</longname>
               <description>Vietnamese input method editor with US keyboard layout with US Flag Icon</description>
               <rank>2</rank>
-              <setup>/usr/lib/onikey/onikey-engine -gui</setup>
+              <setup>/usr/lib/onikey/onikey-config</setup>
           </engine>
     </engines>
 </component>
