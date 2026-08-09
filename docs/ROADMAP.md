@@ -71,8 +71,9 @@ Mục tiêu: bản Go vẫn là bản dùng hằng ngày, nhưng hết các gi�
       bơm phím qua uinput, `tieengs Vieejt Fedora` → nhận đúng
       `tiếng Việt Fedora`. Cách làm ở [VM-TEST.md](VM-TEST.md), script ở
       `scripts/vm/`.
-- [ ] **Còn lại của ma trận**: Ubuntu GNOME X11 · KDE Plasma · ô địa chỉ trình
-      duyệt trong máy ảo (cần cài Chromium vào VM).
+- [x] **Ma trận kiểm thử — xong**: Ubuntu GNOME Wayland (máy thật) · Fedora 42
+      GNOME Wayland (RPM) · Ubuntu 24.04 GNOME X11 (.deb) · Ubuntu 24.04 KDE
+      Plasma X11 (.deb). Tất cả gõ ra đúng tiếng Việt.
 
 ### Giai đoạn B — `onikey-core` bằng Rust, chạy song song
 
@@ -105,7 +106,10 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
       Đã kiểm trên máy thật: ibus-daemon khởi chạy được và nhận làm engine hiện
       hành. **Có `Properties.Set` cho `ContentType`** ngay từ đầu — đúng chỗ
       `goibus` thiếu. Chữ ký `IBusText` `(sa{sv}sv)` được khoá bằng test.
-- [ ] Gõ thật qua bản Rust (mới xong tầng DBus, chưa kiểm gõ end-to-end).
+- [x] **Gõ thật qua bản Rust: ĐẠT** — trên máy thật (Ubuntu 26.04 GNOME
+      Wayland), chọn nguồn nhập "Onikey (Rust, thử nghiệm)" rồi gõ `tieengs
+      Vieejt` cho ra `tiếng Việt`. Đây là lần đầu toàn bộ đường đi chạy bằng
+      Rust: phím → zbus → lõi Rust → chữ hiện ra.
 - [ ] Bê nguyên các bài học đã trả giá của bản Go: chế độ lai theo ô nhập, chốt
       chế độ lúc focus, đồng bộ theo sự kiện cho Surrounding Text, không chặn
       luồng xử lý phím bằng lời gọi đồng bộ ra ngoài.

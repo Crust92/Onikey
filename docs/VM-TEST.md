@@ -81,6 +81,8 @@ sudo virsh screenshot onikey /tmp/vm.ppm && convert /tmp/vm.ppm /tmp/vm.png
 | Fedora 42, GNOME 48 Wayland | RPM `onikey-0.9.0-1.fc42` | Gõ `tieengs Vieejt Fedora` → nhận đúng **`tiếng Việt Fedora`**, chạy chế độ Pre-edit (`mode=1`) |
 | Fedora 42, GNOME X11 | RPM | Chưa kiểm được (xem dưới) |
 | **Ubuntu 24.04, GNOME X11** | `.deb` | Gõ `tieengs Vieejt X11` → nhận đúng **`tiếng Việt X11`** |
+| **Ubuntu 24.04, KDE Plasma X11** | `.deb` | Gõ `tieengs Vieejt KDE` → nhận đúng **`tiếng Việt KDE`** |
+| Ubuntu 26.04, GNOME Wayland (máy thật) | `make install` | Dùng hằng ngày; engine **Rust** cũng đã gõ ra `tiếng Việt` |
 
 ## Bơm phím: X11 dùng xdotool, Wayland dùng ydotool
 
@@ -100,9 +102,31 @@ Hai cái bẫy đã dính, ghi lại cho khỏi mất công:
 - **Ubuntu không đóng gói `ydotoold`.** Thiếu daemon thì mỗi lệnh `ydotool` tự
   tạo một thiết bị ảo tạm, và sự kiện **nhả phím bị hiểu thành nhấn** — vòng
   "nhả hết phím cho an toàn" của tôi gõ ra một tràng số vào ô tìm kiếm.
+- **Locale làm hỏng khâu ĐỌC kết quả, không phải bộ gõ.** Phiên KDE không đặt
+  UTF-8 nên chuỗi zenity ghi ra file thành `ti?ng Vi?t`, trong khi trên màn hình
+  vẫn là `tiếng Việt`. Chạy zenity với `LANG=C.UTF-8` hoặc tin vào ảnh chụp.
 - **Overview của GNOME nuốt bàn phím.** Chữ vẫn ra đúng nhưng rơi vào ô tìm
   kiếm của Overview chứ không vào cửa sổ. Chụp màn hình bằng `virsh screenshot`
   là cách nhanh nhất để biết chữ đang đi đâu.
+
+## KDE cần cấu hình tay
+
+GNOME tự khởi chạy ibus và tự đặt biến môi trường; **KDE thì không**. Muốn dùng
+Onikey trên KDE phải tự làm hai việc:
+
+```sh
+# 1) biến môi trường (đặt trong /etc/environment hoặc ~/.config/plasma-workspace/env/)
+GTK_IM_MODULE=ibus
+QT_IM_MODULE=ibus
+XMODIFIERS=@im=ibus
+
+# 2) tự khởi chạy ibus khi đăng nhập (~/.config/autostart/ibus.desktop)
+Exec=ibus-daemon -drx
+```
+
+KDE cũng không có giao diện chọn nguồn nhập kiểu GNOME; chọn engine bằng
+`ibus engine Onikey` hoặc `ibus-setup`. Đây chính là lý do Fcitx5 được ưu tiên
+trong lộ trình: trên KDE nó là thứ có sẵn và không phải cấu hình tay.
 
 ## Chưa làm được: phiên X11 trên FEDORA
 
