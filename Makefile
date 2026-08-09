@@ -46,6 +46,12 @@ build:
 test:
 	$(SHELL) scripts/test
 
+# Sinh lại bộ ca kiểm đối chiếu của lõi tiếng Việt. CHỈ chạy khi cố ý đổi hành
+# vi lõi — bộ này là mốc để so bản viết lại (Rust), sinh lại tuỳ tiện là mất mốc.
+corpus:
+	go run -mod=vendor ./tools/gen-corpus | gzip -n -9 > tests/corpus/core.jsonl.gz
+	go run -mod=vendor ./tools/check-corpus
+
 clean:
 	rm -f onikey-engine onikey-config
 	rm -f *_linux *_cover.html go_test_* go_build_* test *.gz test
@@ -86,4 +92,4 @@ deb: clean
 	dpkg-buildpackage
 	rm -rf debian
 
-.PHONY: build clean build install uninstall src rpm deb
+.PHONY: build clean build install uninstall src rpm deb corpus
