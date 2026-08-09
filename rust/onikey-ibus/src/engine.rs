@@ -19,7 +19,11 @@ use zbus::interface;
 use zbus::object_server::SignalEmitter;
 use zvariant::{OwnedValue, Value};
 
+use crate::config::{ibflag, Config};
 use crate::ibus_text::{IBusText, ATTR_TYPE_UNDERLINE, ATTR_UNDERLINE_SINGLE, PREEDIT_COMMIT};
+
+/// Bit "ứng dụng cung cấp được surrounding text" trong IBus capabilities.
+const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 
 /// Phím IBus cần biết tới.
 const IBUS_BACKSPACE: u32 = 0xff08;
@@ -37,21 +41,63 @@ pub struct OnikeyEngine {
 
 struct State {
     core: Core,
+    cfg: Config,
     /// Kiểu ô nhập do ứng dụng khai (IBusInputPurpose). Chỉ ghi nhận để gỡ rối.
     content_purpose: u32,
     capabilities: u32,
+    /// Chuỗi đã GHI RA ứng dụng ở chế độ không gạch chân — cần nhớ để biết
+    /// phải xoá lùi bao nhiêu ký tự khi chữ thay đổi.
+    committed: String,
+}
+
+impl State {
+    /// Kết thúc một tiếng: ở chế độ Pre-edit thì phải CHỐT chuỗi vào ứng dụng;
+    /// ở chế độ không gạch chân thì chữ đã nằm sẵn trong đó rồi, chỉ cần quên đi.
+    fn finish_word(&mut self) -> Action {
+        let s = self.core.get_processed_string(mode::VIETNAMESE);
+        self.core.reset();
+        if self.no_underline() {
+            self.committed.clear();
+            return Action::Passthrough(None);
+        }
+        self.committed.clear();
+        Action::Passthrough(if s.is_empty() { None } else { Some(s) })
+    }
+
+    /// Có gõ được kiểu không gạch chân không? Chỉ khi người dùng bật cờ VÀ ứng
+    /// dụng cung cấp được surrounding text — thiếu thì thà gạch chân còn hơn
+    /// nuốt phím (bài học từ ô địa chỉ Edge bên bản Go).
+    fn no_underline(&self) -> bool {
+        self.cfg.ib_flags & ibflag::NO_UNDERLINE != 0
+            && self.capabilities & IBUS_CAP_SURROUNDING_TEXT != 0
+    }
 }
 
 impl OnikeyEngine {
-    pub fn new(input_method: &str, flags: u32) -> OnikeyEngine {
+    pub fn new(cfg: Config) -> OnikeyEngine {
+        let core = Core::new(parse_input_method(&cfg.input_method), cfg.flags);
         OnikeyEngine {
             state: Mutex::new(State {
-                core: Core::new(parse_input_method(input_method), flags),
+                core,
+                cfg,
                 content_purpose: 0,
                 capabilities: 0,
+                committed: String::new(),
             }),
         }
     }
+}
+
+/// Số ký tự phải xoá lùi và phần đuôi phải ghi thêm, để biến `old` thành `new`.
+/// Giữ lại phần đầu giống nhau — xoá cả rồi ghi lại là nháy chữ và chậm.
+fn diff_tail(old: &str, new: &str) -> (u32, String) {
+    let o: Vec<char> = old.chars().collect();
+    let n: Vec<char> = new.chars().collect();
+    let mut k = 0;
+    while k < o.len() && k < n.len() && o[k] == n[k] {
+        k += 1;
+    }
+    ((o.len() - k) as u32, n[k..].iter().collect())
 }
 
 fn is_modifier_pressed(state: u32) -> bool {
@@ -66,8 +112,11 @@ enum Action {
     Ignore,
     /// Chốt chuỗi đang gõ (nếu có) rồi vẫn để phím rơi xuống ứng dụng.
     Passthrough(Option<String>),
-    /// Cập nhật chuỗi đang gõ, nuốt phím.
+    /// Cập nhật chuỗi đang gõ, nuốt phím (chế độ Pre-edit, có gạch chân).
     Preedit(String),
+    /// Chế độ KHÔNG gạch chân: xoá lùi `n` ký tự đã ghi rồi ghi thêm `tail`.
+    /// Chữ nằm thẳng trong ứng dụng nên không có gạch chân nào cả.
+    Rewrite { backspaces: u32, tail: String },
 }
 
 impl OnikeyEngine {
@@ -80,24 +129,27 @@ impl OnikeyEngine {
 
         if is_modifier_pressed(state) {
             // Ctrl/Alt/Super + phím là phím tắt của ứng dụng, không phải chữ.
-            let s = st.core.get_processed_string(mode::VIETNAMESE);
-            st.core.reset();
-            return Action::Passthrough(if s.is_empty() { None } else { Some(s) });
+            return st.finish_word();
         }
 
         match keyval {
             IBUS_BACKSPACE => {
                 if st.core.get_processed_string(mode::VIETNAMESE).is_empty() {
+                    // Không có gì đang gõ dở -> để ứng dụng tự xoá.
+                    st.committed.clear();
                     return Action::Ignore;
                 }
                 st.core.remove_last_char(true);
-                return Action::Preedit(st.core.get_processed_string(mode::VIETNAMESE));
-            }
-            IBUS_RETURN | IBUS_ESCAPE => {
                 let s = st.core.get_processed_string(mode::VIETNAMESE);
-                st.core.reset();
-                return Action::Passthrough(if s.is_empty() { None } else { Some(s) });
+                if st.no_underline() {
+                    // Ở chế độ không gạch chân, chữ đã nằm trong ứng dụng: cứ
+                    // để ứng dụng tự xoá một ký tự, ta chỉ theo dõi trạng thái.
+                    st.committed = s;
+                    return Action::Ignore;
+                }
+                return Action::Preedit(s);
             }
+            IBUS_RETURN | IBUS_ESCAPE => return st.finish_word(),
             _ => {}
         }
 
@@ -108,23 +160,24 @@ impl OnikeyEngine {
 
         // Phím ngắt từ (dấu cách, dấu câu) -> chốt chữ đang gõ rồi cho qua.
         if keyval == IBUS_SPACE || !st.core.can_process_key(chr) {
-            let s = st.core.get_processed_string(mode::VIETNAMESE);
-            st.core.reset();
-            return Action::Passthrough(if s.is_empty() { None } else { Some(s) });
+            return st.finish_word();
         }
 
         st.core.process_key(chr, mode::VIETNAMESE);
-        Action::Preedit(st.core.get_processed_string(mode::VIETNAMESE))
+        let s = st.core.get_processed_string(mode::VIETNAMESE);
+        if st.no_underline() {
+            let (backspaces, tail) = diff_tail(&st.committed, &s);
+            st.committed = s;
+            return Action::Rewrite { backspaces, tail };
+        }
+        Action::Preedit(s)
     }
 
     fn take_pending(&self) -> Option<String> {
         let mut st = self.state.lock().unwrap();
-        let s = st.core.get_processed_string(mode::VIETNAMESE);
-        st.core.reset();
-        if s.is_empty() {
-            None
-        } else {
-            Some(s)
+        match st.finish_word() {
+            Action::Passthrough(s) => s,
+            _ => None,
         }
     }
 }
@@ -150,11 +203,36 @@ impl OnikeyEngine {
                 let _ = update_preedit(&emitter, &s).await;
                 true
             }
+            Action::Rewrite { backspaces, tail } => {
+                if backspaces > 0 {
+                    let _ = emitter
+                        .emit(
+                            "org.freedesktop.IBus.Engine",
+                            "DeleteSurroundingText",
+                            &(-(backspaces as i32), backspaces),
+                        )
+                        .await;
+                }
+                if !tail.is_empty() {
+                    let _ = commit_raw(&emitter, &tail).await;
+                }
+                true
+            }
         }
     }
 
-    async fn focus_in(&self) {
-        self.state.lock().unwrap().core.reset();
+    async fn focus_in(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
+        {
+            let mut st = self.state.lock().unwrap();
+            st.core.reset();
+            st.committed.clear();
+        }
+        // Báo cho ứng dụng biết ta cần surrounding text; thiếu bước này thì
+        // capability không bao giờ có bit tương ứng và chế độ không gạch chân
+        // sẽ không bật được.
+        let _ = emitter
+            .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
+            .await;
     }
 
     async fn focus_out(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
@@ -223,6 +301,14 @@ async fn update_preedit(emitter: &SignalEmitter<'_>, text: &str) -> zbus::Result
         .await
 }
 
+/// Ghi chữ thẳng vào ứng dụng, không đụng tới pre-edit.
+async fn commit_raw(emitter: &SignalEmitter<'_>, text: &str) -> zbus::Result<()> {
+    let v = OwnedValue::try_from(Value::from(IBusText::new(text))).expect("dựng IBusText");
+    emitter
+        .emit("org.freedesktop.IBus.Engine", "CommitText", &(v,))
+        .await
+}
+
 async fn commit(emitter: &SignalEmitter<'_>, text: &str) -> zbus::Result<()> {
     let v = OwnedValue::try_from(Value::from(IBusText::new(text))).expect("dựng IBusText");
     emitter
@@ -235,4 +321,21 @@ async fn commit(emitter: &SignalEmitter<'_>, text: &str) -> zbus::Result<()> {
 
 pub fn default_flags() -> u32 {
     flag::STD_FLAGS
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn chi_sua_phan_duoi_khac_nhau() {
+        // "tie" -> "tiê": giữ "ti", xoá 1, ghi "ê"
+        assert_eq!(diff_tail("tie", "tiê"), (1, "ê".to_string()));
+        // thêm chữ: không phải xoá gì
+        assert_eq!(diff_tail("tiê", "tiên"), (0, "n".to_string()));
+        // đổi dấu ở giữa: "tiêng" -> "tiếng"
+        assert_eq!(diff_tail("tiêng", "tiếng"), (3, "ếng".to_string()));
+        // từ rỗng
+        assert_eq!(diff_tail("", "t"), (0, "t".to_string()));
+    }
 }
