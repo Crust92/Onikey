@@ -1,34 +1,82 @@
-Onikey — Underline-free Vietnamese input for GNOME Wayland
-==========================================================
+Onikey — Vietnamese input method for Linux, Rust engine
+=======================================================
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
-**Onikey** is a **fork of [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)** (BambooEngine), tuned to type Vietnamese **without the preedit underline** on **GNOME Wayland**, plus reliability fixes. All core credit goes to the original authors; this repo keeps the **GPLv3** license.
+**Onikey 1.0** is a Vietnamese IME for IBus. It started as a fork of
+[ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo) and now runs on a
+**completely rewritten Rust engine** that preserves the original typing
+behavior character-for-character. All credit for the Vietnamese input logic
+belongs to the BambooEngine authors; this repo stays **GPLv3**.
 
-> Since 0.9.0 the engine is named **Onikey** (it used to be *Bamboo*) — pick **Onikey** in *Settings → Keyboard → Input Sources*. An existing `~/.config/ibus-bamboo` config is migrated to `~/.config/onikey` on first run.
+## Technical highlights
 
-## What this fork changes
-1. **Per-field hybrid mode** — regular fields use *Pre-edit* (underlined, most reliable under lag), while the **browser address bar automatically switches to an underline-free mode** so URL suggestions keep working. Toggle it in the setup dialog.
-2. **Reads the client's content type** — since IBus 1.5 the input-field type (URL/email/password…) is delivered as the **DBus property `ContentType`**, not via the `SetContentType` method; `goibus` implements no DBus properties, so upstream ibus-bamboo never received it. Onikey adds an `org.freedesktop.DBus.Properties.Set` handler, which is what makes the hybrid mode possible.
-3. **Crash fix on app switch** — `x11GetFocusWindowClass()` lacked a NULL `Display` check, segfaulting when focusing a native-Wayland app and killing input system-wide. Added the null-check and skip X11 introspection on Wayland.
-4. **Setup-GUI panic fix** when the macro file is missing (standalone launch).
-5. **Event-based surrounding-text sync** — after `DeleteSurroundingText`, wait for the app to confirm before committing (capped timeout + adaptive fallback), so tone correction adapts to app/system lag.
+- **Proven behavioral parity.** A corpus of **126,831 test cases** generated
+  from the original Go engine records the Vietnamese string **after every
+  keystroke** (not just the final result), plus raw-key restore, syllable
+  validity, and backspace/restore state — across 9 input methods and 4 flag
+  combinations. The Rust core must match exactly; CI runs it on every push.
+  Charset tables (TCVN3, VNI Windows, VISCII…) are machine-generated from the
+  original and verified against 134,521 cases.
+- **Fixes a long-standing IBus blind spot.** Since IBus 1.5 the input-field
+  type (URL/email/password) arrives as the DBus **property** `ContentType`,
+  not the `SetContentType` method. The original's DBus layer never implemented
+  properties, so the engine never saw it. The Rust engine (zbus) implements
+  `Properties.Set` from day one.
+- **Fast typing without tone glitches** in underline-free mode: after
+  deleting committed text the engine **waits for the app to acknowledge**
+  (via surrounding-text) before writing the replacement — no more
+  `password` → `passsowrd` under load.
+- **English auto-restore**: `expression` typed mid-sentence comes out intact,
+  with the `dd` → `đ` abbreviation exception preserved.
+- **Instant-apply menu & hot config reload**: switching input method or
+  charset from the panel menu rebuilds the core immediately; config file
+  changes are picked up by mtime — no `ibus restart`.
+- **The engine cannot die with the GUI**: the settings dialog is a separate
+  process; the engine links against libc only.
+- **Capability-aware mode selection**: underline-free mode engages only when
+  the app actually provides surrounding text (measured per-app in
+  [docs/APP-COMPAT.md](docs/APP-COMPAT.md)); otherwise Pre-edit — an
+  underline beats swallowed keys.
+- **Multi-distro packaging, actually tested**: proper `PREFIX`/`LIBEXECDIR`,
+  component XML generated for the install location; build+install verified in
+  Fedora/Arch/Debian containers and real typing verified in VMs (GNOME
+  Wayland, GNOME X11, KDE Plasma) with kernel-level key injection
+  ([docs/VM-TEST.md](docs/VM-TEST.md)).
+- **A path forward**: the core exports a C ABI (`libonikey_core` +
+  `onikey.h`, exercised by a real C program in CI) as the foundation for
+  Fcitx5/XIM adapters ([docs/ROADMAP.md](docs/ROADMAP.md)).
 
-## Build & install from source
-Requirements (Ubuntu/Debian): `golang git make gcc libgtk-3-dev libxtst-dev libx11-dev`.
+## Architecture
+
+```
+rust/onikey-core      pure Vietnamese core (no I/O, zero dependencies)
+rust/onikey-core-ffi  C ABI: libonikey_core.{a,so} + include/onikey.h
+rust/onikey-ibus      IBus engine (zbus) — binary onikey-engine-rs, engine name "Onikey"
+*.go                  legacy Go engine — engine name "OnikeyGo", kept as fallback
+```
+
+## Build & install
+
+Requirements (Ubuntu/Debian): `golang cargo gcc make pkg-config libgtk-3-dev libxtst-dev libx11-dev`.
+
 ```sh
-git clone https://github.com/XTCRust/Onikey.git
+git clone https://github.com/xtcrust/Onikey.git
 cd Onikey
-make
+make                       # build as regular user
 sudo make install PREFIX=/usr
 ibus restart
 ```
-Then add the **Onikey** engine under *Settings → Keyboard → Input Sources*. Switch English/Vietnamese with <kbd>Super</kbd>+<kbd>Space</kbd>. Cycle input modes with <kbd>Shift</kbd>+<kbd>~</kbd>. Uninstall with `sudo make uninstall`.
 
-## Known GNOME Wayland limits
-Platform limitations, not engine bugs: no focused-window detection (`Shell.Eval` is locked; native-Wayland apps have no X WM_CLASS); no synthetic key injection (XTest is blocked by Wayland — triggers the *Remote Desktop* prompt); Wine apps don't support surrounding text (characters get doubled). The underline-free approach trades perfect lag-immunity for no underline; use Pre-edit mode if you need the former. The hybrid mode also can't help Firefox's own address bar: Chromium reports it as a URL field, Firefox only reports content types for in-page inputs.
+Pick **Onikey** under *Settings → Keyboard → Input Sources*. Uninstall with
+`sudo make uninstall`. Non-`/usr` installs: pass `PREFIX=`, on Fedora add
+`LIBEXECDIR=/usr/libexec/onikey`.
 
 ## Debugging
-The engine is spawned by ibus-daemon, so its stdout is invisible. Enable a log file with `touch ~/.config/onikey/onikey-debug && ibus restart`; it writes focus, capability, content-type and input-mode events to `~/.config/onikey/onikey-debug.log`. Remove the flag file and restart ibus to turn it off.
+
+`touch ~/.config/onikey/onikey-debug && ibus restart` — the engine logs its
+loaded config and every key decision to `~/.config/onikey/onikey-rust-debug.log`.
 
 ## License
-GPLv3, same as the upstream [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo). See [LICENSE](LICENSE).
+
+GPLv3, same as upstream [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)
+and [bamboo-core](https://github.com/BambooEngine/bamboo-core). See [LICENSE](LICENSE).

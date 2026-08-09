@@ -5,7 +5,7 @@
 %define engine_lib_dir     %{_libexecdir}/%{engine_name}
 
 Name: onikey
-Version: 0.9.0
+Version: 1.0.0
 Release: 1%{?dist}
 Summary: Vietnamese input method for IBus, no preedit underline
 

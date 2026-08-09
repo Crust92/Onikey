@@ -1,109 +1,142 @@
-Onikey — Bộ gõ tiếng Việt không gạch chân cho GNOME Wayland
-===========================================================
+Onikey — Bộ gõ tiếng Việt cho Linux, engine viết bằng Rust
+==========================================================
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
-**Onikey** là bản **fork của [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)** (BambooEngine), tinh chỉnh để **gõ tiếng Việt không có gạch chân dưới từ đang gõ** trên **GNOME Wayland**, kèm một số bản vá ổn định. Toàn bộ công lao cốt lõi thuộc về các tác giả gốc; kho này giữ nguyên giấy phép **GPLv3**.
-
-> Từ bản 0.9.0, engine mang tên **Onikey** (trước đây là *Bamboo*) — trong *Settings → Keyboard → Input Sources* bạn chọn engine tên **Onikey**. Cấu hình cũ ở `~/.config/ibus-bamboo` được tự chuyển sang `~/.config/onikey` ở lần chạy đầu.
+**Onikey 1.0** là bộ gõ tiếng Việt cho IBus, khởi đầu là fork của
+[ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo) và nay chạy bằng
+**engine viết lại hoàn toàn bằng Rust** — giữ đúng từng ký tự hành vi gõ của
+bản gốc, sửa những lỗi nền tảng mà bản gốc không sửa được, và thêm những thứ
+người gõ hằng ngày cảm nhận rõ. Toàn bộ công lao về cách gõ tiếng Việt thuộc
+về các tác giả BambooEngine; kho này giữ nguyên giấy phép **GPLv3**.
 
 ## Mục lục
-- [Điểm khác biệt của Onikey](#điểm-khác-biệt-của-onikey)
-- [Tính năng](#tính-năng)
+- [Điểm nổi bật kỹ thuật](#điểm-nổi-bật-kỹ-thuật)
+- [Kiến trúc](#kiến-trúc)
 - [Cài đặt từ mã nguồn](#cài-đặt-từ-mã-nguồn)
-- [Hướng dẫn sử dụng](#hướng-dẫn-sử-dụng)
+- [Sử dụng](#sử-dụng)
+- [Gỡ rối](#gỡ-rối)
 - [Giới hạn trên GNOME Wayland](#giới-hạn-trên-gnome-wayland)
-- [Báo lỗi](#báo-lỗi)
 - [Giấy phép](#giấy-phép)
 
-## Điểm khác biệt của Onikey
+## Điểm nổi bật kỹ thuật
 
-So với ibus-bamboo gốc, fork này:
+**Lõi Rust khớp 100% hành vi bản gốc — có chứng minh, không phải lời hứa.**
+Trước khi viết dòng Rust nào, bộ ca kiểm **126.831 ca** được sinh từ chính
+engine Go: mỗi ca ghi chuỗi tiếng Việt **sau từng phím** (không chỉ kết quả
+cuối), cộng chuỗi phím gốc, tính hợp lệ của vần, và trạng thái sau xoá
+lùi/khôi phục — trên 9 kiểu gõ (Telex/Telex 2/VNI/VIQR/MS layout…) và 4 tổ
+hợp cờ. Lõi Rust phải khớp **từng ký tự, từng bước** mới được nhận
+(`make rust-test`, chạy trong CI mỗi lần push). Bảng mã (TCVN3, VNI Windows,
+VISCII…) do máy sinh từ bảng gốc, đối chiếu 134.521 ca, lệch 0.
 
-1. **"Không gạch chân" là thật.** Bật ô tick *"Gõ không gạch chân ở mọi ô nhập"* thì engine chuyển hẳn sang chế độ Surrounding Text ở những ứng dụng hỗ trợ, thay vì chỉ bỏ thuộc tính gạch chân của pre-edit như bản gốc (bỏ thuộc tính xong ứng dụng vẫn tự vẽ gạch chân). Ứng dụng không cung cấp surrounding text (Zalo/Electron cũ) thì giữ Pre-edit — thà gạch chân còn hơn nuốt phím.
-2. **Nhận được kiểu ô nhập từ ứng dụng.** Từ IBus 1.5, kiểu ô nhập (URL/email/mật khẩu…) gửi qua **thuộc tính DBus `ContentType`** chứ không qua phương thức `SetContentType`; thư viện `goibus` không xử lý thuộc tính DBus nên ibus-bamboo gốc chưa bao giờ nhận được. Onikey thêm handler `org.freedesktop.DBus.Properties.Set` — đây là cơ sở cho chế độ lai ở trên.
-3. **Vá crash khi chuyển ứng dụng.** `x11GetFocusWindowClass()` thiếu null-check con trỏ `Display` → segfault khi focus vào app native-Wayland (Edge/Electron), làm chết engine và mất gõ toàn hệ thống. Đã thêm null-check và bỏ gọi X11 introspection trên phiên Wayland.
-4. **Vá panic của hộp thoại cấu hình** khi thiếu file macro (chạy standalone).
-5. **Đồng bộ theo sự kiện, giảm lỗi dấu khi máy lag.** Thay việc chờ cứng giữa `DeleteSurroundingText` và `CommitText` bằng cơ chế hỏi–chờ app xác nhận (có timeout dự phòng và tự rút gọn khi app không phản hồi).
+**Sửa chỗ mù của tầng IBus mà bản gốc mang theo nhiều năm.** Từ IBus 1.5,
+kiểu ô nhập (URL/email/mật khẩu) gửi bằng **thuộc tính DBus `ContentType`**,
+không qua phương thức `SetContentType` — thư viện `goibus` của bản gốc không
+xử lý thuộc tính DBus nên engine chưa bao giờ nhận được thông tin này. Engine
+Rust (dùng `zbus`) hiện thực `Properties.Set` ngay từ đầu.
 
-## Tính năng
-Kế thừa đầy đủ từ ibus-bamboo:
-* Bảng mã: Unicode, TCVN (ABC), VIQR, VNI, VPS, VISCII, BK HCM1/2, Unicode UTF-8, Unicode NCR…
-* Kiểu gõ: Telex, Telex W, Telex 2, VNI, VIQR, Microsoft layout…
-* Kiểm tra chính tả (từ điển/luật ghép vần), dấu thanh chuẩn & kiểu mới, bỏ dấu tự do, gõ tắt, 2666 emoji.
-* Nhiều **chế độ gõ**: Pre-edit (có gạch chân) và các chế độ không gạch chân (Surrounding Text, ForwardKeyEvent…). Chuyển nhanh bằng <kbd>Shift</kbd>+<kbd>~</kbd>.
+**Gõ nhanh không lỗi dấu ở chế độ không gạch chân.** Kiểu "sửa chữ đã ghi"
+(xoá lùi rồi ghi đè) vốn dễ trộn chữ khi ứng dụng xử lý không kịp
+(`password` → `passsowrd`). Onikey đồng bộ **theo sự kiện**: xoá xong chờ ứng
+dụng xác nhận (nó gửi lại surrounding text) rồi mới ghi, trần chờ 60ms — app
+nhanh thì ghi ngay, app chậm thì không dồn phím.
+
+**Tự khôi phục tiếng Anh.** Gõ `expression`, `password` giữa câu tiếng Việt
+không bị bẻ dấu: khi chuỗi không còn là vần tiếng Việt hợp lệ, engine trả về
+đúng chuỗi phím đã bấm. Giữ ngoại lệ `dd` → `đ` cho viết tắt.
+
+**Menu áp tức thì, cấu hình nóng.** Đổi kiểu gõ/bảng mã từ menu trên thanh
+hệ thống là lõi dựng lại ngay — không cần `ibus restart`. Sửa cấu hình bằng
+hộp thoại hay tay đều được: engine so mtime tệp và tự nạp lại. Menu chỉ chứa
+mục **có tác dụng thật**.
+
+**Engine không thể chết vì GUI.** Hộp thoại cấu hình là tiến trình riêng
+(`onikey-config`); engine chỉ liên kết libc — GUI lỗi cỡ nào cũng không mất
+gõ toàn hệ thống (bản gốc từng panic cả engine vì thiếu một tệp macro).
+
+**Chọn chế độ gõ an toàn theo khả năng thật của ứng dụng.** Chế độ không
+gạch chân chỉ bật khi ứng dụng cung cấp được surrounding text; thiếu (Zalo,
+Electron cũ) thì giữ Pre-edit — thà có gạch chân còn hơn nuốt phím. Khả năng
+của từng ứng dụng đo thật và ghi ở [docs/APP-COMPAT.md](docs/APP-COMPAT.md).
+
+**Đóng gói đa distro, kiểm thật.** `PREFIX`/`LIBEXECDIR` chuẩn (Fedora dùng
+`/usr/libexec`), component XML sinh theo nơi cài. Build + cài kiểm trong
+container Fedora/Arch/Debian; gõ thật kiểm trong máy ảo (GNOME Wayland, GNOME
+X11, KDE Plasma) bằng phím bơm ở tầng nhân — cách làm ở
+[docs/VM-TEST.md](docs/VM-TEST.md).
+
+**Sẵn đường đi tiếp.** Lõi xuất **C FFI** (`libonikey_core` + `onikey.h`,
+kiểm bằng chương trình C thật trong CI) — nền cho addon Fcitx5/XIM theo lộ
+trình [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Kiến trúc
+
+```
+rust/onikey-core      lõi tiếng Việt thuần (không I/O, không phụ thuộc crate nào)
+rust/onikey-core-ffi  vỏ C ABI: libonikey_core.{a,so} + include/onikey.h
+rust/onikey-ibus      engine IBus (zbus) — binary onikey-engine-rs, TÊN ENGINE "Onikey"
+*.go                  engine Go dự phòng — tên engine "OnikeyGo", sẽ gỡ khi hết vai trò
+```
 
 ## Cài đặt từ mã nguồn
 
 **Yêu cầu (Ubuntu/Debian và tương tự):**
 ```sh
-sudo apt install -y golang git make gcc libgtk-3-dev libxtst-dev libx11-dev
+sudo apt install -y golang cargo gcc make pkg-config libgtk-3-dev libxtst-dev libx11-dev
 ```
 
-**Build & cài đặt:**
+**Build & cài đặt** (build bằng user thường, chỉ bước cài mới cần sudo):
 ```sh
-git clone https://github.com/XTCRust/Onikey.git
+git clone https://github.com/xtcrust/Onikey.git
 cd Onikey
 make
 sudo make install PREFIX=/usr
 ibus restart
 ```
 
-**Chọn bộ gõ:** vào *Settings → Keyboard → Input Sources → +* → *Vietnamese* → **Onikey**. Hoặc đặt nhanh bằng lệnh:
+**Chọn bộ gõ:** *Settings → Keyboard → Input Sources → +* → *Vietnamese* →
+**Onikey**. Hoặc:
 ```sh
-gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('ibus', 'Onikey')]"
+gsettings set org.gnome.desktop.input-sources sources "[('ibus', 'Onikey'), ('xkb', 'us')]"
 ```
-Chuyển giữa tiếng Anh (`us`) và tiếng Việt (`Onikey`) bằng <kbd>Super</kbd>+<kbd>Space</kbd>.
 
-**Gỡ cài đặt:** trong thư mục mã nguồn chạy `sudo make uninstall`.
+Gỡ cài đặt: `sudo make uninstall`. Cài nơi khác `/usr`: truyền `PREFIX=`,
+Fedora thêm `LIBEXECDIR=/usr/libexec/onikey`.
 
-**Cài vào nơi khác `/usr`** (Fedora, FreeBSD, hoặc cài cho riêng một người dùng):
-```sh
-make build PREFIX=/usr/local
-sudo make install PREFIX=/usr/local            # Fedora: thêm LIBEXECDIR=/usr/libexec/onikey
-```
-Đường dẫn dữ liệu được nhúng lúc build theo `PREFIX`, còn component XML và
-desktop file thì `scripts/install` sinh ra theo đúng nơi đang cài. Chạy thử bản
-build tại chỗ mà không cài thì đặt `ONIKEY_DATA_DIR=$PWD`.
+## Sử dụng
 
-**Hai binary, có chủ đích:** `onikey-engine` (bộ gõ, chỉ cần libc + X11) và
-`onikey-config` (hộp thoại cấu hình, cần GTK3). Engine gọi hộp thoại bằng
-`exec`, nên hộp thoại lỗi cũng không làm mất gõ toàn hệ thống.
-
-## Cập nhật bằng gói (.deb)
-Onikey đóng gói được thành `.deb` để cài/cập nhật gọn qua dpkg/apt:
-```sh
-sh scripts/build-deb              # tạo onikey_<phiên-bản>_<arch>.deb
-sudo apt install ./onikey_*.deb   # cài (dpkg quản lý)
-ibus restart
-```
-Sau lần cài đầu, gói kèm sẵn lệnh **`onikey-update`** — chạy bất cứ lúc nào để tự lấy bản mới nhất từ GitHub, đóng gói lại và cài đè:
-```sh
-onikey-update
-```
-Phiên bản gói tăng dần theo giờ commit nên `apt` luôn nhận ra bản mới hơn. Gỡ: `sudo apt remove onikey`.
-
-## Hướng dẫn sử dụng
-- Mặc định là **Telex, Unicode, không gạch chân**. Gõ ngay được, ví dụ `Tieengs Vieejt` → *Tiếng Việt*.
-- Onikey có nhiều **chế độ gõ** (đừng nhầm với **kiểu gõ** như telex/vni). Nhấn vào một khung nhập rồi bấm <kbd>Shift</kbd>+<kbd>~</kbd> để chọn chế độ khác.
-- Một app có thể hợp với chế độ này mà không hợp chế độ khác; dùng *Thêm vào danh sách loại trừ* để tắt tiếng Việt cho một app.
-- Để gõ ký tự `~`, bấm <kbd>Shift</kbd>+<kbd>~</kbd> hai lần.
-
-## Giới hạn trên GNOME Wayland
-Đây là **hạn chế của nền tảng**, không phải lỗi bộ gõ:
-- **Không nhận diện được cửa sổ app đang focus** (GNOME khóa `org.gnome.Shell.Eval`; app native-Wayland không có WM_CLASS qua X11) → không đặt được chế độ riêng theo từng app.
-- **Không dùng được cơ chế bơm phím giả (XTest)** như UniKey/Windows dùng `SendInput` — Wayland chặn vì lý do bảo mật (hiện hộp thoại *Remote Desktop*).
-- **App chạy bằng Wine** không hỗ trợ surrounding text → chữ bị nhân đôi. Giải pháp thực tế: chạy UniKey bản Windows *trong chính prefix Wine* của app đó.
-- Đánh đổi cố hữu: **không gạch chân** thì khi máy lag đôi lúc lỗi dấu/mất ký tự đầu; muốn **tin cậy tuyệt đối** thì dùng chế độ Pre-edit (có gạch chân). Không có ô "vừa không gạch chân vừa miễn nhiễm lag" vì Wayland đã khóa cơ chế injection.
+- Mặc định **Telex, Unicode, Pre-edit** (gạch chân dưới từ đang gõ — tin cậy
+  tuyệt đối kể cả khi máy lag). Muốn không gạch chân: chọn chế độ 2 trong hộp
+  thoại cấu hình.
+- Bấm biểu tượng `vi` trên thanh hệ thống: chọn **kiểu gõ**, **bảng mã**, bật
+  **gõ tắt**, mở hộp thoại cấu hình — mọi thay đổi áp ngay.
+- Gõ tắt dùng tệp `~/.config/onikey/onikey.macro.text` (`khoá:văn bản` mỗi
+  dòng), tự viết hoa theo cách gõ khoá (`vn`→Việt Nam, `VN`→VIỆT NAM).
+- Engine dự phòng: `ibus engine OnikeyGo` (bản Go cũ) — quay về bằng
+  `ibus engine Onikey`.
 
 ## Gỡ rối
-Engine do ibus-daemon khởi chạy nên không xem được stdout. Bật log:
+
+Engine do ibus-daemon khởi chạy nên stdout không xem được ở đâu. Bật log:
 ```sh
 touch ~/.config/onikey/onikey-debug && ibus restart
 ```
-Log ghi vào `~/.config/onikey/onikey-debug.log` (focus, capabilities, kiểu ô nhập, chế độ gõ đang dùng). Tắt bằng cách xóa file cờ rồi `ibus restart`.
+Log ghi vào `~/.config/onikey/onikey-rust-debug.log`: cấu hình nạp được, từng
+phím và hành động engine chọn (pre-edit gì, xoá mấy ký tự, ghi gì) — đủ để
+chẩn đoán từ xa. Xoá tệp cờ rồi `ibus restart` để tắt.
 
-## Báo lỗi
-Mở issue tại [github.com/XTCRust/Onikey/issues](https://github.com/XTCRust/Onikey/issues). Với các vấn đề chung của engine, có thể tham khảo thêm [wiki của ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo/wiki).
+## Giới hạn trên GNOME Wayland
+
+Hạn chế của nền tảng, không phải lỗi bộ gõ:
+- **Không nhận diện được ứng dụng đang focus** (GNOME khoá `Shell.Eval`,
+  không có WM_CLASS) → không có cấu hình riêng theo từng app; thay vào đó
+  Onikey quyết định theo **khả năng ứng dụng tự khai báo**.
+- **Không bơm được phím giả** (Wayland chặn XTest) → không có chế độ
+  XTestFakeKeyEvent như trên X11.
+- App Wine không hỗ trợ surrounding text → dùng Pre-edit ở đó.
 
 ## Giấy phép
-GPLv3 — như dự án gốc [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo). Xem [LICENSE](LICENSE).
+
+GPLv3 — như dự án gốc [ibus-bamboo](https://github.com/BambooEngine/ibus-bamboo)
+và lõi [bamboo-core](https://github.com/BambooEngine/bamboo-core) mà Onikey
+kế thừa cách gõ. Xem [LICENSE](LICENSE).

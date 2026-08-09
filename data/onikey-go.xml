@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Onikey - bộ gõ tiếng Việt. Engine chính (Rust). GPLv3. -->
+<!-- Onikey - bộ gõ tiếng Việt. Engine dự phòng (Go). GPLv3. -->
 <component>
-    <name>org.freedesktop.IBus.Onikey</name>
+    <name>org.freedesktop.IBus.OnikeyGo</name>
     <description>Vietnamese input engine for IBus</description>
-    <exec>/usr/lib/onikey/onikey-engine-rs --ibus</exec>
+    <exec>/usr/lib/onikey/onikey-engine --ibus</exec>
     <version>1.0.0</version>
     <author>xtcrust</author>
     <license>GPLv3</license>
@@ -12,13 +12,13 @@
     <engines>
           <engine>
               <symbol>vi</symbol>
-              <name>Onikey</name>
+              <name>OnikeyGo</name>
               <language>vi</language>
               <license>GPLv3</license>
               <author>xtcrust</author>
               <icon>/usr/share/onikey/icons/vi.svg</icon>
               <layout>default</layout>
-              <longname>Onikey</longname>
+              <longname>Onikey (Go, dự phòng)</longname>
               <description>Vietnamese input method editor</description>
               <setup>/usr/lib/onikey/onikey-config</setup>
               <rank>1</rank>
