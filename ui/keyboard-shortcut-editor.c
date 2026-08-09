@@ -6,7 +6,6 @@
 #define TOTAL_MASKS_PER_ROW 4
 #define IBworkaroundForFBMessenger 1<<19
 #define IBworkaroundForWPS 1<<20
-#define IBnoUnderline 1<<7
 
 int row = 0;
 int col = 0;
@@ -319,18 +318,6 @@ static void on_toggle_fix_address_bar_clicked (GtkWidget *checkbox, gpointer dat
   saveFlags(flags);
 }
 
-static void on_toggle_no_underline_clicked (GtkWidget *checkbox, gpointer data)
-{
-  guint flags = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(checkbox), "flags"));
-  gboolean active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbox));
-  if (active) {
-		flags |= IBnoUnderline;
-  } else {
-		flags &= ~(IBnoUnderline);
-  }
-  saveFlags(flags);
-}
-
 static void
 combo_changed_cb (GtkComboBox *combo, gpointer  data)
 {
@@ -412,7 +399,7 @@ static void add_page_other_settings_content(GtkWidget *parent, GtkWidget *w, gui
   GtkWidget *label1;
   GtkWidget *label2;
   GtkWidget *dropdown1;
-  GtkWidget *checkbox2, *checkbox3, *checkbox5;
+  GtkWidget *checkbox2, *checkbox3;
   GtkWidget *cancel_button;
   GtkWidget *hbox;
 
@@ -436,12 +423,6 @@ static void add_page_other_settings_content(GtkWidget *parent, GtkWidget *w, gui
   g_object_set_data(G_OBJECT(checkbox3), "flags", GUINT_TO_POINTER(flags));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox3), flags&IBworkaroundForWPS);
   g_signal_connect(checkbox3, "toggled", G_CALLBACK(on_toggle_fix_wps_clicked), NULL);
-
-  checkbox5 = gtk_check_button_new_with_label("Gõ không gạch chân ở mọi ô nhập (nếu ứng dụng hỗ trợ)");
-  gtk_grid_attach(GTK_GRID(grid), checkbox5, 0, 3, 1, 1);
-  g_object_set_data(G_OBJECT(checkbox5), "flags", GUINT_TO_POINTER(flags));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox5), flags&IBnoUnderline);
-  g_signal_connect(checkbox5, "toggled", G_CALLBACK(on_toggle_no_underline_clicked), NULL);
 
   // Set consistent padding for all rows
   gtk_grid_set_row_spacing(GTK_GRID(grid),  10);

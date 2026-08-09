@@ -127,11 +127,12 @@ impl State {
         Action::Passthrough(if s.is_empty() { None } else { Some(s) })
     }
 
-    /// Có gõ được kiểu không gạch chân không? Chỉ khi người dùng bật cờ VÀ ứng
+    /// Có gõ được kiểu không gạch chân không? Theo ĐÚNG chế độ người dùng chọn
+    /// (1 = Pre-edit có gạch chân, còn lại = không gạch chân), và chỉ khi ứng
     /// dụng cung cấp được surrounding text — thiếu thì thà gạch chân còn hơn
     /// nuốt phím (bài học từ ô địa chỉ Edge bên bản Go).
     fn no_underline(&self) -> bool {
-        self.cfg.ib_flags & ibflag::NO_UNDERLINE != 0
+        self.cfg.default_input_mode != 1
             && self.capabilities & IBUS_CAP_SURROUNDING_TEXT != 0
     }
 }

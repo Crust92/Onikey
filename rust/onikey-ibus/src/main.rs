@@ -39,11 +39,12 @@ impl Factory {
         // động lại ibus là có hiệu lực, không cần đăng xuất.
         let cfg = crate::config::load();
         crate::debug::log(format_args!(
-            "cấu hình: kiểu gõ {:?}, cờ lõi {}, cờ IBus {} (không gạch chân: {})",
+            "cấu hình: kiểu gõ {:?}, cờ lõi {}, cờ IBus {}, chế độ gõ {} ({})",
             cfg.input_method,
             cfg.flags,
             cfg.ib_flags,
-            cfg.ib_flags & crate::config::ibflag::NO_UNDERLINE != 0
+            cfg.default_input_mode,
+            if cfg.default_input_mode == 1 { "Pre-edit, có gạch chân" } else { "không gạch chân" }
         ));
         let e = engine::OnikeyEngine::new(cfg);
         self.conn
