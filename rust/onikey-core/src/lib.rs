@@ -5,6 +5,7 @@
 //! từng ký tự, ở TỪNG PHÍM.
 
 pub mod charsets;
+pub mod display;
 pub mod engine;
 pub mod flatten;
 pub mod rules;

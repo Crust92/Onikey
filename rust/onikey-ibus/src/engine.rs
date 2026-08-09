@@ -16,7 +16,6 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use std::time::Duration;
 
-use onikey_core::utils::{has_any_vietnamese_char, has_any_vietnamese_vowel};
 use onikey_core::{flag, flatten::mode, rules::parse_input_method, Engine as Core};
 use zbus::interface;
 use zbus::object_server::SignalEmitter;
@@ -71,29 +70,6 @@ fn config_mtime() -> Option<std::time::SystemTime> {
         .ok()
 }
 
-/// Có nên hiển thị CHUỖI PHÍM GỐC thay vì chuỗi đã bỏ dấu không — tức từ đang
-/// gõ không phải tiếng Việt ("expression", "password"). Port sát
-/// shouldFallbackToEnglish của bản Go; tách thành hàm thuần để test được.
-fn should_fallback_to_english(ib_flags: u32, vn_seq_lower: &str, core_valid: bool, check_vn_rune: bool) -> bool {
-    if ib_flags & ibflag::AUTO_NON_VN_RESTORE == 0 {
-        return false;
-    }
-    if vn_seq_lower.is_empty() {
-        return false;
-    }
-    // (bản Go còn né macro ở đây; bản Rust chưa có macro nên chưa cần)
-    if ib_flags & ibflag::DD_FREE_STYLE != 0
-        && !has_any_vietnamese_vowel(vn_seq_lower)
-        && (vn_seq_lower.chars().last() == Some('d') || vn_seq_lower.contains('đ'))
-    {
-        return false;
-    }
-    if check_vn_rune && !has_any_vietnamese_char(vn_seq_lower) {
-        return false;
-    }
-    !core_valid
-}
-
 impl State {
     /// Nạp lại cấu hình nếu tệp đã đổi (gọi ở FocusIn — ngoài đường xử lý phím).
     fn reload_config_if_changed(&mut self) {
@@ -142,16 +118,11 @@ impl State {
     /// Chuỗi nên hiển thị cho người gõ: tiếng Việt đã bỏ dấu, hoặc chuỗi phím
     /// gốc nếu từ rõ ràng không phải tiếng Việt.
     fn display_string(&self) -> String {
-        let vn_lower = self.core.get_processed_string(mode::VIETNAMESE | mode::LOWER_CASE);
-        if should_fallback_to_english(
-            self.cfg.ib_flags,
-            &vn_lower,
-            self.core.is_valid(false),
-            true,
-        ) {
-            return self.core.get_processed_string(mode::ENGLISH);
-        }
-        self.core.get_processed_string(mode::VIETNAMESE)
+        onikey_core::display::display_string(
+            &self.core,
+            self.cfg.ib_flags & ibflag::AUTO_NON_VN_RESTORE != 0,
+            self.cfg.ib_flags & ibflag::DD_FREE_STYLE != 0,
+        )
     }
 
     /// Kết thúc một tiếng: ở chế độ Pre-edit thì phải CHỐT chuỗi vào ứng dụng;
@@ -615,34 +586,6 @@ pub fn default_flags() -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn khoi_phuc_tieng_anh() {
-        const F: u32 = ibflag::AUTO_NON_VN_RESTORE | ibflag::DD_FREE_STYLE;
-        // tắt cờ -> không bao giờ fallback
-        assert!(!should_fallback_to_english(0, "ẻxp", false, true));
-        // từ có ký tự Việt nhưng vần sai -> fallback (đây là "expr")
-        assert!(should_fallback_to_english(F, "ẻxp", false, true));
-        // chuỗi thuần ASCII, check_vn_rune -> không fallback (không có gì để khôi phục)
-        assert!(!should_fallback_to_english(F, "abc", false, true));
-        // vần đúng -> không fallback
-        assert!(!should_fallback_to_english(F, "tiếng", true, true));
-        // dd free style: "đ" mà không có nguyên âm Việt -> giữ nguyên đ
-        assert!(!should_fallback_to_english(F, "đm", false, true));
-
-        // tích hợp với lõi thật: gõ "expr" bằng Telex
-        let mut core = Core::new(parse_input_method("Telex"), flag::STD_FLAGS);
-        for c in "expr".chars() {
-            core.process_key(c, mode::VIETNAMESE);
-        }
-        let vn = core.get_processed_string(mode::VIETNAMESE | mode::LOWER_CASE);
-        assert!(
-            should_fallback_to_english(F, &vn, core.is_valid(false), true),
-            "chuỗi {vn:?} phải bị coi là không phải tiếng Việt"
-        );
-        // và chuỗi khôi phục phải là phím gốc
-        assert_eq!(core.get_processed_string(mode::ENGLISH), "expr");
-    }
 
     #[test]
     fn chi_sua_phan_duoi_khac_nhau() {
