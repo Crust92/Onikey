@@ -4,6 +4,7 @@
 //! kiểm `tests/corpus/core.jsonl.gz` sinh từ bản Go: bản này phải cho ra đúng
 //! từng ký tự, ở TỪNG PHÍM.
 
+pub mod charsets;
 pub mod engine;
 pub mod flatten;
 pub mod rules;

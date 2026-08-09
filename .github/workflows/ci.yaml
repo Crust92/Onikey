@@ -26,6 +26,14 @@ jobs:
           name: onikey-deb
           path: onikey_*.deb
 
+  rust:
+    name: Lõi Rust (đối chiếu với bản Go)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: make rust-test
+
   distro:
     name: Build + install (${{ matrix.image }})
     runs-on: ubuntu-latest

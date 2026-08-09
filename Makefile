@@ -48,6 +48,9 @@ test:
 
 # Sinh lại bộ ca kiểm đối chiếu của lõi tiếng Việt. CHỈ chạy khi cố ý đổi hành
 # vi lõi — bộ này là mốc để so bản viết lại (Rust), sinh lại tuỳ tiện là mất mốc.
+rust-test:
+	$(SHELL) scripts/rust-test
+
 corpus:
 	go run -mod=vendor ./tools/gen-corpus | gzip -n -9 > tests/corpus/core.jsonl.gz
 	go run -mod=vendor ./tools/check-corpus
@@ -92,4 +95,4 @@ deb: clean
 	dpkg-buildpackage
 	rm -rf debian
 
-.PHONY: build clean build install uninstall src rpm deb corpus
+.PHONY: build clean build install uninstall src rpm deb corpus rust-test

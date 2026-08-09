@@ -1,0 +1,18 @@
+#!/bin/sh
+# Kiểm thử lõi Rust: unit test + đối chiếu bộ ca kiểm với bản Go + kiểm tra vỏ C
+# thật sự dùng được từ C (biên dịch, liên kết tĩnh, chạy).
+set -e
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+
+echo "==> cargo test"
+( cd rust && cargo test --release )
+
+echo "==> kiểm tra vỏ C"
+( cd rust && cargo build --release -p onikey-core-ffi )
+CC="${CC:-cc}"
+OUT=$(mktemp)
+trap 'rm -f "$OUT"' EXIT
+$CC -Wall -Wextra -I rust/onikey-core-ffi/include \
+    rust/onikey-core-ffi/tests/smoke.c \
+    rust/target/release/libonikey_core.a -lm -o "$OUT"
+"$OUT"
