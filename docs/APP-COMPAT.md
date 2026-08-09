@@ -28,7 +28,7 @@ tail -f ~/.config/onikey/onikey-debug.log
 | Microsoft Edge — ô trong trang | `0x29` | `0` | Pre-edit | |
 | Firefox — ô địa chỉ | `0x29` | `0` | Pre-edit (vẫn gạch chân) | Firefox **không** khai báo kiểu URL cho thanh địa chỉ của chính nó |
 | Firefox — ô trong trang web | `0x29` | theo HTML | Pre-edit / Surrounding Text | `type=url` và `inputmode=url` đều cho `purpose=5`; `type=email` cho `6` |
-| Zalo Desktop (Electron 22) | **`0x9`** | `0` | Pre-edit | **Không hỗ trợ surrounding text** → các chế độ không gạch chân sẽ gõ lỗi trong Zalo |
+| Zalo Desktop (Electron 22) | **`0x9`** | `0` | Pre-edit | **Không hỗ trợ surrounding text** → chế độ không gạch chân sẽ gõ lỗi ở đây. Gõ tiếng Việt ở chế độ Pre-edit: **đã kiểm, chạy tốt** |
 
 ## Rút ra
 
