@@ -22,7 +22,7 @@ use zbus::interface;
 use zbus::object_server::SignalEmitter;
 use zvariant::{OwnedValue, Value};
 
-use crate::config::{ibflag, Config};
+use crate::config::{ibflag, shortcut, Config};
 use crate::ibus_text::{IBusText, ATTR_TYPE_UNDERLINE, ATTR_UNDERLINE_SINGLE, PREEDIT_COMMIT};
 
 /// Bit "ứng dụng cung cấp được surrounding text" trong IBus capabilities.
@@ -58,6 +58,17 @@ struct State {
     /// Chuỗi đã GHI RA ứng dụng ở chế độ không gạch chân — cần nhớ để biết
     /// phải xoá lùi bao nhiêu ký tự khi chữ thay đổi.
     committed: String,
+    /// Tạm tắt tiếng Việt (phím tắt chuyển Anh–Việt).
+    english_mode: bool,
+    /// Mtime của tệp cấu hình lúc nạp — đổi thì nạp lại ở lần focus sau,
+    /// người dùng chỉnh trong hộp thoại là ăn ngay, không cần ibus restart.
+    cfg_mtime: Option<std::time::SystemTime>,
+}
+
+fn config_mtime() -> Option<std::time::SystemTime> {
+    std::fs::metadata(crate::config::config_path())
+        .and_then(|m| m.modified())
+        .ok()
 }
 
 /// Có nên hiển thị CHUỖI PHÍM GỐC thay vì chuỗi đã bỏ dấu không — tức từ đang
@@ -84,6 +95,50 @@ fn should_fallback_to_english(ib_flags: u32, vn_seq_lower: &str, core_valid: boo
 }
 
 impl State {
+    /// Nạp lại cấu hình nếu tệp đã đổi (gọi ở FocusIn — ngoài đường xử lý phím).
+    fn reload_config_if_changed(&mut self) {
+        let mtime = config_mtime();
+        if mtime == self.cfg_mtime {
+            return;
+        }
+        self.cfg_mtime = mtime;
+        let cfg = crate::config::load();
+        crate::debug::log(format_args!(
+            "cấu hình đổi: kiểu gõ {:?}, chế độ {}",
+            cfg.input_method, cfg.default_input_mode
+        ));
+        self.core = Core::new(parse_input_method(&cfg.input_method), cfg.flags);
+        self.macros = if cfg.ib_flags & ibflag::MACRO_ENABLED != 0 {
+            crate::macros::MacroTable::load(cfg.ib_flags & ibflag::AUTO_CAPITALIZE_MACRO != 0)
+        } else {
+            crate::macros::MacroTable::default()
+        };
+        self.cfg = cfg;
+        self.committed.clear();
+    }
+
+    /// Chuyển sang bảng mã đầu ra (TCVN3, VNI Windows…). Unicode trả nguyên.
+    fn encode(&self, s: &str) -> String {
+        onikey_core::charsets::encode(&self.cfg.output_charset, s)
+    }
+
+    /// Dựng bước sửa chữ cho chế độ không gạch chân, có tính bảng mã đầu ra:
+    /// backspaces đếm theo chuỗi ĐÃ MÃ HOÁ (VNI Windows dùng 2 ký tự cho một
+    /// chữ có dấu — xoá theo số ký tự Unicode là xoá thiếu).
+    fn rewrite_to(&mut self, new_display: String) -> Action {
+        let (cut, tail) = diff_tail(&self.committed, &new_display);
+        let old_chars: Vec<char> = self.committed.chars().collect();
+        let keep = old_chars.len() - cut as usize;
+        let removed_encoded: String = self.encode(&old_chars[keep..].iter().collect::<String>());
+        let backspaces = removed_encoded.chars().count() as u32;
+        let tail_encoded = self.encode(&tail);
+        self.committed = new_display;
+        Action::Rewrite {
+            backspaces,
+            tail: tail_encoded,
+        }
+    }
+
     /// Chuỗi nên hiển thị cho người gõ: tiếng Việt đã bỏ dấu, hoặc chuỗi phím
     /// gốc nếu từ rõ ràng không phải tiếng Việt.
     fn display_string(&self) -> String {
@@ -124,7 +179,11 @@ impl State {
             return Action::Passthrough(None);
         }
         self.committed.clear();
-        Action::Passthrough(if s.is_empty() { None } else { Some(s) })
+        Action::Passthrough(if s.is_empty() {
+            None
+        } else {
+            Some(self.encode(&s))
+        })
     }
 
     /// Có gõ được kiểu không gạch chân không? Theo ĐÚNG chế độ người dùng chọn
@@ -154,6 +213,8 @@ impl OnikeyEngine {
                 content_purpose: 0,
                 capabilities: 0,
                 committed: String::new(),
+                english_mode: false,
+                cfg_mtime: config_mtime(),
             }),
             st_confirm: tokio::sync::Notify::new(),
             awaiting_confirm: AtomicBool::new(false),
@@ -224,6 +285,35 @@ impl OnikeyEngine {
         }
         let mut st = self.state.lock().unwrap();
 
+        // Phím tắt chuyển Anh–Việt: chốt từ đang gõ rồi lật công tắc.
+        if st.cfg.shortcut_matches(shortcut::VI_EN_SWITCH, keyval, state) {
+            let done = st.finish_word();
+            st.english_mode = !st.english_mode;
+            crate::debug::log(format_args!("chuyển Anh–Việt: english={}", st.english_mode));
+            return match done {
+                Action::Passthrough(s) => Action::Expand {
+                    backspaces: 0,
+                    text: s.unwrap_or_default(),
+                },
+                other => other,
+            };
+        }
+        // Phím tắt khôi phục phím gốc: thay chữ đang gõ bằng đúng chuỗi đã bấm.
+        if st.cfg.shortcut_matches(shortcut::RESTORE_KEY_STROKES, keyval, state) {
+            if st.core.get_processed_string(mode::VIETNAMESE).is_empty() {
+                return Action::Ignore;
+            }
+            st.core.restore_last_word(false);
+            let s = st.display_string();
+            if st.no_underline() {
+                return st.rewrite_to(s);
+            }
+            return Action::Preedit(s);
+        }
+        if st.english_mode {
+            return Action::Ignore; // đang tắt tiếng Việt: mọi phím đi thẳng
+        }
+
         if is_modifier_pressed(state) {
             // Ctrl/Alt/Super + phím là phím tắt của ứng dụng, không phải chữ.
             return st.finish_word();
@@ -263,12 +353,11 @@ impl OnikeyEngine {
         st.core.process_key(chr, mode::VIETNAMESE);
         let s = st.display_string();
         if st.no_underline() {
-            let (backspaces, tail) = diff_tail(&st.committed, &s);
-            st.committed = s;
-            return Action::Rewrite { backspaces, tail };
+            return st.rewrite_to(s);
         }
         Action::Preedit(s)
     }
+
 
     fn take_pending(&self) -> Option<String> {
         let mut st = self.state.lock().unwrap();
@@ -340,6 +429,7 @@ impl OnikeyEngine {
             let mut st = self.state.lock().unwrap();
             st.core.reset();
             st.committed.clear();
+            st.reload_config_if_changed();
         }
         // Báo cho ứng dụng biết ta cần surrounding text; thiếu bước này thì
         // capability không bao giờ có bit tương ứng và chế độ không gạch chân

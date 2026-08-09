@@ -55,11 +55,20 @@ biết ngay nó có đọc đúng kiểu gõ của bạn không.
 | Menu thuộc tính | Bấm biểu tượng `vi` có mục "Cấu hình bộ gõ (bản Rust)" |
 | Gõ tắt (macro) | Đọc chung `onikey.macro.text`, tự chỉnh hoa theo cách gõ khoá (`vn`→Việt Nam, `VN`→VIỆT NAM) |
 
+## Đã thêm tiếp
+
+| Mảng | Ghi chú |
+|---|---|
+| Phím tắt chuyển Anh–Việt | Đọc từ `Shortcuts` trong cấu hình (đang tắt trên máy này) |
+| Phím tắt khôi phục phím gốc | Thay chữ đang gõ bằng đúng chuỗi đã bấm (đang tắt trên máy này) |
+| Bảng mã đầu ra | `encode` theo `OutputCharset` ở mọi chỗ chốt chữ; chế độ không gạch chân đếm xoá lùi theo chuỗi **đã mã hoá** (VNI Windows 2 ký tự/chữ có dấu) |
+| Tự nạp lại cấu hình | So mtime ở FocusIn — đổi kiểu gõ trong hộp thoại xong bấm sang ô khác là ăn, không cần `ibus restart` |
+
 ## Chưa có (nên chưa thay được bản Go)
 
-- Bảng emoji, gõ hexadecimal.
-- Các phím tắt: chuyển chế độ gõ (Shift+~), tạm tắt bộ gõ, khôi phục phím gốc.
-- Bảng mã đầu ra (lõi có sẵn hàm `encode`, tầng IBus chưa gọi tới).
-- Danh sách loại trừ theo ứng dụng.
+- Bảng emoji, gõ hexadecimal (cấu hình máy này đang tắt emoji; hexa ít dùng).
+- Phím tắt chuyển chế độ gõ Shift+~ (bản Go cũng chỉ chạy khi nhận diện được
+  ứng dụng — trên Wayland vốn không nhận diện được nên gần như vô dụng).
+- Danh sách loại trừ theo ứng dụng (cùng lý do Wayland).
 - Hộp thoại cấu hình vẫn là bản GTK3 của engine Go.
-- Macro dạng tiền tố (gõ tiếp sau khoá) và theo dõi tệp macro đổi giữa chừng.
+- Macro dạng tiền tố (gõ tiếp sau khoá).
