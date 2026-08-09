@@ -8,6 +8,7 @@ mod bus;
 mod config;
 mod debug;
 mod engine;
+mod ibus_prop;
 mod ibus_text;
 
 use std::sync::atomic::{AtomicU64, Ordering};

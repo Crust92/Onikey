@@ -246,6 +246,13 @@ impl OnikeyEngine {
         let _ = emitter
             .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
             .await;
+        // Đăng ký menu thuộc tính để bấm vào biểu tượng `vi` trên thanh trên
+        // là thấy mục cấu hình — như bản Go.
+        let props = OwnedValue::try_from(Value::from(crate::ibus_prop::onikey_prop_list()))
+            .expect("dựng PropList");
+        let _ = emitter
+            .emit("org.freedesktop.IBus.Engine", "RegisterProperties", &(props,))
+            .await;
     }
 
     async fn focus_out(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
@@ -270,7 +277,25 @@ impl OnikeyEngine {
 
     async fn set_surrounding_text(&self, _text: Value<'_>, _cursor: u32, _anchor: u32) {}
 
-    async fn property_activate(&self, _name: String, _state: u32) {}
+    async fn property_activate(&self, name: String, _state: u32) {
+        crate::debug::log(format_args!("PropertyActivate: {name}"));
+        match name.as_str() {
+            crate::ibus_prop::KEY_CONFIGURATION => {
+                // spawn chứ không chờ: hộp thoại sống bao lâu kệ nó, engine
+                // không được đứng chờ trong handler DBus.
+                let _ = std::process::Command::new("/usr/lib/onikey/onikey-config")
+                    .arg("-engine")
+                    .arg("onikey")
+                    .spawn();
+            }
+            crate::ibus_prop::KEY_ABOUT => {
+                let _ = std::process::Command::new("xdg-open")
+                    .arg("https://github.com/xtcrust/Onikey")
+                    .spawn();
+            }
+            _ => {}
+        }
+    }
 
     async fn page_up(&self) -> bool {
         false
