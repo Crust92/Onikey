@@ -121,12 +121,23 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
 | Đổi tên/đường dẫn làm mất cấu hình người dùng | Đã có `MigrateLegacyConfig`; mọi lần đổi bố cục phải kèm bước chuyển đổi |
 | Cắm đầu vào Wayland thuần rồi phát hiện GNOME không hỗ trợ | Đã kiểm chứng trước: GNOME = IBus, ghi trong mục 1 |
 
-## 5. Việc chưa quyết
+## 5. Đã chốt (2026-08)
 
-- Định dạng cấu hình: giữ JSON hay chuyển TOML khi sang Rust (chuyển thì phải có
-  bước migrate như đã làm với thư mục cấu hình).
+- **Cách chuyển đổi: từng bước, giữ bản Go chạy song song.** Không viết lại từ
+  đầu. Máy chính phải luôn gõ được; mỗi giai đoạn đều có đường lùi.
+- **Thứ tự nền tảng sau IBus: Fcitx5 trước, rồi XIM.** Fcitx5 mở ra KDE và phần
+  lớn distro; XIM đánh vào đúng chỗ đang bất lực (app Wine nhân đôi chữ, Java).
+  Wayland `input-method-v2` **hoãn** — không dùng được trên GNOME nên lợi ích
+  thấp cho tới khi có máy chạy wlroots/KDE.
+- **Cấu hình chuyển sang TOML** khi sang Rust. Kèm bước chuyển đổi tự động từ
+  `onikey.config.json` sang `onikey.toml` (giữ nguyên tinh thần
+  `MigrateLegacyConfig`: chỉ đọc bản cũ, ghi bản mới, không xoá).
+
+## 6. Việc chưa quyết
+
 - GUI cấu hình: gtk4-rs (nặng, hợp GNOME) hay Slint/iced (nhẹ, đồng nhất mọi DE).
-- Có giữ chế độ `XTestFakeKeyEvent` không — Wayland đã khoá, chỉ còn ý nghĩa trên X11.
+- Có giữ chế độ `XTestFakeKeyEvent` không — Wayland đã khoá, chỉ còn ý nghĩa trên X11
+  (sẽ rõ hơn sau khi có adapter XIM).
 
 ## Nguồn đã tra
 
