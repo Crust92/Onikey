@@ -1,0 +1,5 @@
+# Chọn phiên bản phụ thuộc theo rust-version của crate (MSRV 1.85 = rustc của
+# Debian stable). Thiếu dòng này thì `cargo update` trên máy có toolchain mới
+# lại kéo zbus lên bản đòi rustc mới hơn, và CI Debian đỏ như v1.0.0 vừa dính.
+[resolver]
+incompatible-rust-versions = "fallback"
