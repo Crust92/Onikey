@@ -1,0 +1,16 @@
+[package]
+name = "onikey-ibus"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "Engine IBus của Onikey (bản Rust, chạy song song bản Go)"
+
+[[bin]]
+name = "onikey-engine-rs"
+path = "src/main.rs"
+
+[dependencies]
+onikey-core = { path = "../onikey-core" }
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+zvariant = "5"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal"] }

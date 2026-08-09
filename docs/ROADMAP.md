@@ -99,9 +99,13 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
 
 ### Giai đoạn C — `onikey-ibus` bằng Rust thay thế engine Go
 
-- [ ] Cài đặt `org.freedesktop.IBus.Engine` bằng `zbus` (sinh khung bằng
-      `zbus_xmlgen` từ chính XML của IBus). **Nhớ làm cả `Properties.Set`** —
-      đây là chỗ `goibus` thiếu khiến `ContentType` không bao giờ tới engine.
+- [x] **Khung engine `zbus` chạy được**: `rust/onikey-ibus` (binary
+      `onikey-engine-rs`) tự tìm địa chỉ ibus, đăng ký thành phần
+      `org.freedesktop.IBus.OnikeyRust`, xuất Factory và tạo engine theo yêu cầu.
+      Đã kiểm trên máy thật: ibus-daemon khởi chạy được và nhận làm engine hiện
+      hành. **Có `Properties.Set` cho `ContentType`** ngay từ đầu — đúng chỗ
+      `goibus` thiếu. Chữ ký `IBusText` `(sa{sv}sv)` được khoá bằng test.
+- [ ] Gõ thật qua bản Rust (mới xong tầng DBus, chưa kiểm gõ end-to-end).
 - [ ] Bê nguyên các bài học đã trả giá của bản Go: chế độ lai theo ô nhập, chốt
       chế độ lúc focus, đồng bộ theo sự kiện cho Surrounding Text, không chặn
       luồng xử lý phím bằng lời gọi đồng bộ ra ngoài.
