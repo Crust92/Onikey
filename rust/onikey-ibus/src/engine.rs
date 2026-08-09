@@ -12,7 +12,9 @@
 //!   - **Không gọi gì đồng bộ ra ngoài trong đường xử lý phím/focus.** Bản Go
 //!     từng mất 13ms mỗi lần focus chỉ vì hỏi gnome-shell một câu vô ích.
 
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+use std::time::Duration;
 
 use onikey_core::utils::{has_any_vietnamese_char, has_any_vietnamese_vowel};
 use onikey_core::{flag, flatten::mode, rules::parse_input_method, Engine as Core};
@@ -38,6 +40,12 @@ const IBUS_SUPER_MASK: u32 = 1 << 26;
 
 pub struct OnikeyEngine {
     state: Mutex<State>,
+    /// Đồng bộ theo sự kiện cho chế độ không gạch chân: sau khi xoá lùi phải
+    /// CHỜ ứng dụng xác nhận (nó gửi lại SetSurroundingText) rồi mới ghi chữ.
+    /// Gửi liền hai lệnh thì lúc gõ nhanh ứng dụng áp lệch thứ tự — chữ trộn
+    /// lẫn kiểu "password" -> "passsowrd". Bản Go trả giá rồi mới có cơ chế này.
+    st_confirm: tokio::sync::Notify,
+    awaiting_confirm: AtomicBool,
 }
 
 struct State {
@@ -123,6 +131,8 @@ impl OnikeyEngine {
                 capabilities: 0,
                 committed: String::new(),
             }),
+            st_confirm: tokio::sync::Notify::new(),
+            awaiting_confirm: AtomicBool::new(false),
         }
     }
 }
@@ -257,6 +267,7 @@ impl OnikeyEngine {
             }
             Action::Rewrite { backspaces, tail } => {
                 if backspaces > 0 {
+                    self.awaiting_confirm.store(true, Ordering::SeqCst);
                     let _ = emitter
                         .emit(
                             "org.freedesktop.IBus.Engine",
@@ -264,6 +275,18 @@ impl OnikeyEngine {
                             &(-(backspaces as i32), backspaces),
                         )
                         .await;
+                    // Hỏi ứng dụng surrounding text mới rồi CHỜ nó trả lời —
+                    // trần chờ thấp: app chậm quá thì thà ghi sớm còn hơn dồn
+                    // phím (đúng con số bản Go đã dò được).
+                    let _ = emitter
+                        .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
+                        .await;
+                    let _ = tokio::time::timeout(
+                        Duration::from_millis(60),
+                        self.st_confirm.notified(),
+                    )
+                    .await;
+                    self.awaiting_confirm.store(false, Ordering::SeqCst);
                 }
                 if !tail.is_empty() {
                     let _ = commit_raw(&emitter, &tail).await;
@@ -314,7 +337,13 @@ impl OnikeyEngine {
 
     async fn set_cursor_location(&self, _x: i32, _y: i32, _w: i32, _h: i32) {}
 
-    async fn set_surrounding_text(&self, _text: Value<'_>, _cursor: u32, _anchor: u32) {}
+    async fn set_surrounding_text(&self, _text: Value<'_>, _cursor: u32, _anchor: u32) {
+        // Ứng dụng báo lại surrounding text — nếu đang chờ xác nhận xoá lùi
+        // thì đây chính là tín hiệu "tôi đã áp xong", cho phép ghi tiếp.
+        if self.awaiting_confirm.swap(false, Ordering::SeqCst) {
+            self.st_confirm.notify_one();
+        }
+    }
 
     async fn property_activate(&self, name: String, _state: u32) {
         crate::debug::log(format_args!("PropertyActivate: {name}"));
