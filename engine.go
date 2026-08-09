@@ -57,8 +57,9 @@ type OnikeyEngine struct {
 	// (purpose theo IBusInputPurpose: URL / email / password...).
 	contentPurpose uint32
 	contentHints   uint32
-	// Chế độ gõ chốt cho ô địa chỉ (0 = ô hiện tại không phải ô địa chỉ).
-	urlInputMode           int
+	// Chế độ gõ không gạch chân đã chốt cho ô đang focus
+	// (0 = dùng chế độ trong cấu hình, tức có gạch chân).
+	noUnderlineMode        int
 	nFakeBackSpace         int32
 	isFirstTimeSendingBS   bool
 	emoji                  *EmojiEngine
@@ -131,7 +132,7 @@ func (e *OnikeyEngine) FocusIn() *dbus.Error {
 	e.checkWmClass(latestWm)
 	// Chốt lại chế độ ngay lúc focus: capability và kiểu ô nhập tới rải rác từ
 	// nhiều input context, tới đây mới là trạng thái của ô đang thực sự gõ.
-	e.updateURLInputMode()
+	e.updateNoUnderlineMode()
 	e.RegisterProperties(e.propList)
 	e.RequireSurroundingText()
 	if e.isShortcutKeyEnable(KSEmojiDialog) && emojiTrie != nil && len(emojiTrie.Children) == 0 {
@@ -307,7 +308,7 @@ func (e *OnikeyEngine) CandidateClicked(index uint32, button uint32, state uint3
 func (e *OnikeyEngine) SetCapabilities(cap uint32) *dbus.Error {
 	dbg("SetCapabilities: cap=0x%x", cap)
 	e.capabilities = cap
-	e.updateURLInputMode()
+	e.updateNoUnderlineMode()
 	return nil
 }
 

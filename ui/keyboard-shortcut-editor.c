@@ -7,6 +7,7 @@
 #define IBworkaroundForFBMessenger 1<<19
 #define IBworkaroundForWPS 1<<20
 #define IBnoUnderlineForURL 1<<21
+#define IBnoUnderline 1<<7
 
 int row = 0;
 int col = 0;
@@ -331,6 +332,18 @@ static void on_toggle_no_underline_url_clicked (GtkWidget *checkbox, gpointer da
   saveFlags(flags);
 }
 
+static void on_toggle_no_underline_clicked (GtkWidget *checkbox, gpointer data)
+{
+  guint flags = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(checkbox), "flags"));
+  gboolean active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbox));
+  if (active) {
+		flags |= IBnoUnderline;
+  } else {
+		flags &= ~(IBnoUnderline);
+  }
+  saveFlags(flags);
+}
+
 static void
 combo_changed_cb (GtkComboBox *combo, gpointer  data)
 {
@@ -412,7 +425,7 @@ static void add_page_other_settings_content(GtkWidget *parent, GtkWidget *w, gui
   GtkWidget *label1;
   GtkWidget *label2;
   GtkWidget *dropdown1;
-  GtkWidget *checkbox2, *checkbox3, *checkbox4;
+  GtkWidget *checkbox2, *checkbox3, *checkbox4, *checkbox5;
   GtkWidget *cancel_button;
   GtkWidget *hbox;
 
@@ -437,8 +450,14 @@ static void add_page_other_settings_content(GtkWidget *parent, GtkWidget *w, gui
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox3), flags&IBworkaroundForWPS);
   g_signal_connect(checkbox3, "toggled", G_CALLBACK(on_toggle_fix_wps_clicked), NULL);
 
-  checkbox4 = gtk_check_button_new_with_label("Không gạch chân ở ô địa chỉ trình duyệt");
-  gtk_grid_attach(GTK_GRID(grid), checkbox4, 0, 3, 1, 1);
+  checkbox5 = gtk_check_button_new_with_label("Gõ không gạch chân ở mọi ô nhập (nếu ứng dụng hỗ trợ)");
+  gtk_grid_attach(GTK_GRID(grid), checkbox5, 0, 3, 1, 1);
+  g_object_set_data(G_OBJECT(checkbox5), "flags", GUINT_TO_POINTER(flags));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox5), flags&IBnoUnderline);
+  g_signal_connect(checkbox5, "toggled", G_CALLBACK(on_toggle_no_underline_clicked), NULL);
+
+  checkbox4 = gtk_check_button_new_with_label("Không gạch chân riêng ở ô địa chỉ trình duyệt");
+  gtk_grid_attach(GTK_GRID(grid), checkbox4, 0, 4, 1, 1);
   g_object_set_data(G_OBJECT(checkbox4), "flags", GUINT_TO_POINTER(flags));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbox4), flags&IBnoUnderlineForURL);
   g_signal_connect(checkbox4, "toggled", G_CALLBACK(on_toggle_no_underline_url_clicked), NULL);

@@ -273,37 +273,42 @@ func (e *OnikeyEngine) runeCount() int {
 
 func (e *OnikeyEngine) getInputMode() int {
 	var im = e.getConfiguredInputMode()
-	// Ô địa chỉ trình duyệt: pre-edit làm hỏng danh sách gợi ý nên chuyển sang
-	// chế độ không gạch chân. Chỉ "nâng cấp" từ Pre-edit — nếu người dùng đã
-	// chọn sẵn một chế độ không gạch chân hoặc loại trừ app thì giữ nguyên.
-	if im == config.PreeditIM && e.urlInputMode != 0 {
-		return e.urlInputMode
+	// Chỉ "nâng cấp" từ Pre-edit sang chế độ không gạch chân — nếu người dùng đã
+	// tự chọn một chế độ khác hoặc loại trừ app thì giữ nguyên ý họ.
+	if im == config.PreeditIM && e.noUnderlineMode != 0 {
+		return e.noUnderlineMode
 	}
 	return im
 }
 
-// updateURLInputMode chốt chế độ gõ dùng cho ô địa chỉ mỗi khi đổi ô nhập hoặc
+// updateNoUnderlineMode chốt chế độ gõ không gạch chân mỗi khi đổi ô nhập hoặc
 // đổi capability, thay vì tính lại ở từng phím — để chế độ không nhảy giữa
 // chừng lúc đang gõ dở một từ.
-func (e *OnikeyEngine) updateURLInputMode() {
+//
+// Hai đường dẫn tới "không gạch chân":
+//   - IBnoUnderline: người dùng bật "gõ không gạch chân" cho MỌI ô nhập.
+//   - IBnoUnderlineForURL: chỉ riêng ô địa chỉ trình duyệt.
+//
+// CHỈ đổi được khi app cung cấp surrounding text. KHÔNG lùi về Forward as
+// commit: Edge nuốt phím ở chế độ đó nên gõ không ra chữ. Lúc mới focus, Edge
+// còn báo cap=0x9 rồi mới nâng lên 0x29 — thiếu bit thì cứ giữ Pre-edit, khi
+// SetCapabilities gọi lại hàm này thì mới chuyển.
+func (e *OnikeyEngine) updateNoUnderlineMode() {
+	var want = e.config.IBflags&config.IBnoUnderline != 0 ||
+		(e.config.IBflags&config.IBnoUnderlineForURL != 0 && e.isURLBar())
+
 	var mode int
-	// CHỈ đổi chế độ khi app cung cấp được surrounding text. KHÔNG lùi về
-	// Forward as commit: Edge nuốt phím ở chế độ đó nên ô địa chỉ gõ không ra
-	// chữ. Vả lại lúc mới focus, Edge báo cap=0x9 rồi mới nâng lên 0x29 ngay
-	// sau đó — thiếu bit thì cứ giữ Pre-edit, SetCapabilities gọi lại hàm này
-	// và chuyển sang không gạch chân sau.
-	if e.config.IBflags&config.IBnoUnderlineForURL != 0 && e.isURLBar() &&
-		e.capabilities&IBusCapSurroundingText != 0 {
+	if want && e.capabilities&IBusCapSurroundingText != 0 {
 		mode = config.SurroundingTextIM
 	}
-	if mode == e.urlInputMode {
+	if mode == e.noUnderlineMode {
 		return
 	}
 	// Xả bộ đệm THEO CHẾ ĐỘ CŨ rồi mới đổi.
 	e.resetBuffer()
 	e.resetFakeBackspace()
-	e.urlInputMode = mode
-	dbg("updateURLInputMode: purpose=%d cap=0x%x -> urlInputMode=%d inputMode=%d",
+	e.noUnderlineMode = mode
+	dbg("updateNoUnderlineMode: purpose=%d cap=0x%x -> noUnderlineMode=%d inputMode=%d",
 		e.contentPurpose, e.capabilities, mode, e.getInputMode())
 }
 
@@ -334,7 +339,7 @@ func (e *OnikeyEngine) checkContentPurpose(purpose, hints uint32) {
 		e.contentPurpose = purpose
 	}
 	e.contentHints = hints
-	e.updateURLInputMode()
+	e.updateNoUnderlineMode()
 }
 
 func (e *OnikeyEngine) openLookupTable() {
