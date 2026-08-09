@@ -114,6 +114,7 @@ func (e *OnikeyEngine) ProcessKeyEvent(keyVal uint32, keyCode uint32, state uint
 	}
 	fmt.Printf("\n")
 	log.Printf(">>>>ProcessKeyEvent >  %d | state %d keyVal 0x%04x | %c <<<<\n", len(keyPressChan), state, keyVal, rune(keyVal))
+	dbg("Key: keyVal=0x%04x %q state=0x%x hàng-đợi=%d mode=%d", keyVal, rune(keyVal), state, len(keyPressChan), e.getInputMode())
 	if ret, retValue := e.processShortcutKey(keyVal, keyCode, state); ret {
 		return retValue, nil
 	}
