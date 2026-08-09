@@ -1,10 +1,10 @@
 //! Menu thuộc tính của engine trên thanh trên GNOME (biểu tượng `vi`).
 //!
-//! GNOME vẽ menu này từ danh sách property mà engine đăng ký qua tín hiệu
-//! `RegisterProperties`. Không đăng ký thì bấm vào biểu tượng chỉ thấy mỗi
-//! danh sách nguồn nhập — đúng cái Hoang báo thiếu ở bản Rust.
+//! Dựng theo đúng bố cục bản Go: Bảng mã › / Kiểu gõ › / Gõ tắt › / Chính tả ›
+//! / Phím tắt / Cấu hình khác — nhưng CHỈ những mục bản Rust làm được thật.
+//! Radio phản ánh cấu hình hiện tại; bấm là ghi vào tệp cấu hình chung.
 //!
-//! Khuôn dây (khớp goibus, và có test khoá lại):
+//! Khuôn dây (khớp goibus, có test khoá):
 //!   IBusProperty = (sa{sv}suvsvbbuvv)
 //!   IBusPropList = (sa{sv}av)
 
@@ -12,16 +12,28 @@ use std::collections::HashMap;
 
 use zvariant::{OwnedValue, Type, Value};
 
+use crate::config::{ibflag, Config};
 use crate::ibus_text::IBusText;
 
-/// Kiểu property của IBus.
 pub const PROP_TYPE_NORMAL: u32 = 0;
-#[allow(dead_code)]
+pub const PROP_TYPE_TOGGLE: u32 = 1;
+pub const PROP_TYPE_RADIO: u32 = 2;
+pub const PROP_TYPE_MENU: u32 = 3;
 pub const PROP_TYPE_SEPARATOR: u32 = 4;
 
-/// Khoá của các mục menu — phải khớp chuỗi mà `property_activate` nhận lại.
-pub const KEY_CONFIGURATION: &str = "configuration";
+pub const STATE_UNCHECKED: u32 = 0;
+pub const STATE_CHECKED: u32 = 1;
+
+/// Khoá các mục menu — `property_activate` nhận lại đúng chuỗi này.
 pub const KEY_ABOUT: &str = "about";
+pub const KEY_CONFIGURATION: &str = "configuration";
+pub const KEY_MACRO_TABLE: &str = "open_macro_table";
+pub const KEY_MACRO_ENABLED: &str = "macro_enabled";
+pub const KEY_AUTO_CAPITALIZE: &str = "auto_capitalize_macro";
+pub const KEY_NON_VN_RESTORE: &str = "auto_non_vn_restore";
+/// Tiền tố cho radio: "InputMethod::Telex 2", "OutputCharset::TCVN3 (ABC)".
+pub const PREFIX_INPUT_METHOD: &str = "InputMethod::";
+pub const PREFIX_CHARSET: &str = "OutputCharset::";
 
 #[derive(Debug, Clone, Type, Value, OwnedValue)]
 pub struct IBusProperty {
@@ -50,54 +62,140 @@ fn text_value(s: &str) -> OwnedValue {
     OwnedValue::try_from(Value::from(IBusText::new(s))).expect("dựng IBusText")
 }
 
-fn empty_prop_list() -> OwnedValue {
-    OwnedValue::try_from(Value::from(IBusPropList {
+fn prop_list(props: Vec<IBusProperty>) -> IBusPropList {
+    IBusPropList {
         name: "IBusPropList".into(),
         attachments: HashMap::new(),
-        properties: Vec::new(),
-    }))
-    .expect("dựng IBusPropList rỗng")
+        properties: props
+            .into_iter()
+            .map(|p| OwnedValue::try_from(Value::from(p)).expect("property"))
+            .collect(),
+    }
 }
 
-fn property(key: &str, label: &str, tooltip: &str) -> IBusProperty {
+fn prop(key: &str, prop_type: u32, label: &str, state: u32, sub: Option<IBusPropList>) -> IBusProperty {
     IBusProperty {
         name: "IBusProperty".into(),
         attachments: HashMap::new(),
         key: key.into(),
-        prop_type: PROP_TYPE_NORMAL,
+        prop_type,
         label: text_value(label),
         icon: String::new(),
-        tooltip: text_value(tooltip),
+        tooltip: text_value(label),
         sensitive: true,
         visible: true,
-        state: 0,
-        sub_props: empty_prop_list(),
+        state,
+        sub_props: OwnedValue::try_from(Value::from(sub.unwrap_or_else(|| prop_list(Vec::new()))))
+            .expect("subprops"),
         symbol: text_value(""),
     }
 }
 
-/// Menu của bản Rust: gọn — mở hộp thoại cấu hình (nơi chỉnh mọi thứ) và
-/// trang giới thiệu. Các mục bật/tắt lẻ tẻ của bản Go sẽ cân nhắc sau;
-/// menu dài mà nửa số mục chưa hoạt động thì tệ hơn menu ngắn chạy đúng.
-pub fn onikey_prop_list() -> IBusPropList {
-    IBusPropList {
-        name: "IBusPropList".into(),
-        attachments: HashMap::new(),
-        properties: vec![
-            OwnedValue::try_from(Value::from(property(
-                KEY_CONFIGURATION,
-                "Cấu hình bộ gõ (bản Rust)",
-                "Mở hộp thoại cấu hình Onikey",
-            )))
-            .expect("mục cấu hình"),
-            OwnedValue::try_from(Value::from(property(
-                KEY_ABOUT,
-                "Giới thiệu Onikey",
-                "Trang dự án Onikey trên GitHub",
-            )))
-            .expect("mục giới thiệu"),
-        ],
+fn separator() -> IBusProperty {
+    prop("-", PROP_TYPE_SEPARATOR, "", STATE_UNCHECKED, None)
+}
+
+fn checked(b: bool) -> u32 {
+    if b {
+        STATE_CHECKED
+    } else {
+        STATE_UNCHECKED
     }
+}
+
+/// Menu đầy đủ, dựng theo cấu hình hiện tại.
+pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
+    // Kiểu gõ › — radio theo danh sách kiểu gõ của lõi
+    let im_items: Vec<IBusProperty> = onikey_core::rules::INPUT_METHOD_DEFINITIONS
+        .iter()
+        .map(|(name, _)| {
+            prop(
+                &format!("{PREFIX_INPUT_METHOD}{name}"),
+                PROP_TYPE_RADIO,
+                name,
+                checked(*name == cfg.input_method),
+                None,
+            )
+        })
+        .collect();
+
+    // Bảng mã › — radio theo danh sách bảng mã của lõi
+    let cs_items: Vec<IBusProperty> = onikey_core::charsets::charset_names()
+        .into_iter()
+        .map(|name| {
+            prop(
+                &format!("{PREFIX_CHARSET}{name}"),
+                PROP_TYPE_RADIO,
+                name,
+                checked(name == cfg.output_charset),
+                None,
+            )
+        })
+        .collect();
+
+    // Gõ tắt › — hai công tắc + mở bảng gõ tắt
+    let macro_items = vec![
+        prop(
+            KEY_MACRO_ENABLED,
+            PROP_TYPE_TOGGLE,
+            "Bật gõ tắt",
+            checked(cfg.ib_flags & ibflag::MACRO_ENABLED != 0),
+            None,
+        ),
+        prop(
+            KEY_AUTO_CAPITALIZE,
+            PROP_TYPE_TOGGLE,
+            "Tự động viết hoa",
+            checked(cfg.ib_flags & ibflag::AUTO_CAPITALIZE_MACRO != 0),
+            None,
+        ),
+        separator(),
+        prop(
+            KEY_MACRO_TABLE,
+            PROP_TYPE_NORMAL,
+            "Sửa bảng gõ tắt",
+            STATE_UNCHECKED,
+            None,
+        ),
+    ];
+
+    // Chính tả › — chỉ mục bản Rust thật sự dùng
+    let spell_items = vec![prop(
+        KEY_NON_VN_RESTORE,
+        PROP_TYPE_TOGGLE,
+        "Khôi phục từ không phải tiếng Việt",
+        checked(cfg.ib_flags & ibflag::AUTO_NON_VN_RESTORE != 0),
+        None,
+    )];
+
+    prop_list(vec![
+        prop(
+            KEY_ABOUT,
+            PROP_TYPE_NORMAL,
+            &format!("IBus Onikey Rust {}", env!("CARGO_PKG_VERSION")),
+            STATE_UNCHECKED,
+            None,
+        ),
+        separator(),
+        prop("-", PROP_TYPE_MENU, "Bảng mã", STATE_UNCHECKED, Some(prop_list(cs_items))),
+        prop("-", PROP_TYPE_MENU, "Kiểu gõ", STATE_UNCHECKED, Some(prop_list(im_items))),
+        prop("-", PROP_TYPE_MENU, "Gõ tắt", STATE_UNCHECKED, Some(prop_list(macro_items))),
+        prop(
+            "-",
+            PROP_TYPE_MENU,
+            "Kiểm tra chính tả",
+            STATE_UNCHECKED,
+            Some(prop_list(spell_items)),
+        ),
+        separator(),
+        prop(
+            KEY_CONFIGURATION,
+            PROP_TYPE_NORMAL,
+            "Cấu hình khác & phím tắt",
+            STATE_UNCHECKED,
+            None,
+        ),
+    ])
 }
 
 #[cfg(test)]
@@ -107,14 +205,16 @@ mod tests {
 
     #[test]
     fn chu_ky_kieu_khop_goibus() {
-        // Sai khuôn là GNOME lặng lẽ bỏ menu, không có lỗi nào để lần.
         assert_eq!(IBusProperty::SIGNATURE.to_string(), "(sa{sv}suvsvbbuvv)");
         assert_eq!(IBusPropList::SIGNATURE.to_string(), "(sa{sv}av)");
     }
 
     #[test]
-    fn menu_co_muc_cau_hinh() {
-        let l = onikey_prop_list();
-        assert_eq!(l.properties.len(), 2);
+    fn menu_theo_cau_hinh() {
+        let mut cfg = Config::default();
+        cfg.input_method = "Telex 2".into();
+        let l = onikey_prop_list(&cfg);
+        // about + sep + 4 menu + sep + cấu hình = 8 mục
+        assert_eq!(l.properties.len(), 8);
     }
 }
