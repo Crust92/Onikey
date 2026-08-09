@@ -1,0 +1,5891 @@
+{
+ "Microsoft layout": {
+  "keys": [
+   "!",
+   "#",
+   "$",
+   ")",
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "7",
+   "8",
+   "9",
+   "@",
+   "[",
+   "]",
+   "{",
+   "}"
+  ],
+  "super_keys": [],
+  "tone_keys": [
+   "5",
+   "6",
+   "7",
+   "8",
+   "9"
+  ],
+  "appending_keys": [
+   "!",
+   "#",
+   "$",
+   ")",
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "@",
+   "[",
+   "]",
+   "{",
+   "}"
+  ],
+  "rules_by_key": {
+   "!": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ă",
+     "result": "Ă"
+    }
+   ],
+   "#": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ê",
+     "result": "Ê"
+    }
+   ],
+   "$": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ô",
+     "result": "Ô"
+    }
+   ],
+   ")": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Đ",
+     "result": "Đ"
+    }
+   ],
+   "0": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "đ",
+     "result": "đ"
+    }
+   ],
+   "1": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ă",
+     "result": "ă"
+    }
+   ],
+   "2": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "â",
+     "result": "â"
+    }
+   ],
+   "3": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ê",
+     "result": "ê"
+    }
+   ],
+   "4": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ô",
+     "result": "ô"
+    }
+   ],
+   "5": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "6": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "7": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "8": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "9": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "@": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Â",
+     "result": "Â"
+    }
+   ],
+   "[": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ư",
+     "result": "ư"
+    }
+   ],
+   "]": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ơ",
+     "result": "ơ"
+    }
+   ],
+   "{": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ư",
+     "result": "Ư"
+    }
+   ],
+   "}": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ơ",
+     "result": "Ơ"
+    }
+   ]
+  }
+ },
+ "Telex": {
+  "keys": [
+   "a",
+   "d",
+   "e",
+   "f",
+   "j",
+   "o",
+   "r",
+   "s",
+   "w",
+   "x",
+   "z"
+  ],
+  "super_keys": [
+   "w"
+  ],
+  "tone_keys": [
+   "f",
+   "j",
+   "r",
+   "s",
+   "x",
+   "z"
+  ],
+  "appending_keys": [],
+  "rules_by_key": {
+   "a": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    }
+   ],
+   "d": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "e": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    }
+   ],
+   "f": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "j": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "o": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "r": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "s": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "w": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "x": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "z": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ]
+  }
+ },
+ "Telex + VNI": {
+  "keys": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "7",
+   "8",
+   "9",
+   "a",
+   "d",
+   "e",
+   "f",
+   "j",
+   "o",
+   "r",
+   "s",
+   "w",
+   "x",
+   "z"
+  ],
+  "super_keys": [
+   "7",
+   "w"
+  ],
+  "tone_keys": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "f",
+   "j",
+   "r",
+   "s",
+   "x",
+   "z"
+  ],
+  "appending_keys": [],
+  "rules_by_key": {
+   "0": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "1": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "2": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "3": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "4": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "5": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "6": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "7": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   "8": [
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "9": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "a": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    }
+   ],
+   "d": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "e": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    }
+   ],
+   "f": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "j": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "o": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "r": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "s": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "w": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "x": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "z": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ]
+  }
+ },
+ "Telex + VNI + VIQR": {
+  "keys": [
+   "'",
+   "(",
+   "*",
+   "+",
+   ".",
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "7",
+   "8",
+   "9",
+   "?",
+   "\\",
+   "^",
+   "`",
+   "a",
+   "d",
+   "e",
+   "f",
+   "j",
+   "o",
+   "r",
+   "s",
+   "w",
+   "x",
+   "z",
+   "~"
+  ],
+  "super_keys": [
+   "*",
+   "+",
+   "7",
+   "w"
+  ],
+  "tone_keys": [
+   "'",
+   ".",
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "?",
+   "`",
+   "f",
+   "j",
+   "r",
+   "s",
+   "x",
+   "z",
+   "~"
+  ],
+  "appending_keys": [],
+  "rules_by_key": {
+   "'": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "(": [
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "*": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   "+": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   ".": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "0": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "1": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "2": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "3": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "4": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "5": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "6": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "7": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   "8": [
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "9": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "?": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "\\": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "^": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "`": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "a": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    }
+   ],
+   "d": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "e": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    }
+   ],
+   "f": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "j": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "o": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "r": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "s": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "w": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "x": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "z": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "~": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ]
+  }
+ },
+ "Telex 2": {
+  "keys": [
+   "[",
+   "]",
+   "a",
+   "d",
+   "e",
+   "f",
+   "j",
+   "o",
+   "r",
+   "s",
+   "w",
+   "x",
+   "z",
+   "{",
+   "}"
+  ],
+  "super_keys": [
+   "w"
+  ],
+  "tone_keys": [
+   "f",
+   "j",
+   "r",
+   "s",
+   "x",
+   "z"
+  ],
+  "appending_keys": [
+   "[",
+   "]",
+   "w",
+   "{",
+   "}"
+  ],
+  "rules_by_key": {
+   "[": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ơ",
+     "result": "ơ"
+    }
+   ],
+   "]": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ư",
+     "result": "ư"
+    }
+   ],
+   "a": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    }
+   ],
+   "d": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "e": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    }
+   ],
+   "f": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "j": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "o": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "r": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "s": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "w": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    },
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ư",
+     "result": "ư"
+    }
+   ],
+   "x": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "z": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "{": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ơ",
+     "result": "Ơ"
+    }
+   ],
+   "}": [
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "Ư",
+     "result": "Ư"
+    }
+   ]
+  }
+ },
+ "Telex W": {
+  "keys": [
+   "a",
+   "d",
+   "e",
+   "f",
+   "j",
+   "o",
+   "r",
+   "s",
+   "w",
+   "x",
+   "z"
+  ],
+  "super_keys": [
+   "w"
+  ],
+  "tone_keys": [
+   "f",
+   "j",
+   "r",
+   "s",
+   "x",
+   "z"
+  ],
+  "appending_keys": [
+   "w"
+  ],
+  "rules_by_key": {
+   "a": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    }
+   ],
+   "d": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "e": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    }
+   ],
+   "f": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "j": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "o": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "r": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "s": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "w": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    },
+    {
+     "effect": 0,
+     "effect_type": 0,
+     "effect_on": "ư",
+     "result": "ư"
+    }
+   ],
+   "x": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "z": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ]
+  }
+ },
+ "VIQR": {
+  "keys": [
+   "'",
+   "(",
+   "*",
+   "+",
+   ".",
+   "0",
+   "?",
+   "^",
+   "`",
+   "d",
+   "~"
+  ],
+  "super_keys": [
+   "*",
+   "+"
+  ],
+  "tone_keys": [
+   "'",
+   ".",
+   "0",
+   "?",
+   "`",
+   "~"
+  ],
+  "appending_keys": [],
+  "rules_by_key": {
+   "'": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "(": [
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "*": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   "+": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   ".": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "0": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "?": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "^": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "`": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "d": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "~": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ]
+  }
+ },
+ "VNI": {
+  "keys": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "6",
+   "7",
+   "8",
+   "9"
+  ],
+  "super_keys": [
+   "7"
+  ],
+  "tone_keys": [
+   "0",
+   "1",
+   "2",
+   "3",
+   "4",
+   "5"
+  ],
+  "appending_keys": [],
+  "rules_by_key": {
+   "0": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "1": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "2": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "3": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "4": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "5": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "6": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "7": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   "8": [
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "9": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ]
+  }
+ },
+ "VNI Bàn phím tiếng Pháp": {
+  "keys": [
+   "\"",
+   "\u0026",
+   "'",
+   "(",
+   "-",
+   "_",
+   "à",
+   "ç",
+   "è",
+   "é"
+  ],
+  "super_keys": [
+   "_"
+  ],
+  "tone_keys": [
+   "\"",
+   "\u0026",
+   "'",
+   "(",
+   "-",
+   "é"
+  ],
+  "appending_keys": [],
+  "rules_by_key": {
+   "\"": [
+    {
+     "effect": 1,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "\u0026": [
+    {
+     "effect": 0,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "'": [
+    {
+     "effect": 3,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "(": [
+    {
+     "effect": 4,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "-": [
+    {
+     "effect": 5,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ],
+   "_": [
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "u",
+     "result": "ư"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ù",
+     "result": "ừ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ú",
+     "result": "ứ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ủ",
+     "result": "ử"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ũ",
+     "result": "ữ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ụ",
+     "result": "ự"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ư",
+     "result": "u"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ợ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "ơ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ồ",
+     "result": "ờ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ố",
+     "result": "ớ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ổ",
+     "result": "ở"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ỗ",
+     "result": "ỡ"
+    },
+    {
+     "effect": 3,
+     "effect_type": 1,
+     "effect_on": "ộ",
+     "result": "ợ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "o"
+    }
+   ],
+   "à": [
+    {
+     "effect": 4,
+     "effect_type": 1,
+     "effect_on": "d",
+     "result": "đ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "đ",
+     "result": "d"
+    }
+   ],
+   "ç": [
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ặ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "ă"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ầ",
+     "result": "ằ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ấ",
+     "result": "ắ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẩ",
+     "result": "ẳ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ẫ",
+     "result": "ẵ"
+    },
+    {
+     "effect": 2,
+     "effect_type": 1,
+     "effect_on": "ậ",
+     "result": "ặ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "a"
+    }
+   ],
+   "è": [
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "a",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "à",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "á",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ả",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ã",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ạ",
+     "result": "ậ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "â",
+     "result": "a"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ă",
+     "result": "â"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ằ",
+     "result": "ầ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ắ",
+     "result": "ấ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẳ",
+     "result": "ẩ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẵ",
+     "result": "ẫ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ặ",
+     "result": "ậ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "e",
+     "result": "ê"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "è",
+     "result": "ề"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "é",
+     "result": "ế"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẻ",
+     "result": "ể"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẽ",
+     "result": "ễ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ẹ",
+     "result": "ệ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ê",
+     "result": "e"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "o",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ò",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ó",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỏ",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "õ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ọ",
+     "result": "ộ"
+    },
+    {
+     "effect": 0,
+     "effect_type": 1,
+     "effect_on": "ô",
+     "result": "o"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ơ",
+     "result": "ô"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ờ",
+     "result": "ồ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ớ",
+     "result": "ố"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ở",
+     "result": "ổ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ỡ",
+     "result": "ỗ"
+    },
+    {
+     "effect": 1,
+     "effect_type": 1,
+     "effect_on": "ợ",
+     "result": "ộ"
+    }
+   ],
+   "é": [
+    {
+     "effect": 2,
+     "effect_type": 2,
+     "effect_on": "\u0000",
+     "result": "\u0000"
+    }
+   ]
+  }
+ }
+}

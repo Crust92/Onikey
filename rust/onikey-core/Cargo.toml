@@ -1,0 +1,12 @@
+[package]
+name = "onikey-core"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "Lõi xử lý tiếng Việt của Onikey (bản port từ bamboo-core)"
+
+[dependencies]
+
+[dev-dependencies]
+serde_json = "1"
+flate2 = "1"

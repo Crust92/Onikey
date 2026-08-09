@@ -62,8 +62,8 @@ Mục tiêu: bản Go vẫn là bản dùng hằng ngày, nhưng hết các gi�
       cài, và nhận `LIBEXECDIR` riêng (Fedora dùng `/usr/libexec`).
 - [x] **Tách GUI khỏi engine**: `onikey-config` là binary riêng, engine chỉ
       `exec` rồi chờ. Engine **không còn liên kết GTK** — chỉ còn libc + X11/Xtst.
-- [x] **Bỏ hẳn `Shell.Eval`**: xoá `gnome_introspector.go`. Nhận diện ô nhập nay
-      dựa vào content type ứng dụng khai báo (`isURLBar`).
+- [x] **Bỏ hẳn `Shell.Eval`**: xoá `gnome_introspector.go` — trên GNOME Wayland
+      không nhận diện được app, và đã bỏ luôn mọi thứ dựa vào nhận diện app.
 - [x] **Kiểm thử đóng gói thật** trong container: build + install sạch trên
       Fedora 42 (layout `/usr/libexec`) và Arch; `.deb` cài–gỡ sạch trên
       Ubuntu 24.04 (cũ hơn máy dựng gói).
