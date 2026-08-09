@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,--dependency-file=CMakeFiles/onikey.dir/link.d  -o onikey.so CMakeFiles/onikey.dir/src/onikey.cpp.o  /usr/lib/x86_64-linux-gnu/libFcitx5Core.so.5.1.19 /home/d3v/Onikey/fcitx5/../rust/target/release/libonikey_core.a /usr/lib/x86_64-linux-gnu/libFcitx5Config.so.5.1.19 /usr/lib/x86_64-linux-gnu/libFcitx5Utils.so.5.1.19

@@ -12,3 +12,4 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 onikey-core = { path = "../onikey-core" }
+onikey-userconfig = { path = "../onikey-userconfig" }

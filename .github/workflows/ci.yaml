@@ -34,6 +34,16 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: make rust-test
 
+  fcitx5:
+    name: Addon Fcitx5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev
+      - run: cd rust && cargo build --release -p onikey-core-ffi
+      - run: cd fcitx5 && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
+      - run: test -f fcitx5/build/onikey.so
+
   distro:
     name: Build + install (${{ matrix.image }})
     runs-on: ubuntu-latest

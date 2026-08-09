@@ -112,6 +112,65 @@ pub extern "C" fn onikey_encode(charset: *const c_char, input: *const c_char) ->
     to_c_string(charsets::encode(cs, inp))
 }
 
+/// Chuỗi HIỂN THỊ: tiếng Việt đã bỏ dấu, hoặc chuỗi phím gốc nếu từ rõ ràng
+/// không phải tiếng Việt (auto_restore bật). Logic dùng chung mọi adapter —
+/// addon đừng tự chế lại. Trả về chuỗi phải giải phóng bằng onikey_string_free.
+#[no_mangle]
+pub extern "C" fn onikey_engine_display_string(
+    engine: *const OnikeyEngine,
+    auto_restore: bool,
+    dd_free_style: bool,
+) -> *mut c_char {
+    match unsafe { engine.as_ref() } {
+        Some(e) => to_c_string(onikey_core::display::display_string(
+            &e.inner,
+            auto_restore,
+            dd_free_style,
+        )),
+        None => std::ptr::null_mut(),
+    }
+}
+
+/// Cấu hình người dùng đọc từ ~/.config/onikey/onikey.config.json — để mọi
+/// adapter (IBus, Fcitx5) gõ giống hệt nhau. Chuỗi cắt tại 63 byte nếu dài hơn.
+#[repr(C)]
+pub struct OnikeyUserConfig {
+    pub input_method: [c_char; 64],
+    pub output_charset: [c_char; 64],
+    pub core_flags: c_uint,
+    pub ib_flags: c_uint,
+    pub default_input_mode: c_uint,
+}
+
+fn fill_cstr(dst: &mut [c_char; 64], s: &str) {
+    let bytes = s.as_bytes();
+    let n = bytes.len().min(63);
+    for (i, b) in bytes[..n].iter().enumerate() {
+        dst[i] = *b as c_char;
+    }
+    dst[n] = 0;
+}
+
+/// Đọc cấu hình người dùng. Thiếu tệp thì điền mặc định và vẫn trả true —
+/// adapter không phải xử lý riêng ca "chưa từng cấu hình".
+#[no_mangle]
+pub extern "C" fn onikey_load_user_config(out: *mut OnikeyUserConfig) -> bool {
+    let Some(out) = (unsafe { out.as_mut() }) else {
+        return false;
+    };
+    let cfg = onikey_userconfig::load();
+    fill_cstr(&mut out.input_method, &cfg.input_method);
+    fill_cstr(&mut out.output_charset, &cfg.output_charset);
+    out.core_flags = cfg.flags;
+    out.ib_flags = cfg.ib_flags;
+    out.default_input_mode = cfg.default_input_mode;
+    true
+}
+
+/// Bit trong ib_flags mà adapter cần biết (khớp onikey-userconfig::ibflag).
+pub const ONIKEY_IBFLAG_AUTO_NON_VN_RESTORE: c_uint = 1 << 5;
+pub const ONIKEY_IBFLAG_DD_FREE_STYLE: c_uint = 1 << 6;
+
 /// Trả lại chuỗi do các hàm trên cấp phát.
 #[no_mangle]
 pub extern "C" fn onikey_string_free(s: *mut c_char) {
@@ -140,6 +199,33 @@ mod tests {
         onikey_string_free(s);
         onikey_engine_free(e);
         assert_eq!(got, "tiếng");
+    }
+
+    #[test]
+    fn display_string_qua_ffi() {
+        let im = CString::new("Telex").unwrap();
+        let e = onikey_engine_new(im.as_ptr(), 7);
+        for c in "expr".chars() {
+            onikey_engine_process_key(e, c as u32, 1);
+        }
+        let s = onikey_engine_display_string(e, true, true);
+        let got = unsafe { CStr::from_ptr(s) }.to_str().unwrap().to_string();
+        onikey_string_free(s);
+        onikey_engine_free(e);
+        assert_eq!(got, "expr"); // khôi phục tiếng Anh hoạt động qua FFI
+    }
+
+    #[test]
+    fn doc_cau_hinh_qua_ffi() {
+        let mut cfg = OnikeyUserConfig {
+            input_method: [0; 64],
+            output_charset: [0; 64],
+            core_flags: 0,
+            ib_flags: 0,
+            default_input_mode: 0,
+        };
+        assert!(onikey_load_user_config(&mut cfg));
+        assert!(cfg.input_method[0] != 0); // luôn có giá trị (mặc định nếu thiếu tệp)
     }
 
     #[test]
