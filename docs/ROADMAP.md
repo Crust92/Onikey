@@ -79,10 +79,15 @@ Mục tiêu: bản Go vẫn là bản dùng hằng ngày, nhưng hết các gi�
 Mục tiêu: có lõi Rust **đạt ngang tính năng**, kiểm chứng bằng chính bộ ca kiểm
 sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
 
-- [ ] Dựng bộ **ca kiểm đối chiếu**: chạy bản Go, sinh ra bảng
-      `(kiểu gõ, chuỗi phím) -> chuỗi ra` cho vài chục nghìn trường hợp
-      (gồm cả tiếng Việt sai chính tả, phím lặp, khôi phục phím gốc).
-      Đây là lưới an toàn cho toàn bộ cuộc chuyển đổi.
+- [x] **Bộ ca kiểm đối chiếu — xong**: `tests/corpus/core.jsonl.gz`,
+      **126.831 ca kiểm** cho 9 kiểu gõ, sinh bằng `tools/gen-corpus` từ chính
+      bản Go. Mỗi ca ghi chuỗi tiếng Việt **sau từng phím** (không chỉ kết quả
+      cuối), cộng `raw` (khôi phục phím gốc), `valid`, và trạng thái sau khi xoá
+      lùi / khôi phục. Gồm: vét cạn mọi chuỗi 1–2 phím, vét cạn 3 phím cho
+      Telex/VNI/VIQR, 4.000 chuỗi dài 4–9 phím sinh có hạt giống cố định, và một
+      danh sách ca kiểm tay nhắm đúng chỗ hay sai (gõ lặp huỷ dấu, ư/ơ, đ, "gi",
+      "qu", chữ hoa, tiếng Anh lọt vào, VNI/VIQR). Chạy trong `make test`;
+      sinh lại bằng `make corpus`.
 - [ ] Cài đặt `onikey-core`: bộ chuyển đổi Telex/Telex2/VNI/VIQR/MS layout, đặt
       dấu chuẩn & kiểu mới, bỏ dấu tự do, kiểm tra chính tả (luật ghép vần +
       từ điển), bảng mã ra (Unicode, TCVN3, VNI-Win, VIQR, NCR…), gõ tắt.
@@ -156,3 +161,30 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
 - `zbus` + `zbus_xmlgen` (DBus cho Rust): <https://lib.rs/crates/zbus_xmlgen>
 - Hướng dẫn viết input method cho Fcitx 5:
   <https://fcitx-im.org/wiki/Develop_an_simple_input_method>
+
+## 7. Bộ ca kiểm đối chiếu (lưới an toàn cho bản Rust)
+
+Tệp: `tests/corpus/core.jsonl.gz` — mỗi dòng một ca kiểm JSON:
+
+```json
+{"im":"Telex","flags":7,"keys":"tieengs",
+ "steps":["t","ti","tiê","tiê","tiê","tiếng"],
+ "vi":"tiếng","raw":"tieengs","valid":true}
+```
+
+- `steps` — chuỗi tiếng Việt **sau từng phím**. Chỉ so kết quả cuối sẽ bỏ lọt
+  những bản cài đặt "đi đường vòng rồi cũng tới", trong khi người dùng nhìn thấy
+  từng bước một.
+- `raw` — chuỗi phím gốc, dùng cho chức năng khôi phục phím (Shift+Space).
+- `after_bs`, `after_restore` — chỉ có ở các ca kiểm tay: trạng thái sau khi xoá
+  lùi một ký tự và sau khi khôi phục phím gốc.
+
+Cách dùng khi viết lõi Rust:
+
+1. Đọc từng dòng, dựng engine với `im` + `flags`.
+2. Nạp từng phím trong `keys`, sau mỗi phím so với `steps[i]`.
+3. So tiếp `vi`, `raw`, `valid`, rồi `after_bs`/`after_restore` nếu có.
+
+`tools/check-corpus` là bản mẫu của đúng quy trình so sánh đó, viết bằng Go —
+bản Rust chỉ cần làm y hệt. **Không sinh lại bộ ca kiểm** trong lúc chuyển đổi:
+nó là mốc so, sinh lại là mất mốc. Chỉ `make corpus` khi cố ý đổi hành vi lõi.
