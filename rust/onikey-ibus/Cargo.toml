@@ -1,6 +1,6 @@
 [package]
 name = "onikey-ibus"
-version = "0.1.0"
+version = "0.9.0"
 edition = "2021"
 license = "GPL-3.0-or-later"
 description = "Engine IBus của Onikey (bản Rust, chạy song song bản Go)"

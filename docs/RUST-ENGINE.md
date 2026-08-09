@@ -63,6 +63,7 @@ biết ngay nó có đọc đúng kiểu gõ của bạn không.
 | Phím tắt khôi phục phím gốc | Thay chữ đang gõ bằng đúng chuỗi đã bấm (đang tắt trên máy này) |
 | Bảng mã đầu ra | `encode` theo `OutputCharset` ở mọi chỗ chốt chữ; chế độ không gạch chân đếm xoá lùi theo chuỗi **đã mã hoá** (VNI Windows 2 ký tự/chữ có dấu) |
 | Tự nạp lại cấu hình | So mtime ở FocusIn — đổi kiểu gõ trong hộp thoại xong bấm sang ô khác là ăn, không cần `ibus restart` |
+| Menu đầy đủ | Bảng mã ›, Kiểu gõ ›, Gõ tắt ›, Chính tả › — radio áp **tức thì**, ghi thẳng vào tệp cấu hình chung (sửa JSON tại chỗ, không phá phần bản Go dùng) |
 
 ## Chưa có (nên chưa thay được bản Go)
 
@@ -70,5 +71,6 @@ biết ngay nó có đọc đúng kiểu gõ của bạn không.
 - Phím tắt chuyển chế độ gõ Shift+~ (bản Go cũng chỉ chạy khi nhận diện được
   ứng dụng — trên Wayland vốn không nhận diện được nên gần như vô dụng).
 - Danh sách loại trừ theo ứng dụng (cùng lý do Wayland).
-- Hộp thoại cấu hình vẫn là bản GTK3 của engine Go.
+- Hộp thoại cấu hình vẫn là bản GTK3 của engine Go (menu đã thay được phần
+  lớn: kiểu gõ, bảng mã, gõ tắt bật/tắt đều chỉnh từ menu).
 - Macro dạng tiền tố (gõ tiếp sau khoá).
