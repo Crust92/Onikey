@@ -79,3 +79,24 @@ sudo virsh screenshot onikey /tmp/vm.ppm && convert /tmp/vm.ppm /tmp/vm.png
 | Môi trường | Cài từ | Kết quả |
 |---|---|---|
 | Fedora 42, GNOME 48 Wayland | RPM `onikey-0.9.0-1.fc42` | Gõ `tieengs Vieejt Fedora` → nhận đúng **`tiếng Việt Fedora`**, chạy chế độ Pre-edit (`mode=1`) |
+| Fedora 42, GNOME X11 | RPM | **Chưa kiểm được** — xem dưới |
+
+## Chưa làm được: phiên X11 trong máy ảo
+
+Fedora 42 đã bỏ phiên GNOME X11 khỏi GDM (đặt `WaylandEnable=false` cũng bị
+lờ), nên phải đổi sang SDDM mới vào được X11. Nhưng khi đó phiên thiếu phần
+tích hợp IBus mà GNOME thường tự lo, và biểu hiện rất dễ đánh lừa:
+
+- engine **có** nhận `FocusIn` từ ứng dụng → tưởng là đã thông;
+- nhưng **không** nhận một phím nào (`ProcessKeyEvent` không hề được gọi),
+  chữ rơi thẳng vào ứng dụng ở dạng phím thô.
+
+Đã loại trừ: engine chạy (`ibus engine` trả về `Onikey`), nguồn nhập đúng
+(`current=0`), `ibus-daemon` sống, module `im-ibus.so` có mặt và
+`immodules.cache` có nhắc tới ibus, đã thử cả `GTK_IM_MODULE=ibus`,
+Super+Space lẫn Ctrl+Space để bật ngữ cảnh.
+
+Kết luận: **ngữ cảnh IBus không được bật** vì thiếu phần quản lý nguồn nhập
+của phiên GNOME thật. Đây là giới hạn của cách dựng máy ảo, KHÔNG phải bằng
+chứng Onikey hỏng trên X11. Muốn kiểm thật thì dùng bản phân phối còn hỗ trợ
+phiên GNOME X11 tử tế (Ubuntu 24.04 chẳng hạn) thay vì ép Fedora 42.

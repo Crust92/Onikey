@@ -88,15 +88,14 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
       danh sách ca kiểm tay nhắm đúng chỗ hay sai (gõ lặp huỷ dấu, ư/ơ, đ, "gi",
       "qu", chữ hoa, tiếng Anh lọt vào, VNI/VIQR). Chạy trong `make test`;
       sinh lại bằng `make corpus`.
-- [ ] Cài đặt `onikey-core`: bộ chuyển đổi Telex/Telex2/VNI/VIQR/MS layout, đặt
-      dấu chuẩn & kiểu mới, bỏ dấu tự do, kiểm tra chính tả (luật ghép vần +
-      từ điển), bảng mã ra (Unicode, TCVN3, VNI-Win, VIQR, NCR…), gõ tắt.
-      Tham khảo `vi-rs` (Telex/VNI, MIT) để đối chiếu cách đặt dấu, nhưng **không
-      dựa vào nó làm lõi**: thiếu bảng mã, chính tả, macro — đúng những thứ
-      ibus-bamboo hơn người.
-- [ ] `cargo test` phải xanh trên toàn bộ bảng ca kiểm của bước 1.
-- [ ] Xuất **C FFI** (`onikey-core-ffi`: staticlib + `onikey.h`), API dạng
-      "nạp phím vào, hỏi trạng thái ra", không giữ trạng thái toàn cục.
+- [x] **`onikey-core` — xong**: bảng tra, luật gõ 9 kiểu, bộ máy biến đổi, đặt
+      dấu, kiểm tra vần, và bảng mã (do `tools/gen-charsets` SINH ra, không chép
+      tay). Không phụ thuộc crate ngoài nào.
+- [x] **Khớp 100% bộ ca kiểm**: 126.831/126.831 ca, so từng phím, gồm cả xoá lùi
+      và khôi phục phím gốc. Bảng mã có bộ ca kiểm riêng: 134.521 ca, lệch 0.
+- [x] **C FFI xong** (`onikey-core-ffi`: staticlib + cdylib + `onikey.h`), có
+      chương trình C thật biên dịch–liên kết–chạy để chứng minh dùng được.
+      `make rust-test` chạy cả hai phần; CI chạy mỗi lần push.
 
 ### Giai đoạn C — `onikey-ibus` bằng Rust thay thế engine Go
 
