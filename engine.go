@@ -34,7 +34,6 @@ import (
 	"github.com/godbus/dbus/v5"
 
 	"onikey/config"
-	"onikey/ui"
 )
 
 type OnikeyEngine struct {
@@ -363,17 +362,17 @@ func (e *OnikeyEngine) PropertyActivate(propName string, propState uint32) *dbus
 		return nil
 	}
 	if propName == PropKeyConfiguration {
-		ui.OpenGUI(e.engineName)
+		openConfigGUI(e.engineName)
 		e.config = config.LoadConfig(e.engineName)
 		return nil
 	}
 	if propName == PropKeyInputModeLookupTableShortcut {
-		ui.OpenGUI(e.engineName)
+		openConfigGUI(e.engineName)
 		e.config = config.LoadConfig(e.engineName)
 		return nil
 	}
 	if propName == PropKeyMacroTable {
-		ui.OpenGUI(e.engineName)
+		openConfigGUI(e.engineName)
 		e.config = config.LoadConfig(e.engineName)
 		return nil
 	}

@@ -1,53 +1,53 @@
-%define engine_name bamboo
-%define ibus_dir     /usr/share/ibus
-%define engine_share_dir   /usr/share/ibus-%{engine_name}
-%define engine_lib_dir   /usr/lib/ibus-%{engine_name}
-%define ibus_comp_dir /usr/share/ibus/component
-%define _unpackaged_files_terminate_build 0
+%define engine_name onikey
+%define ibus_dir           %{_datadir}/ibus
+%define ibus_comp_dir      %{_datadir}/ibus/component
+%define engine_share_dir   %{_datadir}/%{engine_name}
+%define engine_lib_dir     %{_libexecdir}/%{engine_name}
 
 Name: onikey
-Version: 0.8.5
+Version: 0.9.0
 Release: 1%{?dist}
-Summary: A Vietnamese input method for IBus
+Summary: Vietnamese input method for IBus, no preedit underline
 
-License: GPL-3.0+
+License: GPL-3.0-or-later
 URL: https://github.com/xtcrust/Onikey
 Source0: %{name}-%{version}.tar.gz
 
-BuildRequires: go, ibus-devel, libX11-devel, libXtst-devel, gtk3-devel
+BuildRequires: golang, gcc, make, pkgconf-pkg-config
+BuildRequires: gtk3-devel, libX11-devel, libXtst-devel
 Requires: ibus, gtk3
 
 %description
-A Vietnamese IME for IBus using Bamboo Engine.
-Bộ gõ tiếng Việt mã nguồn mở hỗ trợ hầu hết các bảng mã thông dụng, các kiểu gõ tiếng Việt phổ biến, bỏ dấu thông minh, kiểm tra chính tả, gõ tắt,...
+Onikey là bộ gõ tiếng Việt cho IBus, bản fork của ibus-bamboo, tinh chỉnh để gõ
+không có gạch chân dưới từ đang gõ trên GNOME Wayland. Hỗ trợ các bảng mã thông
+dụng, các kiểu gõ phổ biến (Telex, VNI, VIQR...), bỏ dấu thông minh, kiểm tra
+chính tả và gõ tắt.
 
 %global debug_package %{nil}
+
 %prep
 %setup
 
 %build
-make build
+make build PREFIX=%{_prefix}
 
 %install
-make PREFIX=%{_prefix} DESTDIR=%{buildroot} install
+make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 
 %files
-%defattr(-,root,root)
 %doc README.md
 %license LICENSE
-%dir %{ibus_dir}
-%dir %{ibus_comp_dir}
 %dir %{engine_share_dir}
 %dir %{engine_lib_dir}
 %{engine_share_dir}/*
 %{engine_lib_dir}/*
 %{ibus_comp_dir}/%{engine_name}.xml
-
-%clean
-cd ..
-rm -rf ibus-%{engine_name}-%{version}
-rm -rf %{buildroot}
+%{_datadir}/applications/%{engine_name}-setup.desktop
 
 %changelog
+* Sun Aug 09 2026 xtcrust <xtczone000000@gmail.com> 0.9.0
+- Đổi tên ibus-bamboo -> Onikey; tách hộp thoại cấu hình thành binary riêng
+- Đường dẫn dữ liệu nhận từ PREFIX lúc build, helper theo %%{_libexecdir}
+
 * Wed Aug 14 2019 LuongThanhLam <ltlam93@gmail.com> 0.5.3
 - Initial RPM release

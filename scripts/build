@@ -1,9 +1,14 @@
 # Onikey
 ibus_e_name="onikey-engine"
+config_name="onikey-config"
 version="0.9.0"
 
+# PREFIX quyết định nơi engine đi tìm dữ liệu (icons, từ điển, emoji) khi chạy.
+# Không cắm cứng /usr: Fedora/FreeBSD/cài vào ~/.local đều khác nhau.
+PREFIX="${PREFIX:-/usr}"
+
 # Go flags
-LDFLAGS="-w -s -X main.Version=${version}"
+LDFLAGS="-w -s -X main.Version=${version} -X main.DataDir=${PREFIX}/share/onikey"
 
 # Go flags for FreeBSD
 CGO_CFLAGS_FREEBSD="-I/usr/local/include -std=gnu99"
@@ -11,13 +16,19 @@ CGO_LDFLAGS_FREEBSD="-L/usr/local/lib -lX11 -lXtst -pthread"
 
 case $(uname) in
 	"Linux") CGO_ENABLED=1 \
-		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor
+		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor &&
+		CGO_ENABLED=1 \
+		go build -o ${config_name} -ldflags "${LDFLAGS}" -mod=vendor ./cmd/onikey-config
 		;;
 
 	"FreeBSD") CGO_ENABLED=1 \
 		CGO_CFLAGS=${CGO_CFLAGS_FREEBSD} \
 		CGO_LDFLAGS=${CGO_LDFLAGS_FREEBSD} \
-		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor
+		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor &&
+		CGO_ENABLED=1 \
+		CGO_CFLAGS=${CGO_CFLAGS_FREEBSD} \
+		CGO_LDFLAGS=${CGO_LDFLAGS_FREEBSD} \
+		go build -o ${config_name} -ldflags "${LDFLAGS}" -mod=vendor ./cmd/onikey-config
 		;;
 	*) echo "Hiện tại chưa hỗ trợ hệ điều hành này!"
 		;;

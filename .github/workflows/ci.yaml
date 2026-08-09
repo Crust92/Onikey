@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test + build (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y gcc make libx11-dev libxtst-dev libgtk-3-dev pkg-config
+      - run: make test
+      - run: make build
+      - name: Engine không được liên kết GTK
+        run: |
+          if ldd onikey-engine | grep -qE 'libgtk|libgdk'; then
+            echo "onikey-engine đang liên kết GTK — hộp thoại cấu hình phải nằm ở binary riêng"; exit 1
+          fi
+      - name: Dựng .deb
+        run: sh scripts/build-deb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: onikey-deb
+          path: onikey_*.deb
+
+  distro:
+    name: Build + install (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: fedora:42
+            # Fedora để helper ở /usr/libexec chứ không phải /usr/lib
+            setup: dnf -y install golang gcc make pkgconf-pkg-config gtk3-devel libX11-devel libXtst-devel
+            makeargs: PREFIX=/usr LIBEXECDIR=/usr/libexec/onikey
+          - image: archlinux:latest
+            setup: pacman -Sy --noconfirm go gcc make pkgconf gtk3 libx11 libxtst
+            makeargs: PREFIX=/usr
+          - image: debian:stable
+            setup: apt-get update && apt-get install -y golang gcc make pkg-config libgtk-3-dev libx11-dev libxtst-dev
+            makeargs: PREFIX=/usr
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: ${{ matrix.setup }}
+      - run: make build PREFIX=/usr
+      - run: make install ${{ matrix.makeargs }} DESTDIR=/tmp/stage
+      - name: Component XML phải trỏ đúng nơi đã cài
+        run: |
+          xml=$(find /tmp/stage -name onikey.xml -path '*ibus*')
+          grep -oE '<(exec|setup)>[^<]*' "$xml"
+          for p in $(grep -oE '<(exec|setup)>[^< ]*' "$xml" | sed -E 's#<(exec|setup)>##'); do
+            test -x "/tmp/stage$p" || { echo "thiếu file: $p"; exit 1; }
+          done
+
+  freebsd:
+    name: Build + test (FreeBSD)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: vmactions/freebsd-vm@v1
+        with:
+          release: "15.0"
+          usesh: true
+          prepare: |
+            pkg install -y go pkgconf libX11 libXtst gtk3 gmake
+          run: |
+            gmake test && gmake build

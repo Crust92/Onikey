@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"onikey/config"
-	"onikey/ui"
 	"os"
 	"strconv"
 	"strings"
@@ -56,10 +55,6 @@ func GetIBusEngineCreator() func(*dbus.Conn, string) dbus.ObjectPath {
 		engine.propList = GetPropListByConfig(cfg)
 		engine.shouldEnqueuKeyStrokes = true
 		ibus.PublishEngine(conn, objectPath, engine)
-		if *gui {
-			ui.OpenGUI(engine.engineName)
-			os.Exit(0)
-		}
 		// Chạy ĐỒNG BỘ (không phải "go engine.init()"): chính init() gán biến
 		// toàn cục keyPressHandler. Nếu chạy async, lúc đăng nhập engine có thể
 		// nhận phím TRƯỚC khi goroutine kịp gán -> phím rơi vào hàm rỗng -> "mất
@@ -608,9 +603,11 @@ func (e *OnikeyEngine) getWmClass() string {
 
 func (e *OnikeyEngine) getLatestWmClass() string {
 	var wmClass string
-	if isGnome {
-		wmClass, _ = gnomeGetFocusWindowClass()
-	} else if isWayland {
+	// GNOME: KHÔNG dò cửa sổ nữa. Cách duy nhất từng có là org.gnome.Shell.Eval,
+	// mà GNOME 41+ khoá hẳn (luôn trả về rỗng) trong khi mỗi lời gọi vẫn tốn một
+	// vòng DBus ĐỒNG BỘ ngay trên đường xử lý focus. Việc nhận diện ô nhập nay
+	// dựa vào content type do ứng dụng khai báo (xem isURLBar).
+	if isWayland {
 		wmClass = wlAppId
 	}
 	// Chỉ dùng X11 introspection trên phiên X11 thật. Trên Wayland KHÔNG gọi:

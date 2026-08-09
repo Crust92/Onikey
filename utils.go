@@ -39,17 +39,26 @@ const (
 	HomePage           = "https://github.com/xtcrust/Onikey"
 	CharsetConvertPage = "https://tools.jcisio.com/vietuni/"
 
-	DataDir          = "/usr/share/onikey"
 	DictVietnameseCm = "data/vietnamese.cm.dict"
 	DictEmojiOne     = "data/emojione.json"
-)
-
-const (
-	configDir        = "%s/.config/ibus-%s"
-	configFile       = "%s/ibus-%s.config.json"
-	mactabFile       = "%s/ibus-%s.macro.text"
 	sampleMactabFile = "data/macro.tpl.txt"
 )
+
+// DataDir là nơi cài dữ liệu chạy máy (icons, từ điển, emoji). KHÔNG cắm cứng
+// /usr: Fedora để engine ở /usr/libexec, FreeBSD dùng /usr/local, người dùng
+// có thể cài vào ~/.local. Đặt lúc build bằng
+//
+//	-ldflags "-X main.DataDir=<prefix>/share/onikey"
+//
+// và đè lúc chạy bằng biến môi trường ONIKEY_DATA_DIR (tiện chạy thử bản build
+// tại chỗ mà không cần cài).
+var DataDir = "/usr/share/onikey"
+
+func init() {
+	if d := os.Getenv("ONIKEY_DATA_DIR"); d != "" {
+		DataDir = d
+	}
+}
 
 // Keyboard Shortcuts with keyVal-mask position
 const (
@@ -78,9 +87,8 @@ func getEngineSubFile(fileName string) string {
 		}
 	}
 
-	// return installation data/macro.tpl.txt path
-	fileName = "../../share/onikey/" + fileName
-	return filepath.Join(filepath.Dir(os.Args[0]), fileName)
+	// không có bản trong cây mã nguồn -> lấy trong thư mục dữ liệu đã cài
+	return filepath.Join(DataDir, fileName)
 }
 
 func determineMacroCase(str string) uint8 {

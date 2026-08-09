@@ -19,6 +19,9 @@
 CC=cc
 SHELL=sh
 
+PREFIX ?= /usr
+LIBEXECDIR ?=
+
 engine_name=onikey
 engine_gui_name=onikey-setup.desktop
 ibus_e_name=onikey-engine
@@ -38,13 +41,13 @@ tar_options_src=--transform "s/^\./$(pkg_name)-$(version)/" --exclude=.git --exc
 all: build
 
 build:
-	$(SHELL) scripts/build
+	PREFIX=$(PREFIX) $(SHELL) scripts/build
 
 test:
 	$(SHELL) scripts/test
 
 clean:
-	rm -f onikey-engine
+	rm -f onikey-engine onikey-config
 	rm -f *_linux *_cover.html go_test_* go_build_* test *.gz test
 	rm -f debian/files
 	rm -rf debian/debhelper*
@@ -53,11 +56,11 @@ clean:
 
 
 install: build
-	$(SHELL) scripts/install ${PREFIX} ${DESTDIR}
+	LIBEXECDIR=$(LIBEXECDIR) $(SHELL) scripts/install ${PREFIX} ${DESTDIR}
 
 uninstall:
 	rm -rf $(DESTDIR)$(engine_dir)
-	rm -rf $(DESTDIR)$(PREFIX)/lib/$(engine_name)/
+	rm -rf $(DESTDIR)$(if $(LIBEXECDIR),$(LIBEXECDIR),$(PREFIX)/lib/$(engine_name))/
 	rm -f $(DESTDIR)$(ibus_dir)/component/$(engine_name).xml
 	rm -rf $(DESTDIR)$(PREFIX)/share/applications/$(engine_gui_name)
 

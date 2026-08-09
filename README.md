@@ -56,6 +56,19 @@ Chuyển giữa tiếng Anh (`us`) và tiếng Việt (`Onikey`) bằng <kbd>Sup
 
 **Gỡ cài đặt:** trong thư mục mã nguồn chạy `sudo make uninstall`.
 
+**Cài vào nơi khác `/usr`** (Fedora, FreeBSD, hoặc cài cho riêng một người dùng):
+```sh
+make build PREFIX=/usr/local
+sudo make install PREFIX=/usr/local            # Fedora: thêm LIBEXECDIR=/usr/libexec/onikey
+```
+Đường dẫn dữ liệu được nhúng lúc build theo `PREFIX`, còn component XML và
+desktop file thì `scripts/install` sinh ra theo đúng nơi đang cài. Chạy thử bản
+build tại chỗ mà không cài thì đặt `ONIKEY_DATA_DIR=$PWD`.
+
+**Hai binary, có chủ đích:** `onikey-engine` (bộ gõ, chỉ cần libc + X11) và
+`onikey-config` (hộp thoại cấu hình, cần GTK3). Engine gọi hộp thoại bằng
+`exec`, nên hộp thoại lỗi cũng không làm mất gõ toàn hệ thống.
+
 ## Cập nhật bằng gói (.deb)
 Onikey đóng gói được thành `.deb` để cài/cập nhật gọn qua dpkg/apt:
 ```sh

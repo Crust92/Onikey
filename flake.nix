@@ -7,7 +7,7 @@
 
   outputs = { self, nixpkgs }:
     let
-      version = "v0.8.5";
+      version = "v0.9.0";
 
       supportedSystems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -34,12 +34,15 @@
             ];
 
             buildInputs = [
+              pkgs.gtk3
+              pkgs.xorg.libX11
               pkgs.xorg.libXtst
             ];
 
+            # scripts/install tự sinh component XML + desktop file theo PREFIX,
+            # nên không cần sed đường dẫn ở đây nữa.
             preConfigure = ''
               export GOCACHE="$TMPDIR/go-cache"
-              sed -i "s,/usr,$out," data/bamboo.xml
             '';
 
             makeFlags = [
@@ -66,6 +69,8 @@
             ];
 
             buildInputs = [
+              pkgs.gtk3
+              pkgs.xorg.libX11
               pkgs.xorg.libXtst
             ];
           };
