@@ -44,14 +44,14 @@ cat > "$STAGE/DEBIAN/control" <<EOF
 Package: $PKG
 Version: $VERSION
 Architecture: $ARCH
-Maintainer: xtcrust <xtczone000000@gmail.com>
+Maintainer: Crust92 <xtczone000000@gmail.com>
 Section: utils
 Priority: optional
 Depends: ibus, libgtk-3-0, libx11-6, libxtst6
 Conflicts: ibus-bamboo
 Provides: ibus-bamboo
 Replaces: ibus-bamboo
-Homepage: https://github.com/xtcrust/Onikey
+Homepage: https://github.com/Crust92/Onikey
 Description: Onikey - Vietnamese input method, no preedit underline (fork of onikey)
  Vietnamese input method tuned for typing without the preedit underline on
  GNOME Wayland. Ships 'onikey-update' to update to the latest GitHub build.

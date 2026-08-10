@@ -36,7 +36,7 @@ const (
 	VnCaseNoChange
 )
 const (
-	HomePage           = "https://github.com/xtcrust/Onikey"
+	HomePage           = "https://github.com/Crust92/Onikey"
 	CharsetConvertPage = "https://tools.jcisio.com/vietuni/"
 
 	DictVietnameseCm = "data/vietnamese.cm.dict"

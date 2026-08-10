@@ -58,9 +58,9 @@ rust/onikey-ibus      IBus engine (zbus) — binary onikey-engine-rs, engine nam
 ## Install (recommended — future `apt upgrade` keeps you current)
 
 ```sh
-curl -fsSL https://xtcrust.github.io/Onikey/onikey-archive-keyring.gpg \
+curl -fsSL https://crust92.github.io/Onikey/onikey-archive-keyring.gpg \
   | sudo tee /usr/share/keyrings/onikey-archive-keyring.gpg >/dev/null
-echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://xtcrust.github.io/Onikey stable main" \
+echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://crust92.github.io/Onikey stable main" \
   | sudo tee /etc/apt/sources.list.d/onikey.list
 sudo apt update && sudo apt install onikey     # or fcitx5-onikey
 ```
@@ -68,12 +68,21 @@ Done — **press <kbd>Super</kbd>+<kbd>Space</kbd> and type Vietnamese**. The
 package wakes IBus and adds the input source automatically; no logout, no
 Settings digging.
 
+**Installed before 2026-08-10 (old repo host `xtcrust.github.io`)?** The
+account was renamed and GitHub Pages does not redirect, so `apt update`
+returns 404 until you point at the new host:
+```sh
+echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://crust92.github.io/Onikey stable main" \
+  | sudo tee /etc/apt/sources.list.d/onikey.list
+sudo apt update && sudo apt upgrade
+```
+
 ## Build & install
 
 Requirements (Ubuntu/Debian): `golang cargo gcc make pkg-config libgtk-3-dev libxtst-dev libx11-dev`.
 
 ```sh
-git clone https://github.com/xtcrust/Onikey.git
+git clone https://github.com/Crust92/Onikey.git
 cd Onikey
 make                       # build as regular user
 sudo make install PREFIX=/usr

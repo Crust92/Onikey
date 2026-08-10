@@ -5,9 +5,9 @@
     <description>Vietnamese input engine for IBus</description>
     <exec>/usr/lib/onikey/onikey-engine-rs --ibus</exec>
     <version>1.0.1</version>
-    <author>xtcrust</author>
+    <author>Crust92</author>
     <license>GPLv3</license>
-    <homepage>https://github.com/xtcrust/Onikey</homepage>
+    <homepage>https://github.com/Crust92/Onikey</homepage>
     <textdomain>onikey</textdomain>
     <engines>
           <engine>
@@ -15,7 +15,7 @@
               <name>Onikey</name>
               <language>vi</language>
               <license>GPLv3</license>
-              <author>xtcrust</author>
+              <author>Crust92</author>
               <icon>/usr/share/onikey/icons/vi.svg</icon>
               <layout>default</layout>
               <longname>Onikey</longname>
