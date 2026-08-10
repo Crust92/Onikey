@@ -24,6 +24,10 @@ pub mod ibflag {
     /// DefaultInputMode; giữ tên bit để khỏi ai dùng lại nhầm.
     #[allow(dead_code)]
     pub const NO_UNDERLINE: u32 = 1 << 7;
+    /// Ở chế độ Pre-edit: riêng Ô ĐỊA CHỈ TRÌNH DUYỆT (ứng dụng khai
+    /// purpose=URL) gõ không gạch chân — pre-edit phá danh sách gợi ý của
+    /// thanh địa chỉ. Chỉ có nghĩa khi DefaultInputMode = 1.
+    pub const URL_NO_UNDERLINE: u32 = 1 << 21;
 }
 
 #[derive(Debug, Clone)]
