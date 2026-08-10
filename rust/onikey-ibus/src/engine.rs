@@ -55,6 +55,11 @@ struct State {
     macros: crate::macros::MacroTable,
     /// Kiểu ô nhập do ứng dụng khai (IBusInputPurpose). Chỉ ghi nhận để gỡ rối.
     content_purpose: u32,
+    /// Đặt ở focus_out; ContentType đến thì xoá. Còn cờ đến focus_in nghĩa
+    /// là ô mới KHÔNG khai kiểu ô — lúc đó mới được quên purpose cũ
+    /// (ibus-daemon gửi ContentType TRƯỚC FocusIn, quên vô điều kiện từng
+    /// xoá nhầm nhãn ô địa chỉ vừa nhận — lỗi "chuyển tab bị gạch chân").
+    purpose_stale: bool,
     capabilities: u32,
     /// Chuỗi đã GHI RA ứng dụng ở chế độ không gạch chân — cần nhớ để biết
     /// phải xoá lùi bao nhiêu ký tự khi chữ thay đổi.
@@ -192,6 +197,7 @@ impl OnikeyEngine {
                 core,
                 cfg,
                 content_purpose: 0,
+                purpose_stale: true,
                 capabilities: 0,
                 committed: String::new(),
                 english_mode: false,
@@ -425,17 +431,18 @@ impl OnikeyEngine {
             let mut st = self.state.lock().unwrap();
             st.core.reset();
             st.committed.clear();
-            // Quên purpose của ô trước: app không khai ContentType (terminal,
-            // GTK cũ, Electron cũ) sẽ không gửi gì — giữ purpose cũ làm ô
-            // thường bị coi là ô địa chỉ. Ô URL thật thì ibus-daemon đẩy lại
-            // ContentType ngay sau FocusIn nên không mất gì.
-            if st.content_purpose != 0 {
+            // Ô không khai ContentType (terminal, GTK cũ, Electron cũ) không
+            // gửi gì khi được focus — purpose của ô trước sẽ rò sang nếu cứ
+            // giữ. Nhưng ô có khai thì ibus-daemon gửi ContentType TRƯỚC
+            // FocusIn, nên chỉ được quên khi cờ stale còn nguyên từ focus_out.
+            if st.purpose_stale && st.content_purpose != 0 {
                 crate::debug::log(format_args!(
-                    "focus_in: quên purpose {} của ô trước",
+                    "focus_in: quên purpose {} (ô mới không khai ContentType)",
                     st.content_purpose
                 ));
                 st.content_purpose = 0;
             }
+            st.purpose_stale = true;
             st.reload_config_if_changed();
         }
         // Báo cho ứng dụng biết ta cần surrounding text; thiếu bước này thì
@@ -449,6 +456,7 @@ impl OnikeyEngine {
     }
 
     async fn focus_out(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
+        self.state.lock().unwrap().purpose_stale = true;
         if let Some(s) = self.take_pending() {
             let _ = commit(&emitter, &s).await;
         }
@@ -612,6 +620,7 @@ impl OnikeyEngine {
     #[zbus(property, name = "ContentType")]
     fn set_content_type(&self, value: (u32, u32)) {
         let mut st = self.state.lock().unwrap();
+        st.purpose_stale = false;
         if st.content_purpose != value.0 {
             crate::debug::log(format_args!(
                 "ContentType: purpose {} -> {} (5 = ô địa chỉ)",
