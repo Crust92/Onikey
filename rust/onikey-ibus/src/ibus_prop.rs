@@ -32,8 +32,10 @@ pub const KEY_MACRO_ENABLED: &str = "macro_enabled";
 pub const KEY_AUTO_CAPITALIZE: &str = "auto_capitalize_macro";
 pub const KEY_NON_VN_RESTORE: &str = "auto_non_vn_restore";
 pub const KEY_URL_NO_UNDERLINE: &str = "url_no_underline";
-/// Tiền tố radio chế độ gõ: "InputMode::1" (Pre-edit), "InputMode::2".
-pub const PREFIX_INPUT_MODE: &str = "InputMode::";
+/// Công tắc chế độ gõ: bật = không gạch chân (mode 2), tắt = Pre-edit (mode 1).
+/// Dùng TOGGLE chứ không RADIO vì GNOME giữ menu MỞ khi bấm switch — người
+/// dùng chỉnh nhiều cài đặt liền nhau không phải mở lại menu.
+pub const KEY_MODE_NO_UNDERLINE: &str = "mode_no_underline";
 /// Tiền tố cho radio: "InputMethod::Telex 2", "OutputCharset::TCVN3 (ABC)".
 pub const PREFIX_INPUT_METHOD: &str = "InputMethod::";
 pub const PREFIX_CHARSET: &str = "OutputCharset::";
@@ -172,22 +174,13 @@ pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
     )];
 
     // Cài đặt khác › — chế độ gõ (chuyển từ hộp thoại ra đây) + nút gạt ô địa chỉ
-    let mut other_items = vec![
-        prop(
-            &format!("{PREFIX_INPUT_MODE}1"),
-            PROP_TYPE_RADIO,
-            "Chế độ gõ: Pre-edit (gạch chân, ổn định nhất)",
-            checked(cfg.default_input_mode == 1),
-            None,
-        ),
-        prop(
-            &format!("{PREFIX_INPUT_MODE}2"),
-            PROP_TYPE_RADIO,
-            "Chế độ gõ: không gạch chân",
-            checked(cfg.default_input_mode != 1),
-            None,
-        ),
-    ];
+    let mut other_items = vec![prop(
+        KEY_MODE_NO_UNDERLINE,
+        PROP_TYPE_TOGGLE,
+        "Gõ không gạch chân (mọi ứng dụng)",
+        checked(cfg.default_input_mode != 1),
+        None,
+    )];
     // Nút gạt CHỈ HIỆN khi đang ở chế độ gạch chân — ở chế độ 2 mọi ô đã
     // không gạch chân sẵn, bày thêm công tắc vô nghĩa chỉ gây rối.
     if cfg.default_input_mode == 1 {
