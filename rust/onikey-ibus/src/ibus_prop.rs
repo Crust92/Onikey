@@ -114,7 +114,7 @@ pub fn url_no_underline_prop(cfg: &Config) -> IBusProperty {
     let mut p = prop(
         KEY_URL_NO_UNDERLINE,
         PROP_TYPE_TOGGLE,
-        "Không gạch chân ở ô địa chỉ trình duyệt",
+        "Bỏ gạch chân trình duyệt",
         checked(cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0),
         None,
     );
@@ -182,7 +182,7 @@ pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
     let spell_items = vec![prop(
         KEY_NON_VN_RESTORE,
         PROP_TYPE_TOGGLE,
-        "Khôi phục từ không phải tiếng Việt",
+        "Khôi phục từ ngoại ngữ",
         checked(cfg.ib_flags & ibflag::AUTO_NON_VN_RESTORE != 0),
         None,
     )];
@@ -191,7 +191,7 @@ pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
     let mut other_items = vec![prop(
         KEY_MODE_NO_UNDERLINE,
         PROP_TYPE_TOGGLE,
-        "Gõ không gạch chân (mọi ứng dụng)",
+        "Bỏ gạch chân",
         checked(cfg.default_input_mode != 1),
         None,
     )];
