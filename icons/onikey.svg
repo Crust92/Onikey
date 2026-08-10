@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Logo Onikey: một PHÍM BẤM mang chữ O, thêm hai sừng oni — đúng nghĩa cái
+     tên (Oni + key). Chữ O vẽ bằng hình học chứ không dùng <text>: icon phải
+     hiện đúng trên mọi máy, không phụ thuộc máy đó có sẵn font nào.
+     Đừng nhầm với vi.svg / us.svg — hai cái đó là icon BÁO CHẾ ĐỘ đang gõ
+     Việt hay Anh, không phải nhãn của phần mềm. -->
+<svg width="48" height="48" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="onikeyCap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff8f5e"/>
+      <stop offset="1" stop-color="#d8123a"/>
+    </linearGradient>
+    <linearGradient id="onikeyHorn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f39662"/>
+      <stop offset="1" stop-color="#e3163c"/>
+    </linearGradient>
+  </defs>
+  <!-- sừng -->
+  <path d="M10.5 12.5 L6.5 1.8 L18.5 8.2 Z" fill="url(#onikeyHorn)"/>
+  <path d="M37.5 12.5 L41.5 1.8 L29.5 8.2 Z" fill="url(#onikeyHorn)"/>
+  <!-- thân phím -->
+  <rect x="4.5" y="8" width="39" height="38" rx="9" fill="url(#onikeyCap)"/>
+  <!-- mặt phím bắt sáng -->
+  <rect x="8" y="11.5" width="32" height="27" rx="7" fill="#ffffff" fill-opacity="0.13"/>
+  <!-- chữ O -->
+  <ellipse cx="24" cy="26.5" rx="8.6" ry="9.8" fill="none" stroke="#ffffff" stroke-width="5.2"/>
+</svg>
