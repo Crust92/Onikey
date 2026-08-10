@@ -49,6 +49,23 @@ Description: Onikey Vietnamese input method - Fcitx5 addon
  Vietnamese input engine (Rust core) as a Fcitx5 addon, for KDE and
  distributions that do not use IBus.
 
+Package: fcitx5-onikey
+Version: 1.0.0+git20260810092707.78d73ec
+Architecture: amd64
+Maintainer: xtcrust <xtczone000000@gmail.com>
+Depends: fcitx5
+Filename: pool/main/fcitx5-onikey_1.0.0+git20260810092707.78d73ec_amd64.deb
+Size: 1180962
+MD5sum: f3ebf97862a5133decee9ee42abf782a
+SHA1: e7adf3205317b6d4aa539b82074cc8370a1cf2ca
+SHA256: e53299b614f2a55ead6274c4606d5d5cbbf8c2d4af1491533951646e37dca793
+Section: utils
+Priority: optional
+Homepage: https://github.com/xtcrust/Onikey
+Description: Onikey Vietnamese input method - Fcitx5 addon
+ Vietnamese input engine (Rust core) as a Fcitx5 addon, for KDE and
+ distributions that do not use IBus.
+
 Package: onikey
 Version: 1.0.0+git20260810081051.e7e97c8
 Architecture: amd64
@@ -102,6 +119,26 @@ Size: 2975000
 MD5sum: 3ead43b445972972eacd424b636fc5e7
 SHA1: f01bfc5e5db33cf32851c1c1d45d01a44359d2b1
 SHA256: 42ca94b081ec55fa77529196bea014378fd8b182d39739b41540d0b97f00b902
+Section: utils
+Priority: optional
+Homepage: https://github.com/xtcrust/Onikey
+Description: Onikey - Vietnamese input method, no preedit underline (fork of onikey)
+ Vietnamese input method tuned for typing without the preedit underline on
+ GNOME Wayland. Ships 'onikey-update' to update to the latest GitHub build.
+
+Package: onikey
+Version: 1.0.0+git20260810092707.78d73ec
+Architecture: amd64
+Maintainer: xtcrust <xtczone000000@gmail.com>
+Depends: ibus, libgtk-3-0, libx11-6, libxtst6
+Conflicts: ibus-bamboo
+Replaces: ibus-bamboo
+Provides: ibus-bamboo
+Filename: pool/main/onikey_1.0.0+git20260810092707.78d73ec_amd64.deb
+Size: 2975914
+MD5sum: 6b047be8e10428bf4760a439a067fb81
+SHA1: a6a96f4300f792ce94c5d7f9a549d61c44866bc4
+SHA256: 0e3d4cc280aff1496d7f0555040f94d483c56c2606cfd6db10214f05cf2b9a2b
 Section: utils
 Priority: optional
 Homepage: https://github.com/xtcrust/Onikey
