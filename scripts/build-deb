@@ -24,6 +24,17 @@ install -Dm755 scripts/onikey-update "$STAGE/usr/bin/onikey-update"
 
 # 3) Metadata goi
 mkdir -p "$STAGE/DEBIAN"
+cat > "$STAGE/DEBIAN/postinst" <<'PI'
+#!/bin/sh
+set -e
+if [ "$1" = "configure" ]; then
+  echo "Onikey: de engine xuat hien trong bang chon nguon nhap, chay:"
+  echo "    ibus restart"
+  echo "(hoac dang xuat roi dang nhap lai), sau do them:"
+  echo "    Settings -> Keyboard -> Input Sources -> + -> Vietnamese -> Onikey"
+fi
+PI
+chmod 755 "$STAGE/DEBIAN/postinst"
 cat > "$STAGE/DEBIAN/control" <<EOF
 Package: $PKG
 Version: $VERSION
