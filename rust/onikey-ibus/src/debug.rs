@@ -30,3 +30,8 @@ pub fn log(args: Arguments<'_>) {
         let _ = writeln!(f, "{args}");
     }
 }
+
+/// Log đang bật? — cho những chỗ cần chuẩn bị dữ liệu đắt trước khi log.
+pub fn enabled() -> bool {
+    log_file().is_some()
+}

@@ -40,3 +40,29 @@ tail -f ~/.config/onikey/onikey-debug.log
    bit này và hậu quả là ô địa chỉ Edge nuốt phím.
 3. **Không suy đoán theo tên ứng dụng.** Trên GNOME Wayland không lấy được
    WM_CLASS; mọi quyết định phải dựa vào cái ứng dụng tự khai báo.
+
+## Đo trên VM (2026-08-10): ô địa chỉ trình duyệt và text-input-v3
+
+Thí nghiệm trên VM Fedora 42 GNOME Wayland + Ubuntu 24.04 GNOME X11, bơm phím
+uinput, đọc log engine từng sự kiện:
+
+| Đường vào | ContentType (purpose=URL)? | DeleteSurroundingText? |
+|---|---|---|
+| Chromium **Wayland** `--enable-wayland-ime --wayland-text-input-version=3` | **Có** | **NUỐT** — xoá không ăn, không xác nhận |
+| Chromium Xwayland/X11 (GTK IM) | Không | Có (GTK áp chuẩn) |
+| Firefox (GTK, mọi đường) | Không | Có |
+| GTK app (zenity, gnome-text-editor) | Có (editor khai purpose=0) | Có, xác nhận qua surrounding |
+
+Hệ quả và cách Onikey xử lý (đều đã kiểm chứng bằng log + ảnh màn hình):
+
+1. **ibus-daemon gửi ContentType TRƯỚC FocusIn** → không được quên purpose vô
+   điều kiện ở FocusIn; chỉ quên khi không có ContentType nào đến quanh đó
+   (cờ stale + cửa sổ thời gian).
+2. **Chromium churn**: quanh MỖI lần engine ghi/xoá, Chromium bắn chuỗi
+   blur–refocus + Reset + purpose nhấp nháy 5→0→5. Engine nhận biết churn
+   (phím gõ hoặc ContentType vừa đến < 300ms) và giữ nguyên trạng thái;
+   purpose đến giữa từ thì treo lại, áp khi hết từ.
+3. **Ô nuốt lệnh xoá**: bằng chứng lấy từ surrounding text — nếu chuỗi
+   đáng-lẽ-bị-xoá vẫn đứng trước chuỗi vừa ghi thì ô bị đánh dấu hỏng, engine
+   xoá bù bằng ForwardKeyEvent BackSpace và về Pre-edit đến khi đổi ô. Cờ này
+   sống qua churn, chỉ reset khi đổi ô thật.

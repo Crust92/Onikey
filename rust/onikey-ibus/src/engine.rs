@@ -60,6 +60,24 @@ struct State {
     /// (ibus-daemon gửi ContentType TRƯỚC FocusIn, quên vô điều kiện từng
     /// xoá nhầm nhãn ô địa chỉ vừa nhận — lỗi "chuyển tab bị gạch chân").
     purpose_stale: bool,
+    /// Thời điểm nhận ContentType gần nhất — phân biệt "app vừa khai xong
+    /// rồi blur–refocus tức thì" (churn của Chromium quanh Ctrl+L, phải GIỮ
+    /// nhãn) với "đổi sang ô khác thật" (nhãn đã cũ, phải quên).
+    last_content_type: Option<std::time::Instant>,
+    /// Thời điểm phím gõ cuối — churn (blur/refocus/Reset do chính ta ghi/xoá
+    /// gây ra) luôn nổ ra NGAY sau một phím; người đổi ô thật thì chậm hơn.
+    last_key: Option<std::time::Instant>,
+    /// Purpose đến GIỮA TỪ thì treo ở đây, áp khi từ chốt xong — omnibox
+    /// Chromium nhấp nháy purpose 5→0→5 quanh mỗi lần ta ghi/xoá, reset
+    /// trạng thái theo từng nhịp nháy sẽ cắt vụn từ đang gõ.
+    pending_purpose: Option<u32>,
+    /// Bằng chứng chờ kiểm của lần sửa-có-xoá gần nhất: (chuỗi đáng lẽ bị
+    /// xoá, chuỗi vừa ghi). So với surrounding text app gửi lại — nếu phần
+    /// đáng-xoá vẫn đứng ngay trước phần mới thì ô này NUỐT lệnh xoá
+    /// (omnibox Chromium/Edge qua text-input-v3 bị vậy).
+    delete_evidence: Option<(String, String)>,
+    /// Ô hiện tại bị bắt quả tang nuốt lệnh xoá → dùng Pre-edit đến khi đổi ô.
+    rewrite_broken: bool,
     capabilities: u32,
     /// Chuỗi đã GHI RA ứng dụng ở chế độ không gạch chân — cần nhớ để biết
     /// phải xoá lùi bao nhiêu ký tự khi chữ thay đổi.
@@ -78,6 +96,15 @@ fn config_mtime() -> Option<std::time::SystemTime> {
 }
 
 impl State {
+    /// Sự kiện (FocusIn/Reset/ContentType) nổ ra ngay sau hoạt động của chính
+    /// ta (phím gõ hoặc ContentType vừa đến) là CHURN của ứng dụng, không phải
+    /// người dùng đổi ô thật.
+    fn is_churn(&self) -> bool {
+        let d = std::time::Duration::from_millis(300);
+        self.last_key.is_some_and(|t| t.elapsed() < d)
+            || self.last_content_type.is_some_and(|t| t.elapsed() < d)
+    }
+
     /// Nạp lại cấu hình nếu tệp đã đổi (gọi ở FocusIn — ngoài đường xử lý phím).
     fn reload_config_if_changed(&mut self) {
         let mtime = config_mtime();
@@ -115,6 +142,9 @@ impl State {
         let removed_encoded: String = self.encode(&old_chars[keep..].iter().collect::<String>());
         let backspaces = removed_encoded.chars().count() as u32;
         let tail_encoded = self.encode(&tail);
+        if backspaces > 0 {
+            self.delete_evidence = Some((removed_encoded.clone(), tail_encoded.clone()));
+        }
         self.committed = new_display;
         Action::Rewrite {
             backspaces,
@@ -174,6 +204,9 @@ impl State {
         if self.capabilities & IBUS_CAP_SURROUNDING_TEXT == 0 {
             return false;
         }
+        if self.rewrite_broken {
+            return false; // ô này nuốt lệnh xoá — sửa chữ sẽ chồng chữ
+        }
         if self.cfg.default_input_mode != 1 {
             return true;
         }
@@ -198,6 +231,11 @@ impl OnikeyEngine {
                 cfg,
                 content_purpose: 0,
                 purpose_stale: true,
+                last_content_type: None,
+                last_key: None,
+                pending_purpose: None,
+                delete_evidence: None,
+                rewrite_broken: false,
                 capabilities: 0,
                 committed: String::new(),
                 english_mode: false,
@@ -276,8 +314,15 @@ impl OnikeyEngine {
         let _ = emitter
             .emit("org.freedesktop.IBus.Engine", "RequireSurroundingText", &())
             .await;
-        let _ = tokio::time::timeout(Duration::from_millis(60), self.st_confirm.notified()).await;
+        let ok = tokio::time::timeout(Duration::from_millis(60), self.st_confirm.notified())
+            .await
+            .is_ok();
         self.awaiting_confirm.store(false, Ordering::SeqCst);
+        if !ok {
+            crate::debug::log(format_args!(
+                "xoá {backspaces}: KHÔNG có xác nhận trong 60ms"
+            ));
+        }
     }
 
     /// Phần quyết định: THUẦN ĐỒNG BỘ, không await, không gọi ra ngoài.
@@ -286,6 +331,20 @@ impl OnikeyEngine {
             return Action::Ignore;
         }
         let mut st = self.state.lock().unwrap();
+        st.last_key = Some(std::time::Instant::now());
+        if let Some(p) = st.pending_purpose {
+            if st.committed.is_empty() && st.display_string().is_empty() {
+                st.pending_purpose = None;
+                if st.content_purpose != p {
+                    crate::debug::log(format_args!(
+                        "ContentType (áp sau khi hết từ): purpose {} -> {p}",
+                        st.content_purpose
+                    ));
+                    st.content_purpose = p;
+                    st.delete_evidence = None;
+                }
+            }
+        }
 
         // Phím tắt chuyển Anh–Việt: chốt từ đang gõ rồi lật công tắc.
         if st.cfg.shortcut_matches(shortcut::VI_EN_SWITCH, keyval, state) {
@@ -381,7 +440,8 @@ impl OnikeyEngine {
     ) -> bool {
         let action = self.decide(keyval, state);
         crate::debug::log(format_args!(
-            "phím 0x{keyval:04x} {:?} state=0x{state:x} -> {}",
+            "[{:p}] phím 0x{keyval:04x} {:?} state=0x{state:x} -> {}",
+            &self.state,
             char::from_u32(keyval).unwrap_or('?'),
             match &action {
                 Action::Ignore => "bỏ qua".to_string(),
@@ -429,18 +489,29 @@ impl OnikeyEngine {
     async fn focus_in(&self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
         {
             let mut st = self.state.lock().unwrap();
-            st.core.reset();
-            st.committed.clear();
-            // Ô không khai ContentType (terminal, GTK cũ, Electron cũ) không
-            // gửi gì khi được focus — purpose của ô trước sẽ rò sang nếu cứ
-            // giữ. Nhưng ô có khai thì ibus-daemon gửi ContentType TRƯỚC
-            // FocusIn, nên chỉ được quên khi cờ stale còn nguyên từ focus_out.
-            if st.purpose_stale && st.content_purpose != 0 {
-                crate::debug::log(format_args!(
-                    "focus_in: quên purpose {} (ô mới không khai ContentType)",
-                    st.content_purpose
-                ));
-                st.content_purpose = 0;
+            // Chromium blur–refocus quanh MỖI lần ta ghi/xoá (churn) — nhận
+            // ra bằng ContentType vừa đến tức thì. Churn thì giữ nguyên hết:
+            // từ đang gõ, nhãn ô, cờ chẩn đoán; reset lúc đó là cắt vụn từ.
+            if !st.is_churn() {
+                if st.rewrite_broken {
+                    crate::debug::log(format_args!("focus_in THẬT: reset trạng thái ô (broken->false)"));
+                }
+                st.core.reset();
+                st.committed.clear();
+                // Ô không khai ContentType (terminal, GTK cũ, Electron cũ)
+                // không gửi gì khi được focus — purpose của ô trước sẽ rò
+                // sang nếu cứ giữ. Ô có khai thì ibus-daemon gửi ContentType
+                // TRƯỚC FocusIn, nên chỉ quên khi cờ stale còn từ focus_out.
+                if st.purpose_stale && st.content_purpose != 0 {
+                    crate::debug::log(format_args!(
+                        "focus_in: quên purpose {} (ô mới không khai ContentType)",
+                        st.content_purpose
+                    ));
+                    st.content_purpose = 0;
+                }
+                st.pending_purpose = None;
+                st.delete_evidence = None;
+                st.rewrite_broken = false;
             }
             st.purpose_stale = true;
             st.reload_config_if_changed();
@@ -463,7 +534,16 @@ impl OnikeyEngine {
     }
 
     async fn reset(&self) {
-        self.state.lock().unwrap().core.reset();
+        let mut st = self.state.lock().unwrap();
+        // Chromium gửi Reset sau MỖI lần ô thay đổi (kể cả do chính ta ghi/
+        // xoá bù) — tôn trọng nó giữa từ là vứt từ đang gõ. Churn (ContentType
+        // vừa đến tức thì) thì bỏ qua; Reset thật (đổi ô, bấm chuột) hiếm khi
+        // rơi vào cửa sổ 300ms sau một keystroke.
+        if st.is_churn() && (!st.committed.is_empty() || !st.display_string().is_empty()) {
+            crate::debug::log(format_args!("Reset (churn) — giữ từ đang gõ"));
+            return;
+        }
+        st.core.reset();
     }
 
     async fn enable(&self) {}
@@ -483,11 +563,90 @@ impl OnikeyEngine {
 
     async fn set_cursor_location(&self, _x: i32, _y: i32, _w: i32, _h: i32) {}
 
-    async fn set_surrounding_text(&self, _text: Value<'_>, _cursor: u32, _anchor: u32) {
+    async fn set_surrounding_text(
+        &self,
+        text: Value<'_>,
+        cursor: u32,
+        _anchor: u32,
+        #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
+    ) {
+        if crate::debug::enabled() {
+            // IBusText serialize: struct (sa{sv}sv) — phần tử thứ 3 là chuỗi.
+            let s = match &text {
+                Value::Structure(st) => st
+                    .fields()
+                    .get(2)
+                    .and_then(|f| match f {
+                        Value::Str(s) => Some(s.as_str().to_string()),
+                        _ => None,
+                    })
+                    .unwrap_or_default(),
+                _ => String::new(),
+            };
+            let tail: String = s.chars().take(cursor as usize).collect();
+            let tail: String = tail.chars().rev().take(20).collect::<Vec<_>>().into_iter().rev().collect();
+            crate::debug::log(format_args!("surrounding: …\"{tail}\" cursor={cursor}"));
+        }
         // Ứng dụng báo lại surrounding text — nếu đang chờ xác nhận xoá lùi
         // thì đây chính là tín hiệu "tôi đã áp xong", cho phép ghi tiếp.
         if self.awaiting_confirm.swap(false, Ordering::SeqCst) {
             self.st_confirm.notify_one();
+        }
+        // Đối chiếu bằng chứng: chỉ xét bản surrounding ĐÃ chứa chuỗi mới
+        // (bản trung gian sau-xoá-trước-ghi thì bỏ qua, không kết luận).
+        let s = match &text {
+            Value::Structure(st) => st
+                .fields()
+                .get(2)
+                .and_then(|f| match f {
+                    Value::Str(s) => Some(s.as_str().to_string()),
+                    _ => None,
+                })
+                .unwrap_or_default(),
+            _ => return,
+        };
+        let repair = {
+            let mut st = self.state.lock().unwrap();
+            if let Some((deleted, new)) = st.delete_evidence.take() {
+            let tail: String = s.chars().take(cursor as usize).collect();
+            if tail.ends_with(&new) {
+                let before = &tail[..tail.len() - new.len()];
+                if !deleted.is_empty() && before.ends_with(&deleted) {
+                    st.rewrite_broken = true;
+                    // Chữ trong ô đang chồng (deleted + new). Ô này nuốt
+                    // DeleteSurroundingText nhưng PHÍM BackSpace thật thì phải
+                    // nhận — xoá bù bằng ForwardKeyEvent rồi tiếp tục từ đang
+                    // gõ dạng pre-edit: từ đầu tiên cũng lành lặn.
+                    let n_bs = (deleted.chars().count() + new.chars().count()) as u32;
+                    st.committed.clear();
+                    crate::debug::log(format_args!(
+                        "ô này NUỐT lệnh xoá (thấy {deleted:?} vẫn đứng trước {new:?}) — xoá bù {n_bs} phím, về Pre-edit đến khi đổi ô"
+                    ));
+                    Some((n_bs, st.display_string()))
+                } else {
+                    None
+                }
+            } else {
+                // chưa thấy chuỗi mới — trạng thái trung gian, trả lại chờ bản sau
+                st.delete_evidence = Some((deleted, new));
+                None
+            }
+            } else {
+                None
+            }
+        };
+        if let Some((n_bs, word)) = repair {
+            self.state.lock().unwrap().last_key = Some(std::time::Instant::now());
+            for _ in 0..n_bs {
+                let _ = emitter
+                    .emit(
+                        "org.freedesktop.IBus.Engine",
+                        "ForwardKeyEvent",
+                        &(0xff08u32, 14u32, 0u32),
+                    )
+                    .await;
+            }
+            let _ = update_preedit(&emitter, &word).await;
         }
     }
 
@@ -621,15 +780,26 @@ impl OnikeyEngine {
     fn set_content_type(&self, value: (u32, u32)) {
         let mut st = self.state.lock().unwrap();
         st.purpose_stale = false;
-        if st.content_purpose != value.0 {
-            crate::debug::log(format_args!(
-                "ContentType: purpose {} -> {} (5 = ô địa chỉ)",
-                st.content_purpose, value.0
-            ));
-            st.core.reset();
-            st.committed.clear();
-            st.content_purpose = value.0;
+        st.last_content_type = Some(std::time::Instant::now());
+        if st.content_purpose == value.0 {
+            st.pending_purpose = None;
+            return;
         }
+        if !st.committed.is_empty() || !st.display_string().is_empty() {
+            // Giữa từ — treo lại, áp khi từ chốt (decide sẽ áp).
+            st.pending_purpose = Some(value.0);
+            return;
+        }
+        crate::debug::log(format_args!(
+            "ContentType: purpose {} -> {} (5 = ô địa chỉ, broken {} -> false)",
+            st.content_purpose, value.0, st.rewrite_broken
+        ));
+        st.content_purpose = value.0;
+        st.pending_purpose = None;
+        st.delete_evidence = None;
+        // KHÔNG reset rewrite_broken ở đây: purpose nhấp nháy 5↔0 vẫn là
+        // CÙNG MỘT Ô (churn của Chromium) — cờ chỉ về false khi đổi ô thật
+        // (focus_in ngoài churn).
     }
 }
 
