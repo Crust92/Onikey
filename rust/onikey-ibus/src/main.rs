@@ -48,12 +48,31 @@ impl Factory {
             cfg.default_input_mode,
             if cfg.default_input_mode == 1 { "Pre-edit, có gạch chân" } else { "không gạch chân" }
         ));
-        let e = engine::OnikeyEngine::new(cfg);
+        let e = engine::OnikeyEngine::new(cfg.clone());
         self.conn
             .object_server()
             .at(&obj, e)
             .await
             .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?;
+
+        // Đăng ký menu NGAY khi engine được tạo, đừng đợi FocusIn — sau khi
+        // đăng nhập GNOME tạo engine mà chưa focus ô nào, menu ở icon vi sẽ
+        // trống. Trễ nửa giây để GNOME kịp lắng nghe signal trên path mới.
+        let conn = self.conn.clone();
+        let path = obj.clone();
+        tokio::spawn(async move {
+            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+            if let Ok(emitter) =
+                zbus::object_server::SignalEmitter::new(&conn, path)
+            {
+                let list = crate::ibus_prop::onikey_prop_list(&cfg);
+                if let Ok(props) = zvariant::OwnedValue::try_from(zvariant::Value::from(list)) {
+                    let _ = emitter
+                        .emit("org.freedesktop.IBus.Engine", "RegisterProperties", &(props,))
+                        .await;
+                }
+            }
+        });
         Ok(obj)
     }
 

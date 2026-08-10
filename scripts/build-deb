@@ -22,10 +22,6 @@ sh scripts/install /usr "$STAGE"
 # 2) Kem lenh 'onikey-update' vao /usr/bin
 install -Dm755 scripts/onikey-update "$STAGE/usr/bin/onikey-update"
 
-# 2b) Autostart: danh thuc engine sau khi dang nhap (loi kich hoat GNOME Wayland)
-install -Dm755 scripts/onikey-startup-fix "$STAGE/usr/bin/onikey-startup-fix"
-install -Dm644 scripts/onikey-startup-fix.desktop "$STAGE/etc/xdg/autostart/onikey-startup-fix.desktop"
-
 # 3) Metadata goi
 mkdir -p "$STAGE/DEBIAN"
 cat > "$STAGE/DEBIAN/control" <<EOF

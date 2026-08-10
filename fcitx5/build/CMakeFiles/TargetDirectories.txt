@@ -1,9 +1,0 @@
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/generate-desktop-file.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/translation-file.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/onikey.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/edit_cache.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/rebuild_cache.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/list_install_components.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/install.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/install/local.dir
-/home/d3v/Onikey/fcitx5/build/CMakeFiles/install/strip.dir
