@@ -1,6 +1,10 @@
-Onikey — Bộ gõ tiếng Việt cho Linux
-===================================
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://opensource.org/licenses/GPL-3.0)
+<p align="center">
+  <img src="docs/assets/onikey-banner.png" alt="Onikey — Bộ gõ tiếng Việt cho Linux" width="900">
+</p>
+
+<p align="center">
+  <a href="https://opensource.org/licenses/GPL-3.0"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3"></a>
+</p>
 
 Bộ gõ tiếng Việt cho **IBus** (GNOME, Ubuntu…) và **Fcitx5** (KDE…), engine
 viết bằng Rust. Cách gõ kế thừa từ [BambooEngine](https://github.com/BambooEngine/bamboo-core);
