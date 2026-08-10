@@ -495,17 +495,16 @@ impl OnikeyEngine {
                 let _ = crate::config::save_string("OutputCharset", cs);
                 changed = true;
             }
-        } else if let Some(m) = name.strip_prefix(pr::PREFIX_INPUT_MODE) {
-            if let Ok(m) = m.parse::<u32>() {
-                let mut st = self.state.lock().unwrap();
-                if radio_checked && (m == 1 || m == 2) && st.cfg.default_input_mode != m {
-                    st.cfg.default_input_mode = m;
-                    st.core.reset();
-                    st.committed.clear();
-                    drop(st);
-                    let _ = crate::config::save_number("DefaultInputMode", m);
-                    changed = true; // vẽ lại menu: nút gạt ô địa chỉ hiện/ẩn theo chế độ
-                }
+        } else if name == pr::KEY_MODE_NO_UNDERLINE {
+            let m = if state != 0 { 2 } else { 1 };
+            let mut st = self.state.lock().unwrap();
+            if st.cfg.default_input_mode != m {
+                st.cfg.default_input_mode = m;
+                st.core.reset();
+                st.committed.clear();
+                drop(st);
+                let _ = crate::config::save_number("DefaultInputMode", m);
+                changed = true; // vẽ lại menu: nút gạt ô địa chỉ hiện/ẩn theo chế độ
             }
         } else {
             match name.as_str() {
