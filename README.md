@@ -100,10 +100,14 @@ chuyển sang `crust92.github.io` và địa chỉ cũ KHÔNG chuyển hướng 
 Pages không làm việc đó khi đổi tên tài khoản) — `apt update` sẽ báo 404 cho
 tới khi trỏ lại:
 ```sh
+curl -fsSL https://crust92.github.io/Onikey/onikey-archive-keyring.gpg \
+  | sudo tee /usr/share/keyrings/onikey-archive-keyring.gpg >/dev/null
 echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://crust92.github.io/Onikey stable main" \
   | sudo tee /etc/apt/sources.list.d/onikey.list
 sudo apt update && sudo apt upgrade
 ```
+Phải tải lại **cả tệp khoá**: bản tải từ địa chỉ cũ nay chỉ là trang 404, dùng
+tiếp thì `apt update` báo `NO_PUBKEY ... is not signed`.
 
 ## Cài đặt từ mã nguồn
 

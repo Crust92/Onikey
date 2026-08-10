@@ -72,10 +72,14 @@ Settings digging.
 account was renamed and GitHub Pages does not redirect, so `apt update`
 returns 404 until you point at the new host:
 ```sh
+curl -fsSL https://crust92.github.io/Onikey/onikey-archive-keyring.gpg \
+  | sudo tee /usr/share/keyrings/onikey-archive-keyring.gpg >/dev/null
 echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://crust92.github.io/Onikey stable main" \
   | sudo tee /etc/apt/sources.list.d/onikey.list
 sudo apt update && sudo apt upgrade
 ```
+Re-fetch the **keyring** too — the copy from the old host is now a 404 page,
+which makes `apt update` fail with `NO_PUBKEY ... is not signed`.
 
 ## Build & install
 
