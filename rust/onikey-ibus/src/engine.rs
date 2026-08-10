@@ -241,6 +241,10 @@ impl OnikeyEngine {
     async fn register_props(&self, emitter: &SignalEmitter<'_>) {
         let list = {
             let st = self.state.lock().unwrap();
+            crate::debug::log(format_args!(
+                "register_props: mode={} ibflags={:#x}",
+                st.cfg.default_input_mode, st.cfg.ib_flags
+            ));
             crate::ibus_prop::onikey_prop_list(&st.cfg)
         };
         let props = OwnedValue::try_from(Value::from(list)).expect("dựng PropList");
@@ -421,6 +425,17 @@ impl OnikeyEngine {
             let mut st = self.state.lock().unwrap();
             st.core.reset();
             st.committed.clear();
+            // Quên purpose của ô trước: app không khai ContentType (terminal,
+            // GTK cũ, Electron cũ) sẽ không gửi gì — giữ purpose cũ làm ô
+            // thường bị coi là ô địa chỉ. Ô URL thật thì ibus-daemon đẩy lại
+            // ContentType ngay sau FocusIn nên không mất gì.
+            if st.content_purpose != 0 {
+                crate::debug::log(format_args!(
+                    "focus_in: quên purpose {} của ô trước",
+                    st.content_purpose
+                ));
+                st.content_purpose = 0;
+            }
             st.reload_config_if_changed();
         }
         // Báo cho ứng dụng biết ta cần surrounding text; thiếu bước này thì
@@ -448,7 +463,14 @@ impl OnikeyEngine {
     async fn destroy(&self) {}
 
     async fn set_capabilities(&self, caps: u32) {
-        self.state.lock().unwrap().capabilities = caps;
+        let mut st = self.state.lock().unwrap();
+        if st.capabilities != caps {
+            crate::debug::log(format_args!(
+                "capabilities: {:#x} -> {:#x}",
+                st.capabilities, caps
+            ));
+        }
+        st.capabilities = caps;
     }
 
     async fn set_cursor_location(&self, _x: i32, _y: i32, _w: i32, _h: i32) {}
@@ -557,6 +579,19 @@ impl OnikeyEngine {
             // menu cho radio/toggle đúng trạng thái mới.
             self.state.lock().unwrap().cfg_mtime = config_mtime();
             self.register_props(&emitter).await;
+            if name == pr::KEY_MODE_NO_UNDERLINE {
+                // RegisterProperties chỉ có tác dụng cho LẦN MỞ MENU SAU;
+                // UpdateProperty mới vẽ lại mục lẻ ngay khi menu đang mở —
+                // nút ô địa chỉ phải mờ/sáng tức thì theo công tắc chế độ.
+                let url_prop = {
+                    let st = self.state.lock().unwrap();
+                    crate::ibus_prop::url_no_underline_prop(&st.cfg)
+                };
+                let v = OwnedValue::try_from(Value::from(url_prop)).expect("dựng IBusProperty");
+                let _ = emitter
+                    .emit("org.freedesktop.IBus.Engine", "UpdateProperty", &(v,))
+                    .await;
+            }
         }
     }
 
@@ -578,6 +613,10 @@ impl OnikeyEngine {
     fn set_content_type(&self, value: (u32, u32)) {
         let mut st = self.state.lock().unwrap();
         if st.content_purpose != value.0 {
+            crate::debug::log(format_args!(
+                "ContentType: purpose {} -> {} (5 = ô địa chỉ)",
+                st.content_purpose, value.0
+            ));
             st.core.reset();
             st.committed.clear();
             st.content_purpose = value.0;
