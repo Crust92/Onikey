@@ -470,26 +470,42 @@ impl OnikeyEngine {
         use crate::ibus_prop as pr;
         crate::debug::log(format_args!("PropertyActivate: {name} state={state}"));
 
+        // GNOME gửi PropertyActivate cho CẢ NHÓM radio khi bấm một mục
+        // (mục chọn state=1, mọi mục khác state=0, thứ tự đến không đảm
+        // bảo). Radio vì thế chỉ được nhận state=CHECKED — xử lý cả loạt
+        // state=0 từng làm config bị ghi thành mục ngẫu nhiên và menu bị
+        // vẽ lại dồn dập không đóng được.
+        let radio_checked = state == pr::STATE_CHECKED;
         let mut changed = false;
         if let Some(im) = name.strip_prefix(pr::PREFIX_INPUT_METHOD) {
-            let _ = crate::config::save_string("InputMethod", im);
             let mut st = self.state.lock().unwrap();
-            st.cfg.input_method = im.to_string();
-            st.core = Core::new(parse_input_method(im), st.cfg.flags);
-            st.committed.clear();
-            changed = true;
+            if radio_checked && st.cfg.input_method != im {
+                st.cfg.input_method = im.to_string();
+                st.core = Core::new(parse_input_method(im), st.cfg.flags);
+                st.committed.clear();
+                drop(st);
+                let _ = crate::config::save_string("InputMethod", im);
+                changed = true;
+            }
         } else if let Some(cs) = name.strip_prefix(pr::PREFIX_CHARSET) {
-            let _ = crate::config::save_string("OutputCharset", cs);
-            self.state.lock().unwrap().cfg.output_charset = cs.to_string();
-            changed = true;
+            let mut st = self.state.lock().unwrap();
+            if radio_checked && st.cfg.output_charset != cs {
+                st.cfg.output_charset = cs.to_string();
+                drop(st);
+                let _ = crate::config::save_string("OutputCharset", cs);
+                changed = true;
+            }
         } else if let Some(m) = name.strip_prefix(pr::PREFIX_INPUT_MODE) {
             if let Ok(m) = m.parse::<u32>() {
-                let _ = crate::config::save_number("DefaultInputMode", m);
                 let mut st = self.state.lock().unwrap();
-                st.cfg.default_input_mode = m;
-                st.core.reset();
-                st.committed.clear();
-                changed = true; // vẽ lại menu: nút gạt ô địa chỉ hiện/ẩn theo chế độ
+                if radio_checked && (m == 1 || m == 2) && st.cfg.default_input_mode != m {
+                    st.cfg.default_input_mode = m;
+                    st.core.reset();
+                    st.committed.clear();
+                    drop(st);
+                    let _ = crate::config::save_number("DefaultInputMode", m);
+                    changed = true; // vẽ lại menu: nút gạt ô địa chỉ hiện/ẩn theo chế độ
+                }
             }
         } else {
             match name.as_str() {
@@ -504,6 +520,9 @@ impl OnikeyEngine {
                         _ => ibflag::AUTO_NON_VN_RESTORE,
                     };
                     let mut st = self.state.lock().unwrap();
+                    if (state != 0) == (st.cfg.ib_flags & bit != 0) {
+                        return; // không đổi gì — sự kiện sync của panel, bỏ qua
+                    }
                     if state != 0 {
                         st.cfg.ib_flags |= bit;
                     } else {
