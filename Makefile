@@ -26,7 +26,7 @@ engine_name=onikey
 engine_gui_name=onikey-setup.desktop
 ibus_e_name=onikey-engine
 pkg_name=$(engine_name)
-version=1.0.0
+version=1.0.1
 
 engine_dir=$(PREFIX)/share/$(pkg_name)
 ibus_dir=$(PREFIX)/share/ibus
