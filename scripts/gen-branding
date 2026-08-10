@@ -3,8 +3,8 @@
 
     python3 scripts/gen-branding      # sinh .svg rồi render .png
 
-Ảnh dựng từ CHÍNH icon app (icons/vi.svg) nên đổi icon là ảnh theo — không
-có bản sao vẽ tay nào trôi dạt khỏi bộ nhận diện. Cần rsvg-convert để ra PNG;
+Ảnh dựng từ CHÍNH logo app (icons/onikey.svg) nên sửa logo là ảnh theo —
+không có bản sao vẽ tay nào trôi dạt khỏi bộ nhận diện. Cần rsvg-convert để ra PNG;
 thiếu thì vẫn có .svg dùng được.
 
 Kích thước: banner 1200×630 (đúng tỉ lệ 1.91:1 mà Facebook/OG dùng cho ảnh
@@ -12,7 +12,6 @@ xem trước liên kết, cũng vừa đẹp làm ảnh đầu README); vuông 1
 đăng trên dòng thời gian.
 """
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
@@ -56,21 +55,19 @@ URL = "github.com/Crust92/Onikey"
 TYPED, RESULT = "tieengs Vieejt", "tiếng Việt"
 
 
-def v_path() -> str:
-    """Nét chữ V trắng, lấy thẳng từ icon app."""
-    src = (ROOT / "icons" / "vi.svg").read_text()
-    m = re.search(r'<path d="(m41\.029.*?)" fill', src, re.S)
-    if not m:
-        sys.exit("không tìm thấy nét chữ V trong icons/vi.svg")
-    return m.group(1)
+def logo() -> tuple:
+    """Logo Onikey lấy thẳng từ icons/onikey.svg: (phần <defs>, phần hình)."""
+    src = (ROOT / "icons" / "onikey.svg").read_text()
+    if "</defs>" not in src:
+        sys.exit("icons/onikey.svg không có <defs> — file hỏng?")
+    defs = src[src.index("<defs>") + 6 : src.index("</defs>")]
+    body = src[src.index("</defs>") + 7 : src.rindex("</svg>")]
+    return defs, body
 
 
 def mark(x: float, y: float, scale: float, v: str) -> str:
-    """Logo: nền bo góc gradient + chữ V (icon 48×48 phóng theo scale)."""
-    return f"""<g transform="translate({x},{y}) scale({scale})">
-  <rect width="48" height="48" rx="11" fill="url(#accent)"/>
-  <g transform="matrix(.39686 0 0 .39686 -2.2501 -67.618)"><path d="{v}" fill="#ffffff" fill-rule="evenodd"/></g>
-</g>"""
+    """Đặt logo tại (x,y), phóng theo scale (logo gốc 48×48)."""
+    return f'<g transform="translate({x},{y}) scale({scale})">{v}</g>'
 
 
 def demo_card(x: float, y: float, t: dict) -> str:
@@ -101,13 +98,13 @@ def chips(x: float, y: float, items) -> str:
     return f'<g font-size="20" fill="#d7dbe8">{"".join(out)}</g>'
 
 
-def banner(t: dict, v: str) -> str:
+def banner(t: dict, v: str, ldefs: str) -> str:
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Ubuntu">
-<defs>{DEFS}</defs>
+<defs>{DEFS}{ldefs}</defs>
 <rect width="1200" height="630" fill="url(#bg)"/>
 <ellipse cx="1020" cy="130" rx="430" ry="340" fill="url(#glow)"/>
 <ellipse cx="140" cy="610" rx="380" ry="270" fill="url(#glow2)"/>
-{mark(84, 78, 2.0, v)}
+{mark(82, 74, 2.1, v)}
 <text x="196" y="144" font-size="76" font-weight="700" fill="#ffffff" letter-spacing="-1">Onikey</text>
 <text x="86" y="252" font-size="42" font-weight="500" fill="#e8eaf2">{t['tagline']}</text>
 <text x="86" y="298" font-size="24" fill="#98a0b4">{t['sub']}</text>
@@ -119,13 +116,13 @@ def banner(t: dict, v: str) -> str:
 </svg>"""
 
 
-def square(t: dict, v: str) -> str:
+def square(t: dict, v: str, ldefs: str) -> str:
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" font-family="Ubuntu">
-<defs>{DEFS}</defs>
+<defs>{DEFS}{ldefs}</defs>
 <rect width="1080" height="1080" fill="url(#bg)"/>
 <ellipse cx="880" cy="120" rx="430" ry="360" fill="url(#glow)"/>
 <ellipse cx="120" cy="1000" rx="420" ry="320" fill="url(#glow2)"/>
-{mark(444, 80, 4.0, v)}
+{mark(444, 78, 4.0, v)}
 <text x="540" y="372" font-size="92" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-1">Onikey</text>
 <text x="540" y="434" font-size="42" font-weight="500" fill="#e8eaf2" text-anchor="middle">{t['tagline']}</text>
 <text x="540" y="478" font-size="25" fill="#98a0b4" text-anchor="middle">{t['sub']}</text>
@@ -137,11 +134,11 @@ def square(t: dict, v: str) -> str:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    v = v_path()
+    ldefs, v = logo()
     files = {
-        "onikey-banner.svg": banner(VI, v),
-        "onikey-banner-en.svg": banner(EN, v),
-        "onikey-square.svg": square(VI, v),
+        "onikey-banner.svg": banner(VI, v, ldefs),
+        "onikey-banner-en.svg": banner(EN, v, ldefs),
+        "onikey-square.svg": square(VI, v, ldefs),
     }
     for name, body in files.items():
         (OUT / name).write_text(body)
