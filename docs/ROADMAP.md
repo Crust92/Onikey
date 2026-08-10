@@ -128,8 +128,19 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
       trước chữ (bài passsowrd dạng Fcitx); (2) máy chưa có tệp cấu hình phải
       nhận default có auto-restore — default ib_flags=0 làm "expression" thành
       "ẽpresion". CI build addon mỗi lần push.
-- [ ] Còn lại cho Fcitx5: đóng gói (.deb/.rpm), chế độ không gạch chân, menu.
-- [ ] `onikey-xim`: dùng crate `xim` (của kime) → app X11 cổ điển, Wine, Java.
+- [x] **Fcitx5 chế độ không gạch chân — đạt**: theo `DefaultInputMode` chung,
+      chỉ bật khi app có surrounding text; xoá lùi đếm trên chuỗi đã mã hoá;
+      so phần đầu chung theo byte rồi lùi về ranh giới UTF-8. Ảnh VM:
+      `tiếng Việt password đường` không gạch chân. Gói `fcitx5-onikey.deb`
+      đã có trong release v1.0.0.
+- [x] **XIM — kiểm chứng KHÔNG CẦN viết server riêng**: cả IBus lẫn Fcitx5
+      đều có XIM frontend sẵn, và cả hai đường đã gõ thật ra tiếng Việt qua
+      lõi Onikey (ảnh VM, `GTK_IM_MODULE=xim` + `XMODIFIERS=@im=ibus|fcitx`).
+      App Wine/Java đi đường này. Lưu ý fcitx5: trạng thái bật/tắt theo TỪNG
+      cửa sổ trừ khi đặt `ShareInputState=All` — nên khuyên người dùng đặt.
+- [ ] Còn lại cho Fcitx5: menu/systray (fcitx5-configtool đã đủ dùng).
+- [x] ~~`onikey-xim` server riêng~~ — KHÔNG CẦN: XIM frontend của IBus/Fcitx5
+      phủ được (đã kiểm chứng, xem Giai đoạn D).
 - [ ] `onikey-wayland`: `zwp_input_method_v2` → sway/hyprland (và KDE).
       **Không** dùng được trên GNOME, xem mục 1.
 - [ ] `onikey-config`: GUI cấu hình viết lại (gtk4-rs hoặc Slint), dùng chung
