@@ -181,18 +181,20 @@ pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
         checked(cfg.default_input_mode != 1),
         None,
     )];
-    // Nút gạt CHỈ HIỆN khi đang ở chế độ gạch chân — ở chế độ 2 mọi ô đã
-    // không gạch chân sẵn, bày thêm công tắc vô nghĩa chỉ gây rối.
-    if cfg.default_input_mode == 1 {
-        other_items.push(separator());
-        other_items.push(prop(
-            KEY_URL_NO_UNDERLINE,
-            PROP_TYPE_TOGGLE,
-            "Không gạch chân ở ô địa chỉ trình duyệt",
-            checked(cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0),
-            None,
-        ));
-    }
+    // Nút gạt ô địa chỉ LUÔN CÓ MẶT, chỉ MỜ ĐI khi ở chế độ không gạch
+    // chân (mọi ô đã không gạch chân sẵn). Không được thêm/bớt mục theo
+    // trạng thái: GNOME đóng menu khi re-register làm menu NGẮN đi —
+    // cấu trúc bất biến thì menu ở lại, đúng ý người dùng.
+    other_items.push(separator());
+    let mut url_toggle = prop(
+        KEY_URL_NO_UNDERLINE,
+        PROP_TYPE_TOGGLE,
+        "Không gạch chân ở ô địa chỉ trình duyệt",
+        checked(cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0),
+        None,
+    );
+    url_toggle.sensitive = cfg.default_input_mode == 1;
+    other_items.push(url_toggle);
 
     prop_list(vec![
         prop(
