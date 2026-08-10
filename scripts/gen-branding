@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""Sinh ảnh nhận diện Onikey (banner + ảnh vuông) ra docs/assets/.
+
+    python3 scripts/gen-branding      # sinh .svg rồi render .png
+
+Ảnh dựng từ CHÍNH icon app (icons/vi.svg) nên đổi icon là ảnh theo — không
+có bản sao vẽ tay nào trôi dạt khỏi bộ nhận diện. Cần rsvg-convert để ra PNG;
+thiếu thì vẫn có .svg dùng được.
+
+Kích thước: banner 1200×630 (đúng tỉ lệ 1.91:1 mà Facebook/OG dùng cho ảnh
+xem trước liên kết, cũng vừa đẹp làm ảnh đầu README); vuông 1080×1080 cho bài
+đăng trên dòng thời gian.
+"""
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+OUT = ROOT / "docs" / "assets"
+
+# Màu lấy từ icon app: đỏ #e3163c, cam #f39662, chữ trắng.
+DEFS = """
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#0e0f16"/><stop offset="0.55" stop-color="#14121d"/><stop offset="1" stop-color="#1c1220"/>
+  </linearGradient>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#f39662"/><stop offset="1" stop-color="#e3163c"/>
+  </linearGradient>
+  <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#e3163c" stop-opacity="0.42"/><stop offset="1" stop-color="#e3163c" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="glow2" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#f39662" stop-opacity="0.26"/><stop offset="1" stop-color="#f39662" stop-opacity="0"/>
+  </radialGradient>
+"""
+
+VI = dict(
+    tagline="Bộ gõ tiếng Việt cho Linux",
+    sub="Engine Rust · IBus &amp; Fcitx5 · Wayland &amp; X11",
+    chips=[("9 kiểu gõ", 150), ("9 bảng mã", 150), ("Gõ tắt · Macro", 176)],
+    foot="Cài một lệnh — bấm Super+Space là gõ tiếng Việt.",
+    lbl_in="bạn gõ",
+    lbl_out="màn hình hiện",
+)
+EN = dict(
+    tagline="Vietnamese input for Linux",
+    sub="Rust engine · IBus &amp; Fcitx5 · Wayland &amp; X11",
+    chips=[("9 layouts", 150), ("9 charsets", 152), ("Macros", 130)],
+    foot="One command to install — then just press Super+Space.",
+    lbl_in="you type",
+    lbl_out="you get",
+)
+URL = "github.com/Crust92/Onikey"
+TYPED, RESULT = "tieengs Vieejt", "tiếng Việt"
+
+
+def v_path() -> str:
+    """Nét chữ V trắng, lấy thẳng từ icon app."""
+    src = (ROOT / "icons" / "vi.svg").read_text()
+    m = re.search(r'<path d="(m41\.029.*?)" fill', src, re.S)
+    if not m:
+        sys.exit("không tìm thấy nét chữ V trong icons/vi.svg")
+    return m.group(1)
+
+
+def mark(x: float, y: float, scale: float, v: str) -> str:
+    """Logo: nền bo góc gradient + chữ V (icon 48×48 phóng theo scale)."""
+    return f"""<g transform="translate({x},{y}) scale({scale})">
+  <rect width="48" height="48" rx="11" fill="url(#accent)"/>
+  <g transform="matrix(.39686 0 0 .39686 -2.2501 -67.618)"><path d="{v}" fill="#ffffff" fill-rule="evenodd"/></g>
+</g>"""
+
+
+def demo_card(x: float, y: float, t: dict) -> str:
+    """Khung minh hoạ: chuỗi phím gõ vào -> tiếng Việt hiện ra."""
+    return f"""<g transform="translate({x},{y})">
+  <rect x="0" y="0" width="430" height="330" rx="22" fill="#12141d" fill-opacity="0.94" stroke="#2b3145"/>
+  <g transform="translate(28,26)">
+    <circle cx="8" cy="8" r="6" fill="#ff5f57"/><circle cx="30" cy="8" r="6" fill="#febc2e"/><circle cx="52" cy="8" r="6" fill="#28c840"/>
+  </g>
+  <text x="30" y="112" font-size="21" fill="#6f778c">{t['lbl_in']}</text>
+  <text x="30" y="160" font-size="38" font-weight="500" fill="#aab2c6" font-family="Ubuntu Mono, monospace">{TYPED}</text>
+  <line x1="30" y1="174" x2="330" y2="174" stroke="#7b8398" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="30" y="238" font-size="21" fill="#6f778c">{t['lbl_out']}</text>
+  <text x="30" y="290" font-size="46" font-weight="700" fill="#ffffff">{RESULT}</text>
+  <rect x="254" y="254" width="4" height="44" fill="url(#accent)"/>
+</g>"""
+
+
+def chips(x: float, y: float, items) -> str:
+    out, cx = [], x
+    for label, w in items:
+        out.append(
+            f'<rect x="{cx}" y="{y}" width="{w}" height="46" rx="23" fill="#ffffff" '
+            f'fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.14"/>'
+            f'<text x="{cx + w / 2}" y="{y + 29}" text-anchor="middle">{label}</text>'
+        )
+        cx += w + 12
+    return f'<g font-size="20" fill="#d7dbe8">{"".join(out)}</g>'
+
+
+def banner(t: dict, v: str) -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Ubuntu">
+<defs>{DEFS}</defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<ellipse cx="1020" cy="130" rx="430" ry="340" fill="url(#glow)"/>
+<ellipse cx="140" cy="610" rx="380" ry="270" fill="url(#glow2)"/>
+{mark(84, 78, 2.0, v)}
+<text x="196" y="144" font-size="76" font-weight="700" fill="#ffffff" letter-spacing="-1">Onikey</text>
+<text x="86" y="252" font-size="42" font-weight="500" fill="#e8eaf2">{t['tagline']}</text>
+<text x="86" y="298" font-size="24" fill="#98a0b4">{t['sub']}</text>
+{chips(86, 344, t['chips'])}
+<line x1="86" y1="432" x2="586" y2="432" stroke="#ffffff" stroke-opacity="0.10"/>
+<text x="86" y="480" font-size="23" fill="#858da2">{t['foot']}</text>
+<text x="86" y="534" font-size="24" font-weight="500" fill="#f0a273">{URL}</text>
+{demo_card(690, 150, t)}
+</svg>"""
+
+
+def square(t: dict, v: str) -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" font-family="Ubuntu">
+<defs>{DEFS}</defs>
+<rect width="1080" height="1080" fill="url(#bg)"/>
+<ellipse cx="880" cy="120" rx="430" ry="360" fill="url(#glow)"/>
+<ellipse cx="120" cy="1000" rx="420" ry="320" fill="url(#glow2)"/>
+{mark(444, 80, 4.0, v)}
+<text x="540" y="372" font-size="92" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="-1">Onikey</text>
+<text x="540" y="434" font-size="42" font-weight="500" fill="#e8eaf2" text-anchor="middle">{t['tagline']}</text>
+<text x="540" y="478" font-size="25" fill="#98a0b4" text-anchor="middle">{t['sub']}</text>
+{demo_card(325, 528, t)}
+<text x="540" y="936" font-size="26" fill="#858da2" text-anchor="middle">{t['foot']}</text>
+<text x="540" y="996" font-size="28" font-weight="500" fill="#f0a273" text-anchor="middle">{URL}</text>
+</svg>"""
+
+
+def main() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    v = v_path()
+    files = {
+        "onikey-banner.svg": banner(VI, v),
+        "onikey-banner-en.svg": banner(EN, v),
+        "onikey-square.svg": square(VI, v),
+    }
+    for name, body in files.items():
+        (OUT / name).write_text(body)
+        print("svg:", (OUT / name).relative_to(ROOT))
+
+    rsvg = shutil.which("rsvg-convert")
+    if not rsvg:
+        print("(không có rsvg-convert — bỏ qua bước render PNG)")
+        return
+    for name in files:
+        src, dst = OUT / name, OUT / name.replace(".svg", ".png")
+        width = 1080 if "square" in name else 1200
+        subprocess.run([rsvg, str(src), "-w", str(width), "-o", str(dst)], check=True)
+        print("png:", dst.relative_to(ROOT))
+
+
+if __name__ == "__main__":
+    main()
