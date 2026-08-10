@@ -78,6 +78,19 @@ rust/onikey-ibus      engine IBus (zbus) — binary onikey-engine-rs, TÊN ENGIN
 *.go                  engine Go dự phòng — tên engine "OnikeyGo", sẽ gỡ khi hết vai trò
 ```
 
+## Cài đặt
+
+**Cách khuyến nghị (Ubuntu/Debian) — cài một lần, về sau `apt upgrade` tự lên bản mới:**
+```sh
+curl -fsSL https://xtcrust.github.io/Onikey/onikey-archive-keyring.gpg \
+  | sudo tee /usr/share/keyrings/onikey-archive-keyring.gpg >/dev/null
+echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://xtcrust.github.io/Onikey stable main" \
+  | sudo tee /etc/apt/sources.list.d/onikey.list
+sudo apt update
+sudo apt install onikey          # bộ gõ cho IBus (GNOME mặc định)
+sudo apt install fcitx5-onikey   # addon cho Fcitx5 (KDE...)
+```
+
 ## Cài đặt từ mã nguồn
 
 **Yêu cầu (Ubuntu/Debian và tương tự):**

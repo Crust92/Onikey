@@ -1,0 +1,46 @@
+#!/bin/bash
+# apt-repo — dựng kho APT tĩnh (ký GPG) từ các gói .deb, để phục vụ qua
+# GitHub Pages. Người dùng thêm source một lần, về sau `apt upgrade` là lên
+# bản mới.
+#
+#   scripts/apt-repo <thư-mục-ra> <deb1> [deb2 ...]
+#
+# Cần: apt-ftparchive (gói apt-utils), dpkg-scanpackages (dpkg-dev), và một
+# khoá GPG ký kho. Chọn khoá bằng biến ONIKEY_APT_KEY (mặc định: khoá có
+# uid "Onikey APT Repository").
+set -euo pipefail
+
+OUT="$1"; shift
+KEY="${ONIKEY_APT_KEY:-Onikey APT Repository}"
+DIST=stable
+COMP=main
+ARCH=amd64
+
+mkdir -p "$OUT/pool/main" "$OUT/dists/$DIST/$COMP/binary-$ARCH"
+for deb in "$@"; do
+  cp -f "$deb" "$OUT/pool/main/"
+done
+
+cd "$OUT"
+# Packages + nén
+dpkg-scanpackages --multiversion pool /dev/null > "dists/$DIST/$COMP/binary-$ARCH/Packages"
+gzip -9 -k -f "dists/$DIST/$COMP/binary-$ARCH/Packages"
+
+# Release (kèm checksum) — apt-ftparchive tự tính
+apt-ftparchive \
+  -o "APT::FTPArchive::Release::Origin=Onikey" \
+  -o "APT::FTPArchive::Release::Label=Onikey" \
+  -o "APT::FTPArchive::Release::Suite=$DIST" \
+  -o "APT::FTPArchive::Release::Codename=$DIST" \
+  -o "APT::FTPArchive::Release::Architectures=$ARCH" \
+  -o "APT::FTPArchive::Release::Components=$COMP" \
+  release "dists/$DIST" > "dists/$DIST/Release"
+
+# Ký: Release.gpg (chữ ký rời) + InRelease (ký ôm nội dung)
+gpg --batch --yes -u "$KEY" -abs -o "dists/$DIST/Release.gpg" "dists/$DIST/Release"
+gpg --batch --yes -u "$KEY" --clearsign -o "dists/$DIST/InRelease" "dists/$DIST/Release"
+
+# Khoá công khai cho người dùng tải (dạng nhị phân, dùng thẳng với signed-by)
+gpg --batch --yes --export "$KEY" > onikey-archive-keyring.gpg
+
+echo "kho APT sẵn sàng tại: $OUT"
