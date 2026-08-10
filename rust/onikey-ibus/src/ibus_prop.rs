@@ -108,6 +108,20 @@ fn checked(b: bool) -> u32 {
     }
 }
 
+/// Nút gạt ô địa chỉ — tách riêng để engine gửi UpdateProperty cập nhật
+/// TẠI CHỖ khi menu đang mở (GNOME chỉ vẽ lại mục lẻ qua tín hiệu này).
+pub fn url_no_underline_prop(cfg: &Config) -> IBusProperty {
+    let mut p = prop(
+        KEY_URL_NO_UNDERLINE,
+        PROP_TYPE_TOGGLE,
+        "Không gạch chân ở ô địa chỉ trình duyệt",
+        checked(cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0),
+        None,
+    );
+    p.sensitive = cfg.default_input_mode == 1;
+    p
+}
+
 /// Menu đầy đủ, dựng theo cấu hình hiện tại.
 pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
     // Kiểu gõ › — radio theo danh sách kiểu gõ của lõi
@@ -186,15 +200,7 @@ pub fn onikey_prop_list(cfg: &Config) -> IBusPropList {
     // trạng thái: GNOME đóng menu khi re-register làm menu NGẮN đi —
     // cấu trúc bất biến thì menu ở lại, đúng ý người dùng.
     other_items.push(separator());
-    let mut url_toggle = prop(
-        KEY_URL_NO_UNDERLINE,
-        PROP_TYPE_TOGGLE,
-        "Không gạch chân ở ô địa chỉ trình duyệt",
-        checked(cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0),
-        None,
-    );
-    url_toggle.sensitive = cfg.default_input_mode == 1;
-    other_items.push(url_toggle);
+    other_items.push(url_no_underline_prop(cfg));
 
     prop_list(vec![
         prop(
