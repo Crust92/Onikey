@@ -55,6 +55,16 @@ rust/onikey-ibus      IBus engine (zbus) — binary onikey-engine-rs, engine nam
 *.go                  legacy Go engine — engine name "OnikeyGo", kept as fallback
 ```
 
+## Install (recommended — future `apt upgrade` keeps you current)
+
+```sh
+curl -fsSL https://xtcrust.github.io/Onikey/onikey-archive-keyring.gpg \
+  | sudo tee /usr/share/keyrings/onikey-archive-keyring.gpg >/dev/null
+echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://xtcrust.github.io/Onikey stable main" \
+  | sudo tee /etc/apt/sources.list.d/onikey.list
+sudo apt update && sudo apt install onikey     # or fcitx5-onikey
+```
+
 ## Build & install
 
 Requirements (Ubuntu/Debian): `golang cargo gcc make pkg-config libgtk-3-dev libxtst-dev libx11-dev`.

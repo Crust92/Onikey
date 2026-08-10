@@ -1,0 +1,37 @@
+#!/bin/bash
+# apt-publish — build gói mới, cập nhật kho APT trên nhánh gh-pages và đẩy lên
+# GitHub Pages. Chạy TRÊN MÁY PHÁT HÀNH (khoá ký nằm trong ~/.gnupg, cố ý
+# không đưa lên CI — private key không rời máy).
+#
+#   scripts/apt-publish            # build + cập nhật kho + push
+#
+# Kho TÍCH LUỸ: giữ các .deb cũ trong pool để ai chưa nâng cấp vẫn tải được.
+set -euo pipefail
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+
+echo "==> Build gói"
+DEB1=$(sh scripts/build-deb)
+DEB2=$(sh scripts/build-deb-fcitx5)
+
+echo "==> Lấy nhánh gh-pages"
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+git fetch origin gh-pages
+git worktree add "$WORK" origin/gh-pages -f >/dev/null 2>&1 || {
+  git worktree add "$WORK" gh-pages -f
+}
+
+echo "==> Cập nhật kho"
+scripts/apt-repo "$WORK" "$DEB1" "$DEB2"
+
+echo "==> Đẩy lên GitHub Pages"
+(
+  cd "$WORK"
+  git add -A
+  git -c user.name=xtcrust -c user.email=xtczone000000@gmail.com \
+      -c commit.gpgsign=false commit -q -m "kho APT: $(basename "$DEB1") + $(basename "$DEB2")"
+  git push origin HEAD:gh-pages
+)
+git worktree remove "$WORK" -f 2>/dev/null || true
+
+echo "==> Xong. Người dùng chỉ cần: sudo apt update && sudo apt upgrade"
