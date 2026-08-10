@@ -28,7 +28,7 @@ echo "==> Đẩy lên GitHub Pages"
 (
   cd "$WORK"
   git add -A
-  git -c user.name=xtcrust -c user.email=xtczone000000@gmail.com \
+  git -c user.name=Crust92 -c user.email=xtczone000000@gmail.com \
       -c commit.gpgsign=false commit -q -m "kho APT: $(basename "$DEB1") + $(basename "$DEB2")"
   git push origin HEAD:gh-pages
 )

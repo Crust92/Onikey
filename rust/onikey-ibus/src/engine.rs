@@ -744,7 +744,7 @@ impl OnikeyEngine {
                 }
                 pr::KEY_ABOUT => {
                     let _ = std::process::Command::new("xdg-open")
-                        .arg("https://github.com/xtcrust/Onikey")
+                        .arg("https://github.com/Crust92/Onikey")
                         .spawn();
                 }
                 _ => {}

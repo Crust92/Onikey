@@ -26,11 +26,11 @@ cat > "$STAGE/DEBIAN/control" <<CTRL
 Package: $PKG
 Version: $VERSION
 Architecture: $ARCH
-Maintainer: xtcrust <xtczone000000@gmail.com>
+Maintainer: Crust92 <xtczone000000@gmail.com>
 Section: utils
 Priority: optional
 Depends: fcitx5
-Homepage: https://github.com/xtcrust/Onikey
+Homepage: https://github.com/Crust92/Onikey
 Description: Onikey Vietnamese input method - Fcitx5 addon
  Vietnamese input engine (Rust core) as a Fcitx5 addon, for KDE and
  distributions that do not use IBus.

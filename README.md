@@ -82,9 +82,9 @@ rust/onikey-ibus      engine IBus (zbus) — binary onikey-engine-rs, TÊN ENGIN
 
 **Cách khuyến nghị (Ubuntu/Debian) — cài một lần, về sau `apt upgrade` tự lên bản mới:**
 ```sh
-curl -fsSL https://xtcrust.github.io/Onikey/onikey-archive-keyring.gpg \
+curl -fsSL https://crust92.github.io/Onikey/onikey-archive-keyring.gpg \
   | sudo tee /usr/share/keyrings/onikey-archive-keyring.gpg >/dev/null
-echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://xtcrust.github.io/Onikey stable main" \
+echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://crust92.github.io/Onikey stable main" \
   | sudo tee /etc/apt/sources.list.d/onikey.list
 sudo apt update
 sudo apt install onikey          # bộ gõ cho IBus (GNOME mặc định)
@@ -95,6 +95,16 @@ tự đánh thức IBus và tự thêm nguồn nhập, không cần đăng xuấ
 Settings. (Nguồn nhập được THÊM vào cuối danh sách, bàn phím hiện tại giữ
 nguyên; muốn gỡ thì xoá trong Settings như thường.)
 
+**Đã cài trước 2026-08-10 (địa chỉ kho cũ `xtcrust.github.io`)?** Kho đã
+chuyển sang `crust92.github.io` và địa chỉ cũ KHÔNG chuyển hướng (GitHub
+Pages không làm việc đó khi đổi tên tài khoản) — `apt update` sẽ báo 404 cho
+tới khi trỏ lại:
+```sh
+echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://crust92.github.io/Onikey stable main" \
+  | sudo tee /etc/apt/sources.list.d/onikey.list
+sudo apt update && sudo apt upgrade
+```
+
 ## Cài đặt từ mã nguồn
 
 **Yêu cầu (Ubuntu/Debian và tương tự):**
@@ -104,7 +114,7 @@ sudo apt install -y golang cargo gcc make pkg-config libgtk-3-dev libxtst-dev li
 
 **Build & cài đặt** (build bằng user thường, chỉ bước cài mới cần sudo):
 ```sh
-git clone https://github.com/xtcrust/Onikey.git
+git clone https://github.com/Crust92/Onikey.git
 cd Onikey
 make
 sudo make install PREFIX=/usr
