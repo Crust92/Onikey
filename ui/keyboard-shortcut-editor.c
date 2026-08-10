@@ -12,7 +12,7 @@ int col = 0;
 const int KEYVAL = 1;
 const int MASK = 0;
 guint32 *key_pairs_tmp;
-char *input_mode_alert = "Ibus-bamboo cung cấp nhiều chế độ gõ khác nhau (1 chế độ gõ có gạch chân và 5 chế độ gõ không gạch chân; tránh nhầm lẫn chế độ gõ với kiểu gõ, các kiểu gõ bao gồm telex, vni, ...).\n\n\
+char *input_mode_alert = "Onikey cung cấp nhiều chế độ gõ khác nhau (1 chế độ gõ có gạch chân và 5 chế độ gõ không gạch chân; tránh nhầm lẫn chế độ gõ với kiểu gõ, các kiểu gõ bao gồm telex, vni, ...).\n\n\
 Một số lưu ý:\n\
 - Một ứng dụng có thể hoạt động tốt với chế độ gõ này trong khi không hoạt động tốt với chế độ gõ khác.\n\
 - Các chế độ gõ được lưu riêng biệt cho mỗi phần mềm (firefox có thể đang dùng chế độ 3, trong khi libreoffice thì lại dùng chế độ 2).\n\

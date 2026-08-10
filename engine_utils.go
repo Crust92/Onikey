@@ -1,5 +1,5 @@
 /*
- * Bamboo - A Vietnamese Input method editor
+ * Onikey - A Vietnamese Input method editor
  * Copyright (C) 2018 Luong Thanh Lam <ltlam93@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /*
- * Bamboo - A Vietnamese Input method editor - Hexadecimal emulator
+ * Onikey - A Vietnamese Input method editor - Hexadecimal emulator
  * for Bamboo
  * Copyright (C) 2021 Tran Duc Binh <binhtran432k@gmail.com>
  *

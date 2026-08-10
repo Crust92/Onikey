@@ -94,7 +94,7 @@ func GetConfigPath(engineName string) string {
 
 func DefaultCfg() Config {
 	return Config{
-		InputMethod:            "Telex",
+		InputMethod:            "Telex 2",
 		OutputCharset:          "Unicode",
 		InputMethodDefinitions: bamboo.GetInputMethodDefinitions(),
 		Flags:                  bamboo.EstdFlags,

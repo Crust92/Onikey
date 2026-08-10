@@ -51,7 +51,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Config {
         Config {
-            input_method: "Telex".into(),
+            input_method: "Telex 2".into(),
             output_charset: "Unicode".into(),
             flags: onikey_core::flag::STD_FLAGS,
             // Máy CHƯA TỪNG cấu hình phải có hành vi chuẩn: tự khôi phục tiếng
@@ -255,6 +255,6 @@ mod tests {
         std::env::set_var("HOME", "/khong/co/that");
         std::env::remove_var("XDG_CONFIG_HOME");
         let c = load();
-        assert_eq!(c.input_method, "Telex");
+        assert_eq!(c.input_method, "Telex 2");
     }
 }
