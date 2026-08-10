@@ -76,6 +76,8 @@ uninstall:
 	rm -f $(DESTDIR)$(ibus_dir)/component/$(engine_name).xml
 	rm -f $(DESTDIR)$(ibus_dir)/component/$(engine_name)-go.xml
 	rm -rf $(DESTDIR)$(PREFIX)/share/applications/$(engine_gui_name)
+	rm -f $(DESTDIR)$(PREFIX)/bin/onikey-startup-fix
+	rm -f $(DESTDIR)/etc/xdg/autostart/onikey-startup-fix.desktop
 
 
 src: clean

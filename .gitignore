@@ -31,3 +31,4 @@ macro-editor
 
 # Rust
 /rust/target/
+/fcitx5/build/

@@ -36,6 +36,13 @@ case $(uname) in
 			> ${DESTDIR}${ibus_dir}/component/${engine_name}-go.xml
 		gen_from_template data/${engine_gui_name} \
 			> ${DESTDIR}${PREFIX}/share/applications/${engine_gui_name}
+		# IBus trên GNOME Wayland không kích hoạt engine lúc đăng nhập
+		# (icon vi hiện nhưng menu trống, gõ không ra tiếng Việt cho tới
+		# khi đổi nguồn nhập). Autostart này restart ibus sau khi vào phiên.
+		install -Dm755 scripts/onikey-startup-fix \
+			${DESTDIR}${PREFIX}/bin/onikey-startup-fix
+		install -Dm644 scripts/onikey-startup-fix.desktop \
+			${DESTDIR}/etc/xdg/autostart/onikey-startup-fix.desktop
 		;;
 	*)	echo "Hiện tại chưa hỗ trợ hệ điều hành này!"
 		;;
