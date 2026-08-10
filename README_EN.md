@@ -63,10 +63,10 @@ curl -fsSL https://xtcrust.github.io/Onikey/onikey-archive-keyring.gpg \
 echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://xtcrust.github.io/Onikey stable main" \
   | sudo tee /etc/apt/sources.list.d/onikey.list
 sudo apt update && sudo apt install onikey     # or fcitx5-onikey
-ibus restart                                   # or log out and back in
 ```
-Then add the input source: *Settings → Keyboard → Input Sources → + →
-Vietnamese → Onikey* (the engine only appears after IBus restarts).
+Done — **press <kbd>Super</kbd>+<kbd>Space</kbd> and type Vietnamese**. The
+package wakes IBus and adds the input source automatically; no logout, no
+Settings digging.
 
 ## Build & install
 
