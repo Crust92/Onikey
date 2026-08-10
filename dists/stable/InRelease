@@ -1,0 +1,33 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64
+Codename: stable
+Components: main
+Date: Mon, 10 Aug 2026 01:55:59 +0000
+Label: Onikey
+Origin: Onikey
+Suite: stable
+MD5Sum:
+ f8055942a5af1495471b4d8fb0e3c9cd              136 Release
+ 1f01cf925e72c1d0042c0c62fbd05c97             1435 main/binary-amd64/Packages
+ f6f39505a996303a81de0b9abf8bbe84              736 main/binary-amd64/Packages.gz
+SHA1:
+ 0a5addd1dcab062cd88218fa57f555326574f8a9              136 Release
+ 0f81e137fb24157f6c1e546b857743dee17f210c             1435 main/binary-amd64/Packages
+ b4a63a80ac60afe61ac7dee00387a1f5cf890a6e              736 main/binary-amd64/Packages.gz
+SHA256:
+ daceb4d1f22c7cbbe3d571edc4274d8281029fefce74d64433371b56a25b83de              136 Release
+ c275227bc45d4fc785a1039f753e5ded68da88ba498038393d04c5757e5e9156             1435 main/binary-amd64/Packages
+ 2558a25e7b4a1138bc1d213d9b2a30fecaaba6887da9d84d320bfb0306def296              736 main/binary-amd64/Packages.gz
+SHA512:
+ 4998eb29107062f7d0f843a97018d708745888da1a8acec3ab38fe9a9645a02cb1801287e16ad90e9c395a0f64a84736f72e49c95aebed69b7f820f08082b68a              136 Release
+ cc74f4a61e225a156e1acde35a75ac451803f256af012df6ba26047bc25fe493903b93d8f08dd6766736e483769e79df5df67eaa05ec3d3890f281f94e1b2499             1435 main/binary-amd64/Packages
+ 7a080a648f522c96a18740c33ad0df99f17c45ddfdb63525101ad4b97f98c0409bc49c4c8e165010857116f9efa641369072ade6cfaa642897abc88ccdf8100f              736 main/binary-amd64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iI4EARYKADYWIQTOo4AQsU0dXoPE7CMZ+/hujrONdgUCankvrxgceHRjem9uZTAw
+MDAwMEBnbWFpbC5jb20ACgkQGfv4bo6zjXblUQEA9NKk/cQew72Tx+oQHbeIIjXy
+QHFsn6JMuNI6uGPYoqAA/jnhJ4/i05D+5vwhOWKcRH6jYYk4rFE88bh64fnnY88L
+=q6wz
+-----END PGP SIGNATURE-----
