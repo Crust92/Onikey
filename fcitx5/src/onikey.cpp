@@ -43,6 +43,7 @@ public:
         autoRestore_ = cfg.ib_flags & ONIKEY_IBFLAG_AUTO_NON_VN_RESTORE;
         ddFreeStyle_ = cfg.ib_flags & ONIKEY_IBFLAG_DD_FREE_STYLE;
         charset_ = cfg.output_charset;
+        inputMode_ = cfg.default_input_mode;
     }
     ~OnikeyState() override { onikey_engine_free(engine_); }
 
@@ -70,7 +71,20 @@ public:
     bool autoRestore_ = true;
     bool ddFreeStyle_ = true;
     std::string charset_ = "Unicode";
+    /// Chế độ gõ người dùng chọn: 1 = Pre-edit, khác = không gạch chân.
+    unsigned int inputMode_ = 1;
+    /// Chuỗi đã GHI RA ứng dụng ở chế độ không gạch chân — để biết phải xoá
+    /// lùi bao nhiêu khi chữ thay đổi. (Cùng vai trò `committed` bên IBus.)
+    std::string committed_;
 };
+
+// Có gõ được kiểu không gạch chân không: theo chế độ người dùng chọn VÀ ứng
+// dụng phải hỗ trợ surrounding text — thiếu thì giữ Pre-edit, thà có gạch chân
+// còn hơn nuốt phím (bài học ô địa chỉ Edge bên IBus).
+bool noUnderline(fcitx::InputContext *ic, const OnikeyState *state) {
+    return state->inputMode_ != 1 &&
+           ic->capabilityFlags().test(fcitx::CapabilityFlag::SurroundingText);
+}
 
 class OnikeyFcitxEngine final : public fcitx::InputMethodEngineV2 {
 public:
@@ -99,9 +113,15 @@ public:
 
         if (sym == FcitxKey_BackSpace) {
             if (state->display().empty()) {
+                state->committed_.clear();
                 return; // không có gì đang gõ -> app tự xoá
             }
             onikey_engine_remove_last_char(state->engine_, true);
+            if (noUnderline(ic, state)) {
+                // chữ đã nằm trong app: để app tự xoá 1 ký tự, ta chỉ theo dõi
+                state->committed_ = state->display();
+                return;
+            }
             updatePreedit(ic, state);
             keyEvent.filterAndAccept();
             return;
@@ -123,6 +143,12 @@ public:
             // hai đường đi (commit qua IM, phím forward thô) không bảo đảm thứ
             // tự tới ứng dụng — dấu cách sẽ chạy lên TRƯỚC chữ. Cùng họ với
             // bài học "passsowrd" bên engine IBus.
+            if (noUnderline(ic, state)) {
+                // chữ đã nằm trong app, chỉ cần quên từ hiện tại đi
+                onikey_engine_reset(state->engine_);
+                state->committed_.clear();
+                return; // phím ngắt tới app nguyên vẹn
+            }
             std::string pending = state->display();
             if (!pending.empty()) {
                 onikey_engine_reset(state->engine_);
@@ -137,6 +163,11 @@ public:
         }
 
         onikey_engine_process_key(state->engine_, chr, 1 /* VIETNAMESE */);
+        if (noUnderline(ic, state)) {
+            rewriteCommitted(ic, state);
+            keyEvent.filterAndAccept();
+            return;
+        }
         updatePreedit(ic, state);
         keyEvent.filterAndAccept();
     }
@@ -177,9 +208,51 @@ private:
         const std::string s = state->display();
         onikey_engine_reset(state->engine_);
         clearPanel(ic);
+        if (noUnderline(ic, state)) {
+            state->committed_.clear();
+            return; // chữ đã nằm trong app từ trước
+        }
         if (!s.empty()) {
             ic->commitString(state->encoded(s));
         }
+    }
+
+    /// Chế độ không gạch chân: so chuỗi cũ/mới, xoá lùi đúng phần khác rồi ghi
+    /// đuôi mới. Số ký tự xoá đếm trên chuỗi ĐÃ MÃ HOÁ (VNI Windows dùng 2 ký
+    /// tự cho một chữ có dấu). Cùng thuật toán rewrite_to bên engine IBus.
+    void rewriteCommitted(fcitx::InputContext *ic, OnikeyState *state) {
+        const std::string next = state->display();
+        const std::string &prev = state->committed_;
+        // Phần đầu chung: so theo byte rồi LÙI về ranh giới ký tự UTF-8 gần
+        // nhất (byte tiếp diễn có dạng 10xxxxxx) — cắt giữa một ký tự là xoá
+        // lệch nửa chữ.
+        size_t common = 0;
+        while (common < prev.size() && common < next.size() &&
+               prev[common] == next[common]) {
+            ++common;
+        }
+        while (common > 0 &&
+               (static_cast<unsigned char>(prev[common - 1]) & 0xC0) == 0x80 &&
+               common < prev.size() &&
+               (static_cast<unsigned char>(prev[common]) & 0xC0) == 0x80) {
+            --common;
+        }
+        while (common > 0 && common < prev.size() &&
+               (static_cast<unsigned char>(prev[common]) & 0xC0) == 0x80) {
+            --common;
+        }
+        const std::string removed = prev.substr(common);
+        const std::string tail = next.substr(common);
+        const size_t delChars =
+            fcitx::utf8::length(state->encoded(removed));
+        if (delChars > 0) {
+            ic->deleteSurroundingText(-static_cast<int>(delChars),
+                                      static_cast<unsigned>(delChars));
+        }
+        if (!tail.empty()) {
+            ic->commitString(state->encoded(tail));
+        }
+        state->committed_ = next;
     }
 
     fcitx::Instance *instance_;
