@@ -167,7 +167,9 @@ impl State {
     fn finish_word(&mut self) -> Action {
         let s = self.display_string();
         self.core.reset();
-        // Gõ tắt: chuỗi vừa gõ trùng khoá -> thay bằng bản mở rộng.
+        // Gõ tắt: chuỗi vừa gõ trùng khoá -> thay bằng bản mở rộng. Tra bằng
+        // chuỗi HIỂN THỊ: khoá thô ("btw") khớp nhờ khôi phục tiếng Anh, khoá
+        // có dấu ("đc" gõ "ddc") khớp nhờ flatten — cả hai đường đều qua đây.
         if !self.macros.is_empty() {
             if let Some(expanded) = self.macros.expand(&s) {
                 let backspaces = if self.no_underline() {
@@ -373,6 +375,13 @@ impl OnikeyEngine {
         }
         if st.english_mode {
             return Action::Ignore; // đang tắt tiếng Việt: mọi phím đi thẳng
+        }
+
+        // Phím bổ trợ ĐỨNG MỘT MÌNH (Shift, Ctrl, Alt, Caps, Super...) không
+        // phải ký tự — bỏ qua và GIỮ NGUYÊN từ đang gõ. Coi nó như phím
+        // thường từng cắt từ mỗi lần nhấn Shift: "BTW" vỡ thành B|T|Ư.
+        if (0xffe1..=0xffee).contains(&keyval) {
+            return Action::Ignore;
         }
 
         if is_modifier_pressed(state) {
