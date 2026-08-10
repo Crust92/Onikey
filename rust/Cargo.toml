@@ -1,3 +1,11 @@
 [workspace]
 members = ["onikey-core", "onikey-core-ffi", "onikey-ibus", "onikey-userconfig"]
 resolver = "2"
+
+# Tối ưu bản phát hành: LTO toàn phần + một đơn vị codegen (chậm build, nhanh
+# chạy, binary nhỏ), strip debug. KHÔNG panic=abort: engine chết là mất gõ
+# toàn máy, thà unwind còn hơn.
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true

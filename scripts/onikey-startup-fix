@@ -8,3 +8,6 @@ sleep 8
 command -v ibus >/dev/null 2>&1 || exit 0
 pgrep -x ibus-daemon >/dev/null 2>&1 || exit 0
 ibus restart
+sleep 2
+# tự thêm nguồn nhập Onikey nếu chưa có — người dùng không phải vào Settings
+command -v onikey-enable >/dev/null 2>&1 && onikey-enable || true

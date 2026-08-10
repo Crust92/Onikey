@@ -89,11 +89,11 @@ echo "deb [signed-by=/usr/share/keyrings/onikey-archive-keyring.gpg] https://xtc
 sudo apt update
 sudo apt install onikey          # bộ gõ cho IBus (GNOME mặc định)
 sudo apt install fcitx5-onikey   # addon cho Fcitx5 (KDE...)
-ibus restart                     # hoặc đăng xuất rồi đăng nhập lại
 ```
-Rồi thêm nguồn nhập: *Settings → Keyboard → Input Sources → +* →
-*Vietnamese* → **Onikey**. (Engine chỉ xuất hiện trong bảng chọn sau khi
-IBus khởi động lại — đây là bước hay bị quên nhất.)
+Xong. **Bấm <kbd>Super</kbd>+<kbd>Space</kbd> là gõ được tiếng Việt** — gói
+tự đánh thức IBus và tự thêm nguồn nhập, không cần đăng xuất, không cần vào
+Settings. (Nguồn nhập được THÊM vào cuối danh sách, bàn phím hiện tại giữ
+nguyên; muốn gỡ thì xoá trong Settings như thường.)
 
 ## Cài đặt từ mã nguồn
 

@@ -26,12 +26,17 @@ install -Dm755 scripts/onikey-update "$STAGE/usr/bin/onikey-update"
 mkdir -p "$STAGE/DEBIAN"
 cat > "$STAGE/DEBIAN/postinst" <<'PI'
 #!/bin/sh
+# Cai xong la DUNG DUOC NGAY: danh thuc IBus + tu them nguon nhap cho moi
+# user dang dang nhap. User khac se duoc lo boi autostart o lan dang nhap toi.
 set -e
 if [ "$1" = "configure" ]; then
-  echo "Onikey: de engine xuat hien trong bang chon nguon nhap, chay:"
-  echo "    ibus restart"
-  echo "(hoac dang xuat roi dang nhap lai), sau do them:"
-  echo "    Settings -> Keyboard -> Input Sources -> + -> Vietnamese -> Onikey"
+  for d in /run/user/*; do
+    [ -S "$d/bus" ] || continue
+    uid=$(basename "$d")
+    user=$(id -nu "$uid" 2>/dev/null) || continue
+    runuser -u "$user" -- env       XDG_RUNTIME_DIR="$d"       DBUS_SESSION_BUS_ADDRESS="unix:path=$d/bus"       /usr/bin/onikey-enable >/dev/null 2>&1 || true
+  done
+  echo "Onikey da san sang: bam Super+Space de chuyen sang go tieng Viet."
 fi
 PI
 chmod 755 "$STAGE/DEBIAN/postinst"

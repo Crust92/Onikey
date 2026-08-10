@@ -1,0 +1,44 @@
+#!/bin/sh
+# onikey-enable — làm mọi việc để Onikey DÙNG ĐƯỢC NGAY, không bắt người dùng
+# đăng xuất hay mò vào Settings:
+#   1. đánh thức IBus (nạp component mới cài)
+#   2. tự thêm nguồn nhập ('ibus','Onikey') vào GNOME nếu chưa có
+#
+# Chạy TRONG phiên của người dùng (autostart lúc đăng nhập, hoặc postinst gọi
+# qua runuser cho user đang đăng nhập). An toàn chạy nhiều lần: đã có thì thôi.
+set -e
+
+command -v ibus >/dev/null 2>&1 || exit 0
+
+# 1) IBus phải biết engine mới. Chỉ restart khi engine CHƯA có trong danh sách
+#    — restart vô cớ làm mất preedit người dùng đang gõ.
+if pgrep -x ibus-daemon >/dev/null 2>&1; then
+  if ! ibus list-engine 2>/dev/null | grep -q "Onikey"; then
+    ibus restart >/dev/null 2>&1 || true
+    sleep 2
+  fi
+fi
+
+# 2) Thêm nguồn nhập vào GNOME (đặt CUỐI danh sách — không đổi bàn phím hiện
+#    tại của người dùng, chỉ thêm lựa chọn). Ngoài GNOME thì bỏ qua.
+command -v gsettings >/dev/null 2>&1 || exit 0
+gsettings list-schemas 2>/dev/null | grep -q "org.gnome.desktop.input-sources" || exit 0
+
+python3 - <<'PY' 2>/dev/null || true
+import ast, subprocess
+
+cur = subprocess.run(
+    ["gsettings", "get", "org.gnome.desktop.input-sources", "sources"],
+    capture_output=True, text=True).stdout.strip()
+try:
+    # GVariant dạng [('xkb','us'), ...] trùng cú pháp tuple Python
+    sources = list(ast.literal_eval(cur)) if cur.startswith("[") else []
+except Exception:
+    raise SystemExit(0)
+
+if ("ibus", "Onikey") in sources:
+    raise SystemExit(0)
+sources.append(("ibus", "Onikey"))
+val = "[" + ", ".join(f"('{a}', '{b}')" for a, b in sources) + "]"
+subprocess.run(["gsettings", "set", "org.gnome.desktop.input-sources", "sources", val])
+PY
