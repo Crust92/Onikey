@@ -406,11 +406,9 @@ static void add_page_other_settings_content(GtkWidget *parent, GtkWidget *w, gui
   grid = gtk_grid_new();
   gtk_container_add(GTK_CONTAINER(parent), grid);
 
-  label1 = gtk_label_new("Chế độ gõ mặc định");
-  gtk_grid_attach(GTK_GRID(grid), label1, 0, 0, 1, 1); // column, row, width, height
-
-  dropdown1 = create_new_dropdown(mode, input_mode_alert, options, 7-1);
-  gtk_grid_attach(GTK_GRID(grid), dropdown1, 1, 0, 1, 1);
+  /* "Chế độ gõ mặc định" đã chuyển ra menu tray (Cài đặt khác) — một chỗ
+   * một nghĩa, hộp thoại không giữ bản sao nữa. */
+  (void)label1; (void)dropdown1; (void)mode;
 
   checkbox2 = gtk_check_button_new_with_label("Sửa lỗi lặp chữ trong FB");
   gtk_grid_attach(GTK_GRID(grid), checkbox2, 0, 1, 1, 1);

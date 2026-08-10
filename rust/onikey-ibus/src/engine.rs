@@ -26,6 +26,8 @@ use crate::ibus_text::{IBusText, ATTR_TYPE_UNDERLINE, ATTR_UNDERLINE_SINGLE, PRE
 
 /// Bit "ứng dụng cung cấp được surrounding text" trong IBus capabilities.
 const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
+/// IBusInputPurpose: ô địa chỉ / ô URL.
+const IBUS_INPUT_PURPOSE_URL: u32 = 5;
 
 /// Phím IBus cần biết tới.
 const IBUS_BACKSPACE: u32 = 0xff08;
@@ -157,13 +159,21 @@ impl State {
         })
     }
 
-    /// Có gõ được kiểu không gạch chân không? Theo ĐÚNG chế độ người dùng chọn
-    /// (1 = Pre-edit có gạch chân, còn lại = không gạch chân), và chỉ khi ứng
-    /// dụng cung cấp được surrounding text — thiếu thì thà gạch chân còn hơn
-    /// nuốt phím (bài học từ ô địa chỉ Edge bên bản Go).
+    /// Có gõ được kiểu không gạch chân không? Điều kiện tiên quyết: ứng dụng
+    /// phải cung cấp surrounding text — thiếu thì thà gạch chân còn hơn nuốt
+    /// phím (bài học ô địa chỉ Edge). Đủ điều kiện thì:
+    ///   - chế độ 2 trở lên: luôn không gạch chân;
+    ///   - chế độ 1 (Pre-edit): riêng Ô ĐỊA CHỈ trình duyệt (purpose=URL) nếu
+    ///     người dùng bật nút gạt — pre-edit phá gợi ý của thanh địa chỉ.
     fn no_underline(&self) -> bool {
-        self.cfg.default_input_mode != 1
-            && self.capabilities & IBUS_CAP_SURROUNDING_TEXT != 0
+        if self.capabilities & IBUS_CAP_SURROUNDING_TEXT == 0 {
+            return false;
+        }
+        if self.cfg.default_input_mode != 1 {
+            return true;
+        }
+        self.cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0
+            && self.content_purpose == IBUS_INPUT_PURPOSE_URL
     }
 }
 
@@ -472,12 +482,25 @@ impl OnikeyEngine {
             let _ = crate::config::save_string("OutputCharset", cs);
             self.state.lock().unwrap().cfg.output_charset = cs.to_string();
             changed = true;
+        } else if let Some(m) = name.strip_prefix(pr::PREFIX_INPUT_MODE) {
+            if let Ok(m) = m.parse::<u32>() {
+                let _ = crate::config::save_number("DefaultInputMode", m);
+                let mut st = self.state.lock().unwrap();
+                st.cfg.default_input_mode = m;
+                st.core.reset();
+                st.committed.clear();
+                changed = true; // vẽ lại menu: nút gạt ô địa chỉ hiện/ẩn theo chế độ
+            }
         } else {
             match name.as_str() {
-                pr::KEY_MACRO_ENABLED | pr::KEY_AUTO_CAPITALIZE | pr::KEY_NON_VN_RESTORE => {
+                pr::KEY_MACRO_ENABLED
+                | pr::KEY_AUTO_CAPITALIZE
+                | pr::KEY_NON_VN_RESTORE
+                | pr::KEY_URL_NO_UNDERLINE => {
                     let bit = match name.as_str() {
                         pr::KEY_MACRO_ENABLED => ibflag::MACRO_ENABLED,
                         pr::KEY_AUTO_CAPITALIZE => ibflag::AUTO_CAPITALIZE_MACRO,
+                        pr::KEY_URL_NO_UNDERLINE => ibflag::URL_NO_UNDERLINE,
                         _ => ibflag::AUTO_NON_VN_RESTORE,
                     };
                     let mut st = self.state.lock().unwrap();
@@ -538,6 +561,7 @@ impl OnikeyEngine {
         let mut st = self.state.lock().unwrap();
         if st.content_purpose != value.0 {
             st.core.reset();
+            st.committed.clear();
             st.content_purpose = value.0;
         }
     }
