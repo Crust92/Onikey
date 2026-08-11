@@ -41,6 +41,14 @@ git clone https://github.com/Crust92/Onikey.git
 cd Onikey && make && sudo make install PREFIX=/usr LIBEXECDIR=/usr/libexec/onikey && ibus restart
 ```
 
+Fedora Silverblue/Kinoite và các bản atomic khác (cài từ COPR, không cần
+build):
+```sh
+sudo dnf copr enable crust92/onikey
+rpm-ostree install onikey        # bản thường: sudo dnf install onikey
+systemctl reboot
+```
+
 Chọn bộ gõ trong *Settings → Keyboard → Input Sources → + → Vietnamese →
 Onikey*. Gỡ bằng `sudo make uninstall` (kèm đúng biến đã cài). Cài ra ngoài
 `/usr` thì truyền `PREFIX=`.

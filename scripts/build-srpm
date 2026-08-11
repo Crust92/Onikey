@@ -1,0 +1,57 @@
+#!/bin/bash
+# build-srpm — dựng tarball nguồn + SRPM cho Fedora/COPR.
+#
+#   scripts/build-srpm                  # ra ~/rpmbuild/SRPMS/
+#   scripts/build-srpm --outdir DIR     # ra DIR (COPR gọi kiểu này)
+#
+# Điểm cốt lõi: tarball phải TỰ ĐỦ để build KHÔNG CẦN MẠNG. Máy build của COPR
+# (và Koji) chặn mạng trong lúc %build, nên mọi phụ thuộc phải nằm sẵn trong
+# nguồn: Go đã có vendor/ trong kho, Rust thì script này chạy `cargo vendor`
+# rồi nhét vào tarball kèm cấu hình trỏ cargo về thư mục đó.
+set -euo pipefail
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+
+OUTDIR=""
+[ "${1:-}" = "--outdir" ] && OUTDIR="$2"
+
+VER=$(grep -m1 '^version=' Makefile | cut -d= -f2)
+NAME=onikey
+SRC="$HOME/rpmbuild/SOURCES"
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+STAGE="$WORK/$NAME-$VER"
+
+echo "==> Chép nguồn (theo git, bỏ thứ không cần)"
+mkdir -p "$STAGE"
+git archive HEAD | tar -x -C "$STAGE"
+
+echo "==> Vendor phụ thuộc Rust"
+( cd rust && cargo vendor --versioned-dirs "$STAGE/rust/vendor" ) >"$WORK/vendor.toml"
+# cargo in ra đường TUYỆT ĐỐI tới thư mục tạm của máy đang đóng gói; để nguyên
+# thì máy build của COPR không có đường đó và cargo lại đi tải mạng -> build đỏ.
+# Đổi thành đường tương đối (cargo tính từ thư mục cha của .cargo/, tức rust/).
+sed -i 's#^directory = .*#directory = "vendor"#' "$WORK/vendor.toml"
+# Nối cấu hình vendor vào .cargo/config.toml có sẵn (đang giữ [resolver]).
+cat "$WORK/vendor.toml" >> "$STAGE/rust/.cargo/config.toml"
+
+echo "==> Kiểm tra Go đã vendor sẵn"
+test -d "$STAGE/vendor/github.com" || {
+  echo "thiếu vendor/ của Go — chạy 'go mod vendor' rồi commit" >&2
+  exit 1
+}
+
+echo "==> Đóng tarball"
+mkdir -p "$SRC"
+tar -czf "$SRC/$NAME-$VER.tar.gz" -C "$WORK" "$NAME-$VER"
+echo "    $SRC/$NAME-$VER.tar.gz ($(du -h "$SRC/$NAME-$VER.tar.gz" | cut -f1))"
+
+echo "==> Dựng SRPM"
+if [ -n "$OUTDIR" ]; then
+  mkdir -p "$OUTDIR"
+  rpmbuild -bs build/rpm/onikey.spec \
+    --define "_sourcedir $SRC" --define "_srcrpmdir $OUTDIR"
+else
+  rpmbuild -bs build/rpm/onikey.spec
+fi
+echo
+echo "Đưa lên COPR:  copr-cli build <tên-dự-án> ~/rpmbuild/SRPMS/$NAME-$VER-1.*.src.rpm"
