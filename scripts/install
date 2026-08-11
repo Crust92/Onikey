@@ -43,8 +43,15 @@ case $(uname) in
 			${DESTDIR}${PREFIX}/bin/onikey-enable
 		install -Dm755 scripts/onikey-startup-fix \
 			${DESTDIR}${PREFIX}/bin/onikey-startup-fix
+		# Autostart: cài toàn máy thì vào /etc/xdg/autostart; cài riêng cho
+		# một người (PREFIX=~/.local) thì vào ~/.config/autostart — đụng
+		# vào /etc lúc đó vừa sai chỗ vừa đòi root vô cớ.
+		case "${PREFIX}" in
+			/usr|/usr/local) autostart_dir=${DESTDIR}/etc/xdg/autostart ;;
+			*) autostart_dir=${XDG_CONFIG_HOME:-${HOME}/.config}/autostart ;;
+		esac
 		install -Dm644 scripts/onikey-startup-fix.desktop \
-			${DESTDIR}/etc/xdg/autostart/onikey-startup-fix.desktop
+			${autostart_dir}/onikey-startup-fix.desktop
 		# Logo phải nằm trong theme icon thì Icon=onikey mới tra ra được
 		# (đường dẫn tuyệt đối trong .desktop bị GNOME đời mới bỏ qua).
 		install -Dm644 icons/onikey.svg \

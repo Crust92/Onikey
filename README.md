@@ -12,6 +12,14 @@ kho này giữ giấy phép **GPLv3**.
 
 ## Cài đặt
 
+**Nhanh nhất — mọi distro, một dòng** (tải bản dựng sẵn từ GitHub Releases,
+kiểm checksum rồi cài; không cần trình biên dịch, không thêm kho phần mềm):
+```sh
+curl -fsSL https://raw.githubusercontent.com/Crust92/Onikey/master/scripts/get-onikey.sh | sh
+```
+Muốn cài riêng cho mình, khỏi cần `sudo`:
+`curl -fsSL .../get-onikey.sh | ONIKEY_PREFIX=~/.local sh`
+
 **Ubuntu/Debian — cài một lần, về sau `apt upgrade` tự lên bản mới:**
 ```sh
 curl -fsSL https://crust92.github.io/Onikey/onikey-archive-keyring.gpg \
