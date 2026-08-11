@@ -52,7 +52,7 @@ cd Onikey && make && sudo make install PREFIX=/usr LIBEXECDIR=/usr/libexec/onike
 Fedora Silverblue/Kinoite và các bản atomic khác (cài từ COPR, không cần
 build):
 ```sh
-sudo dnf copr enable crust92/onikey
+sudo dnf copr enable xatomic/onikey
 rpm-ostree install onikey        # bản thường: sudo dnf install onikey
 systemctl reboot
 ```
