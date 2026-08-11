@@ -11,7 +11,16 @@ cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 
 echo "==> Build gói"
 DEB1=$(sh scripts/build-deb)
-DEB2=$(sh scripts/build-deb-fcitx5)
+# Addon Fcitx5 cần fcitx5-devel + cmake; máy phát hành không nhất thiết có.
+# Thiếu nó KHÔNG được chặn cả đợt phát hành — kho tích luỹ nên bản addon cũ
+# vẫn còn trong pool, chỉ là lần này không có bản mới. Báo to để khỏi âm thầm.
+if DEB2=$(sh scripts/build-deb-fcitx5 2>/dev/null); then
+  :
+else
+  DEB2=""
+  echo "    !! BỎ QUA addon Fcitx5: chưa build được trên máy này"
+  echo "       (cần fcitx5-devel + cmake, rồi chạy lại scripts/apt-publish)"
+fi
 
 echo "==> Lấy nhánh gh-pages"
 WORK=$(mktemp -d)
@@ -22,14 +31,14 @@ git worktree add "$WORK" origin/gh-pages -f >/dev/null 2>&1 || {
 }
 
 echo "==> Cập nhật kho"
-scripts/apt-repo "$WORK" "$DEB1" "$DEB2"
+scripts/apt-repo "$WORK" "$DEB1" ${DEB2:+"$DEB2"}
 
 echo "==> Đẩy lên GitHub Pages"
 (
   cd "$WORK"
   git add -A
   git -c user.name=Crust92 -c user.email=xtczone000000@gmail.com \
-      -c commit.gpgsign=false commit -q -m "kho APT: $(basename "$DEB1") + $(basename "$DEB2")"
+      -c commit.gpgsign=false commit -q -m "kho APT: $(basename "$DEB1")${DEB2:+ + $(basename "$DEB2")}"
   git push origin HEAD:gh-pages
 )
 git worktree remove "$WORK" -f 2>/dev/null || true
