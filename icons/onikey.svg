@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Logo Onikey: một PHÍM BẤM mang chữ O, thêm hai sừng oni — đúng nghĩa cái
-     tên (Oni + key). Chữ O vẽ bằng hình học chứ không dùng <text>: icon phải
-     hiện đúng trên mọi máy, không phụ thuộc máy đó có sẵn font nào.
-     Đừng nhầm với vi.svg / us.svg — hai cái đó là icon BÁO CHẾ ĐỘ đang gõ
-     Việt hay Anh, không phải nhãn của phần mềm. -->
 <svg width="48" height="48" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- CHÚ Ý: mọi chú thích phải nằm TRONG thẻ <svg>. Đặt trước nó thì
+       gdk-pixbuf dò định dạng không thấy "<svg" trong vùng đầu tệp và
+       báo "không nhận ra dạng thức ảnh" — icon mất trắng trên GTK. -->
+  <!-- Logo Onikey: một PHÍM BẤM mang chữ O, thêm hai sừng oni — đúng nghĩa cái
+       tên (Oni + key). Chữ O vẽ bằng hình học chứ không dùng <text>: icon phải
+       hiện đúng trên mọi máy, không phụ thuộc máy đó có sẵn font nào.
+       Đừng nhầm với vi.svg / us.svg — hai cái đó là icon BÁO CHẾ ĐỘ đang gõ
+       Việt hay Anh, không phải nhãn của phần mềm. -->
   <defs>
     <linearGradient id="onikeyCap" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ff8f5e"/>
