@@ -4,7 +4,7 @@
     <name>org.freedesktop.IBus.Onikey</name>
     <description>Vietnamese input engine for IBus</description>
     <exec>/usr/lib/onikey/onikey-engine-rs --ibus</exec>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <author>Crust92</author>
     <license>GPLv3</license>
     <homepage>https://github.com/Crust92/Onikey</homepage>
