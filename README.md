@@ -10,7 +10,7 @@ Bộ gõ tiếng Việt cho **IBus** (GNOME, Ubuntu…) và **Fcitx5** (KDE…),
 viết bằng Rust. Cách gõ kế thừa từ [BambooEngine](https://github.com/BambooEngine/bamboo-core);
 kho này giữ giấy phép **GPLv3**.
 
-## Cài đặt
+## Cài đặt / Cập nhập
 
 **Nhanh nhất — mọi distro, một dòng** (tải bản dựng sẵn từ GitHub Releases,
 kiểm checksum rồi cài; không cần trình biên dịch, không thêm kho phần mềm):
