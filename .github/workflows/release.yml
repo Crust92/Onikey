@@ -28,7 +28,7 @@ jobs:
         run: |
           set -e
           VER=$(grep -m1 '^version=' Makefile | cut -d= -f2)
-          tar xzf onikey-$VER-linux-x86_64.tar.gz -C /tmp
+          tar xzf dist/onikey-$VER-linux-x86_64.tar.gz -C /tmp
           XDG_CONFIG_HOME=/tmp/cfg /tmp/onikey-$VER-linux-x86_64/install.sh --prefix /tmp/root
           test -x /tmp/root/lib/onikey/onikey-engine-rs
           test -f /tmp/root/share/ibus/component/onikey.xml
@@ -36,6 +36,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            onikey-*-linux-x86_64.tar.gz
-            onikey-*-linux-x86_64.tar.gz.sha256
+            dist/onikey-*-linux-x86_64.tar.gz
+            dist/onikey-*-linux-x86_64.tar.gz.sha256
           fail_on_unmatched_files: true

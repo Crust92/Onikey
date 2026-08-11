@@ -24,7 +24,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: onikey-deb
-          path: onikey_*.deb
+          path: dist/onikey_*.deb
 
   rust:
     name: Lõi Rust (đối chiếu với bản Go)

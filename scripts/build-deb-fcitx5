@@ -36,6 +36,7 @@ Description: Onikey Vietnamese input method - Fcitx5 addon
  distributions that do not use IBus.
 CTRL
 
-OUT="$(pwd)/${PKG}_${VERSION}_${ARCH}.deb"
+mkdir -p "$(pwd)/dist"
+OUT="$(pwd)/dist/${PKG}_${VERSION}_${ARCH}.deb"
 dpkg-deb --build --root-owner-group "$STAGE" "$OUT" >/dev/null
 echo "$OUT"

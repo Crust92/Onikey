@@ -70,7 +70,10 @@ EOF
 chmod +x "$STAGE/install.sh"
 
 echo "==> Nén"
-tar -czf "$NAME.tar.gz" -C "$WORK" "$NAME"
-sha256sum "$NAME.tar.gz" > "$NAME.tar.gz.sha256"
-echo "    $PWD/$NAME.tar.gz ($(du -h "$NAME.tar.gz" | cut -f1))"
-echo "    $PWD/$NAME.tar.gz.sha256"
+# Gói đi vào dist/ chứ không rơi vào gốc kho: gốc kho là nơi chứa MÃ NGUỒN,
+# còn gói build ra là sản phẩm dùng một lần rồi đưa lên GitHub Releases.
+mkdir -p dist
+tar -czf "dist/$NAME.tar.gz" -C "$WORK" "$NAME"
+( cd dist && sha256sum "$NAME.tar.gz" > "$NAME.tar.gz.sha256" )
+echo "    dist/$NAME.tar.gz ($(du -h "dist/$NAME.tar.gz" | cut -f1))"
+echo "    dist/$NAME.tar.gz.sha256"

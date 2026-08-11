@@ -32,3 +32,7 @@ macro-editor
 # Rust
 /rust/target/
 /fcitx5/build/
+
+# Sản phẩm đóng gói (tarball, .deb, .rpm) — phân phối qua GitHub Releases
+# và kho APT/COPR, không bao giờ nằm trong git.
+dist/

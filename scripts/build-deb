@@ -57,6 +57,7 @@ Description: Onikey - Vietnamese input method, no preedit underline (fork of oni
  GNOME Wayland. Ships 'onikey-update' to update to the latest GitHub build.
 EOF
 
-OUT="$(pwd)/${PKG}_${VERSION}_${ARCH}.deb"
+mkdir -p "$(pwd)/dist"
+OUT="$(pwd)/dist/${PKG}_${VERSION}_${ARCH}.deb"
 dpkg-deb --build --root-owner-group "$STAGE" "$OUT" >/dev/null
 echo "$OUT"
