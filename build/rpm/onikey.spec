@@ -1,53 +1,77 @@
-%define engine_name onikey
-%define ibus_dir           %{_datadir}/ibus
-%define ibus_comp_dir      %{_datadir}/ibus/component
-%define engine_share_dir   %{_datadir}/%{engine_name}
-%define engine_lib_dir     %{_libexecdir}/%{engine_name}
-
-Name: onikey
-Version: 1.0.0
-Release: 1%{?dist}
-Summary: Vietnamese input method for IBus, no preedit underline
-
-License: GPL-3.0-or-later
-URL: https://github.com/xtcrust/Onikey
-Source0: %{name}-%{version}.tar.gz
-
-BuildRequires: golang, gcc, make, pkgconf-pkg-config
-BuildRequires: gtk3-devel, libX11-devel, libXtst-devel
-Requires: ibus, gtk3
-
-%description
-Onikey là bộ gõ tiếng Việt cho IBus, bản fork của ibus-bamboo, tinh chỉnh để gõ
-không có gạch chân dưới từ đang gõ trên GNOME Wayland. Hỗ trợ các bảng mã thông
-dụng, các kiểu gõ phổ biến (Telex, VNI, VIQR...), bỏ dấu thông minh, kiểm tra
-chính tả và gõ tắt.
-
+%global engine_name onikey
+%global engine_share_dir %{_datadir}/%{engine_name}
+%global engine_lib_dir   %{_libexecdir}/%{engine_name}
+# Binary Rust đã strip sẵn (profile release: strip = true) nên không có gì để
+# tách ra gói debug; để rpm tự dò sẽ lỗi "empty debugsourcefiles".
 %global debug_package %{nil}
 
+Name:           onikey
+Version:        1.0.1
+Release:        1%{?dist}
+Summary:        Bộ gõ tiếng Việt cho IBus (engine Rust)
+
+License:        GPL-3.0-or-later
+URL:            https://github.com/Crust92/Onikey
+Source0:        %{name}-%{version}.tar.gz
+
+BuildRequires:  gcc make pkgconf-pkg-config
+BuildRequires:  golang
+BuildRequires:  cargo rust
+BuildRequires:  gtk3-devel libX11-devel libXtst-devel
+Requires:       ibus
+Requires:       gtk3
+
+%description
+Onikey là bộ gõ tiếng Việt cho IBus với engine viết bằng Rust. Hỗ trợ 9 kiểu
+gõ (Telex, Telex 2, VNI, VIQR...), 9 bảng mã, gõ tắt, khôi phục từ ngoại ngữ,
+và hai chế độ hiển thị: gạch chân từ đang gõ (Pre-edit) hoặc bỏ gạch chân.
+Nhận diện được ô địa chỉ trình duyệt để gõ không gạch chân riêng ở đó.
+
+Cách gõ kế thừa từ BambooEngine.
+
 %prep
-%setup
+%autosetup
 
 %build
+# Bản đóng gói dựng OFFLINE: phụ thuộc Go nằm sẵn trong vendor/ của kho, phụ
+# thuộc Rust do scripts/build-srpm nhét vào rust/vendor lúc tạo tarball. Máy
+# build của COPR/Koji không có mạng nên bất kỳ lần tải nào cũng là build đỏ.
+export CARGO_NET_OFFLINE=true
+export GOFLAGS=-mod=vendor
+export GOPROXY=off
 make build PREFIX=%{_prefix}
 
 %install
 make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 
 %files
-%doc README.md
 %license LICENSE
+%doc README.md
 %dir %{engine_share_dir}
+%{engine_share_dir}/icons
+%{engine_share_dir}/data
 %dir %{engine_lib_dir}
-%{engine_share_dir}/*
-%{engine_lib_dir}/*
-%{ibus_comp_dir}/%{engine_name}.xml
+%{engine_lib_dir}/onikey-engine-rs
+%{engine_lib_dir}/onikey-engine
+%{engine_lib_dir}/onikey-config
+%{_datadir}/ibus/component/%{engine_name}.xml
+%{_datadir}/ibus/component/%{engine_name}-go.xml
 %{_datadir}/applications/%{engine_name}-setup.desktop
+%{_bindir}/onikey-enable
+%{_bindir}/onikey-startup-fix
+%config(noreplace) /etc/xdg/autostart/onikey-startup-fix.desktop
 
 %changelog
-* Sun Aug 09 2026 xtcrust <xtczone000000@gmail.com> 0.9.0
-- Đổi tên ibus-bamboo -> Onikey; tách hộp thoại cấu hình thành binary riêng
-- Đường dẫn dữ liệu nhận từ PREFIX lúc build, helper theo %%{_libexecdir}
+* Tue Aug 11 2026 Crust92 <xtczone000000@gmail.com> - 1.0.1-1
+- Đóng gói cho Fedora/COPR, dựng được offline (vendor cả Go lẫn Rust)
+- Bổ sung engine Rust, component XML dự phòng, autostart và onikey-enable
+  vào danh sách tệp — bản spec trước còn thiếu, cài xong là thiếu file
+- Không dùng scriptlet đụng tới phiên người dùng: trên hệ atomic
+  (Silverblue/Kinoite) scriptlet chạy lúc dựng ảnh chứ không phải lúc
+  đăng nhập, nên việc "đánh thức IBus" giao cho autostart trong phiên
 
-* Wed Aug 14 2019 LuongThanhLam <ltlam93@gmail.com> 0.5.3
+* Sun Aug 09 2026 xtcrust <xtczone000000@gmail.com> - 0.9.0-1
+- Đổi tên ibus-bamboo -> Onikey; tách hộp thoại cấu hình thành binary riêng
+
+* Wed Aug 14 2019 LuongThanhLam <ltlam93@gmail.com> - 0.5.3-1
 - Initial RPM release
