@@ -33,11 +33,6 @@ ibus_dir=$(PREFIX)/share/ibus
 
 GOLDFLAGS=-ldflags "-w -s -X main.Version=$(version)
 
-rpm_src_dir=~/rpmbuild/SOURCES
-tar_file=$(pkg_name)-$(version).tar.gz
-rpm_src_tar=$(rpm_src_dir)/$(tar_file)
-tar_options_src=--transform "s/^\./$(pkg_name)-$(version)/" --exclude=.git --exclude="*.tar.gz" .
-
 all: build
 
 build:
@@ -81,25 +76,5 @@ uninstall:
 	rm -f $(DESTDIR)/etc/xdg/autostart/onikey-startup-fix.desktop
 
 
-src: clean
-	tar -zcf $(DESTDIR)/$(tar_file) $(tar_options_src)
-	cp -f build/rpm/$(pkg_name).spec $(DESTDIR)/
-	cp -r build/deb debian
-	cp -f debian/$(pkg_name).dsc $(DESTDIR)/
-	cp -f debian/changelog $(DESTDIR)/debian.changelog
-	cp -f debian/control $(DESTDIR)/debian.control
-	cp -f debian/compat $(DESTDIR)/debian.compat
-	cp -f debian/rules $(DESTDIR)/debian.rules
-	cp -f build/arch/PKGBUILD-obs $(DESTDIR)/PKGBUILD
 
-
-rpm: clean
-	tar -zcf $(rpm_src_tar) $(tar_options_src)
-	rpmbuild $(pkg_name).spec -ba
-
-deb: clean
-	cp -r build/deb debian
-	dpkg-buildpackage
-	rm -rf debian
-
-.PHONY: build clean build install uninstall src rpm deb corpus rust-test
+.PHONY: all build test clean install uninstall corpus rust-test

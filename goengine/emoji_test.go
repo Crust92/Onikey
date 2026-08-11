@@ -23,7 +23,7 @@ import (
 )
 
 func TestEmojiFindResult(t *testing.T) {
-	emojiTrie, _ = loadEmojiOne(DictEmojiOne)
+	emojiTrie, _ = loadEmojiOne(getEngineSubFile(DictEmojiOne))
 	var be = NewEmojiEngine()
 	if be.MatchString(":'") != true {
 		t.Errorf("Finding result for emoji :', expected true, got %v", be.MatchString(":'"))
@@ -40,7 +40,7 @@ func TestEmojiFindResult(t *testing.T) {
 }
 
 func TestFilterEmoji(t *testing.T) {
-	emojiTrie, _ = loadEmojiOne(DictEmojiOne)
+	emojiTrie, _ = loadEmojiOne(getEngineSubFile(DictEmojiOne))
 	var be = NewEmojiEngine()
 	var grinnings = be.Filter(":')")
 	if !inStringList(grinnings, "😂") {
