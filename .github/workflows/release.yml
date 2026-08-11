@@ -7,6 +7,12 @@ on:
     tags: ["v*"]
   workflow_dispatch:
 
+# Mặc định token của Actions trong kho này CHỈ ĐỌC, nên bước đính gói vào
+# Release trả 403 "Resource not accessible by integration". Xin quyền ghi
+# đúng phạm vi cần: nội dung kho (release + asset), không hơn.
+permissions:
+  contents: write
+
 jobs:
   tarball:
     name: Gói binary (x86_64)
