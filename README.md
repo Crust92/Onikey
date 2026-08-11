@@ -131,6 +131,8 @@ Kiến trúc:
 rust/onikey-core      lõi tiếng Việt thuần (không I/O, không phụ thuộc crate nào)
 rust/onikey-core-ffi  vỏ C ABI: libonikey_core.{a,so} + include/onikey.h
 rust/onikey-ibus      engine IBus (zbus) — binary onikey-engine-rs
+goengine/             engine Go dự phòng + phần gọi GTK cho hộp thoại cấu hình
+ui/, cmd/             hộp thoại cấu hình (GTK) — tiến trình riêng
 fcitx5/               addon Fcitx5 (C++), dùng chung lõi qua C FFI
 ```
 

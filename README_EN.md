@@ -117,6 +117,8 @@ Layout:
 rust/onikey-core      pure Vietnamese core (no I/O, zero dependencies)
 rust/onikey-core-ffi  C ABI: libonikey_core.{a,so} + include/onikey.h
 rust/onikey-ibus      IBus engine (zbus) — binary onikey-engine-rs
+goengine/             fallback Go engine + GTK glue
+ui/, cmd/             settings dialog (GTK), a separate process
 fcitx5/               Fcitx5 addon (C++), same core via the C ABI
 ```
 

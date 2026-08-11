@@ -16,7 +16,7 @@ CGO_LDFLAGS_FREEBSD="-L/usr/local/lib -lX11 -lXtst -pthread"
 
 case $(uname) in
 	"Linux") CGO_ENABLED=1 \
-		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor &&
+		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor ./goengine &&
 		CGO_ENABLED=1 \
 		go build -o ${config_name} -ldflags "${LDFLAGS}" -mod=vendor ./cmd/onikey-config &&
 		( cd rust && cargo build --release -p onikey-ibus ) &&
@@ -26,7 +26,7 @@ case $(uname) in
 	"FreeBSD") CGO_ENABLED=1 \
 		CGO_CFLAGS=${CGO_CFLAGS_FREEBSD} \
 		CGO_LDFLAGS=${CGO_LDFLAGS_FREEBSD} \
-		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor &&
+		go build -o ${ibus_e_name} -ldflags "${LDFLAGS}" -mod=vendor ./goengine &&
 		CGO_ENABLED=1 \
 		CGO_CFLAGS=${CGO_CFLAGS_FREEBSD} \
 		CGO_LDFLAGS=${CGO_LDFLAGS_FREEBSD} \

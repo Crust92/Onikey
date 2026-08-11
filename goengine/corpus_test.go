@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"onikey/corpus"
@@ -10,9 +12,15 @@ import (
 // (tools/gen-corpus) phải chạy lại ra kết quả y hệt. Nó vừa canh cho bản Go
 // khỏi trôi khi nâng bamboo-core, vừa là thước đo cho lõi Rust sắp viết.
 func TestCorpus(t *testing.T) {
-	cases, err := corpus.Load(corpus.Path)
+	path := corpus.Path
+	if _, statErr := os.Stat(path); statErr != nil {
+		// Go chạy test trong thư mục của gói (./goengine), còn bộ ca kiểm nằm
+		// ở gốc kho — ngó lên một cấp trước khi kết luận là không có.
+		path = filepath.Join("..", path)
+	}
+	cases, err := corpus.Load(path)
 	if err != nil {
-		t.Skipf("không có bộ ca kiểm (%v) — sinh bằng: go run ./tools/gen-corpus | gzip -n > %s", err, corpus.Path)
+		t.Skipf("không có bộ ca kiểm (%v) — sinh bằng: go run ./tools/gen-corpus | gzip -n > %s", err, path)
 	}
 	if len(cases) < 1000 {
 		t.Fatalf("bộ ca kiểm quá nhỏ: %d ca", len(cases))

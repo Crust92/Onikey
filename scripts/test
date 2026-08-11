@@ -2,15 +2,21 @@
 CGO_CFLAGS_FREEBSD="-I/usr/local/include -std=gnu99"
 CGO_LDFLAGS_FREEBSD="-L/usr/local/lib -lX11 -lXtst -pthread"
 
+# Từ điển/emoji được dò theo THƯ MỤC HIỆN HÀNH trước, rồi mới tới thư mục đã
+# cài. Test chạy trong ./goengine nên không tự thấy data/ ở gốc kho — chỉ thẳng
+# cho nó, khỏi phụ thuộc máy đã cài Onikey hay chưa.
+ONIKEY_DATA_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+export ONIKEY_DATA_DIR
+
 # Functions
 case $(uname) in
 	"Linux") CGO_ENABLED=1 \
-		go test . -mod=vendor
+		go test ./goengine -mod=vendor
 		;;
 	"FreeBSD") CGO_ENABLED=1 \
         	CGO_CFLAGS=${CGO_CFLAGS_FREEBSD} \
         	CGO_LDFLAGS=${CGO_LDFLAGS_FREEBSD} \
-        	go test . -mod=vendor
+        	go test ./goengine -mod=vendor
 		;;
 	*)
 		echo "Hiện tại chưa hỗ trợ hệ điều hành này!"
