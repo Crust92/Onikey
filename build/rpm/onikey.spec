@@ -7,7 +7,7 @@
 
 Name:           onikey
 Version:        1.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Bộ gõ tiếng Việt cho IBus (engine Rust)
 
 License:        GPL-3.0-or-later
@@ -63,6 +63,10 @@ make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 %config(noreplace) /etc/xdg/autostart/onikey-startup-fix.desktop
 
 %changelog
+* Tue Aug 11 2026 Crust92 <xtczone000000@gmail.com> - 1.0.1-3
+- Sửa icon không hiện trên GTK: chú thích đặt trước thẻ <svg> khiến
+  gdk-pixbuf không nhận ra dạng thức ảnh
+
 * Tue Aug 11 2026 Crust92 <xtczone000000@gmail.com> - 1.0.1-2
 - Hộp thoại cấu hình hiện đúng icon: logo cài vào theme hicolor, .desktop
   dùng Icon=onikey thay cho đường dẫn tuyệt đối, app khai app-id để cửa sổ
