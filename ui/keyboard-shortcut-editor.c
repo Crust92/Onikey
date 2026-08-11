@@ -459,7 +459,15 @@ int openGUI(guint flags, int mode, guint32 *s, int size, char *mtext, char *cfg_
 
   key_pairs_tmp = s;
 
+  /* Tên tiến trình = app-id: Wayland/GNOME khớp cửa sổ với tệp .desktop qua
+   * cái này (StartupWMClass trong onikey-setup.desktop trỏ đúng tên đây).
+   * Thiếu nó thì cửa sổ hiện icon chung chung ở dock và Alt+Tab.
+   * Phải đặt TRƯỚC gtk_init. */
+  g_set_prgname("onikey-setup");
   gtk_init(NULL, NULL);
+  /* Icon tra theo TÊN trong theme (hicolor), không cắm đường dẫn tuyệt đối —
+   * GNOME đời mới bỏ qua đường tuyệt đối ở nhiều chỗ. */
+  gtk_window_set_default_icon_name("onikey");
   /* --- Create the top level window --- */
   w = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_widget_set_size_request(w, 600, 150);
@@ -522,7 +530,7 @@ int openGUI(guint flags, int mode, guint32 *s, int size, char *mtext, char *cfg_
   /*
    * --- Make the main window visible
    */
-  gtk_window_set_title(GTK_WINDOW(w), "Settings");
+  gtk_window_set_title(GTK_WINDOW(w), "Onikey — Cấu hình bộ gõ");
 
   gtk_widget_show_all(GTK_WIDGET(w));
 
