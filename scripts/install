@@ -45,6 +45,10 @@ case $(uname) in
 			${DESTDIR}${PREFIX}/bin/onikey-startup-fix
 		install -Dm644 scripts/onikey-startup-fix.desktop \
 			${DESTDIR}/etc/xdg/autostart/onikey-startup-fix.desktop
+		# Logo phải nằm trong theme icon thì Icon=onikey mới tra ra được
+		# (đường dẫn tuyệt đối trong .desktop bị GNOME đời mới bỏ qua).
+		install -Dm644 icons/onikey.svg \
+			${DESTDIR}${PREFIX}/share/icons/hicolor/scalable/apps/onikey.svg
 		;;
 	*)	echo "Hiện tại chưa hỗ trợ hệ điều hành này!"
 		;;

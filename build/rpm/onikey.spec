@@ -57,6 +57,7 @@ make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 %{_datadir}/ibus/component/%{engine_name}.xml
 %{_datadir}/ibus/component/%{engine_name}-go.xml
 %{_datadir}/applications/%{engine_name}-setup.desktop
+%{_datadir}/icons/hicolor/scalable/apps/%{engine_name}.svg
 %{_bindir}/onikey-enable
 %{_bindir}/onikey-startup-fix
 %config(noreplace) /etc/xdg/autostart/onikey-startup-fix.desktop
