@@ -13,6 +13,14 @@ engine written in Rust. The Vietnamese input logic comes from
 
 ## Install
 
+**Fastest — any distro, one line** (downloads the prebuilt binary from GitHub
+Releases, verifies its checksum, installs; no compiler, no extra repo):
+```sh
+curl -fsSL https://raw.githubusercontent.com/Crust92/Onikey/master/scripts/get-onikey.sh | sh
+```
+For a per-user install without `sudo`:
+`curl -fsSL .../get-onikey.sh | ONIKEY_PREFIX=~/.local sh`
+
 **Ubuntu/Debian — install once, `apt upgrade` keeps you current:**
 ```sh
 curl -fsSL https://crust92.github.io/Onikey/onikey-archive-keyring.gpg \

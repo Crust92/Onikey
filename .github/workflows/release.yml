@@ -1,0 +1,41 @@
+name: Release
+
+# Gắn thẻ v* là tự dựng gói binary và đính vào GitHub Release, để lệnh cài
+# một dòng (scripts/get-onikey.sh) luôn có bản mới nhất mà không phải dựng tay.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  tarball:
+    name: Gói binary (x86_64)
+    # CỐ Ý dùng runner cũ: binary liên kết glibc của máy dựng, dựng trên bản
+    # mới thì máy người dùng đời cũ chạy không nổi ("GLIBC_2.xx not found").
+    # 22.04 mang glibc 2.35 — thấp hơn Debian stable lẫn Ubuntu LTS đang dùng.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc make pkg-config libgtk-3-dev libx11-dev libxtst-dev
+      - run: bash scripts/build-tarball
+      - name: Kiểm gói cài được (không cần root)
+        run: |
+          set -e
+          VER=$(grep -m1 '^version=' Makefile | cut -d= -f2)
+          tar xzf onikey-$VER-linux-x86_64.tar.gz -C /tmp
+          XDG_CONFIG_HOME=/tmp/cfg /tmp/onikey-$VER-linux-x86_64/install.sh --prefix /tmp/root
+          test -x /tmp/root/lib/onikey/onikey-engine-rs
+          test -f /tmp/root/share/ibus/component/onikey.xml
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            onikey-*-linux-x86_64.tar.gz
+            onikey-*-linux-x86_64.tar.gz.sha256
+          fail_on_unmatched_files: true

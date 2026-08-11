@@ -1,0 +1,76 @@
+#!/bin/bash
+# build-tarball — đóng gói bản BINARY chạy sẵn cho mọi distro Linux.
+#
+#   scripts/build-tarball            # ra ./onikey-<ver>-linux-<arch>.tar.gz
+#
+# Gói giữ nguyên bố cục cây nguồn (binary + icons/ + data/ + scripts/) nên cài
+# bằng chính scripts/install của dự án — một đường cài duy nhất cho cả bản
+# nguồn lẫn bản binary, khỏi lệch nhau theo thời gian.
+set -euo pipefail
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+
+VER=$(grep -m1 '^version=' Makefile | cut -d= -f2)
+ARCH=$(uname -m)
+NAME="onikey-$VER-linux-$ARCH"
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+STAGE="$WORK/$NAME"
+
+echo "==> Build"
+make build >/dev/null
+
+echo "==> Xếp gói"
+mkdir -p "$STAGE/scripts"
+cp -f onikey-engine onikey-config onikey-engine-rs "$STAGE/"
+cp -R icons data "$STAGE/"
+cp -f scripts/install scripts/onikey-enable scripts/onikey-startup-fix \
+      scripts/onikey-startup-fix.desktop "$STAGE/scripts/"
+cp -f LICENSE README.md "$STAGE/"
+
+cat > "$STAGE/install.sh" <<'EOF'
+#!/bin/sh
+# Cài Onikey từ gói binary này.
+#
+#   sudo ./install.sh                  # cài toàn máy vào /usr
+#   ./install.sh --prefix ~/.local     # cài riêng cho người dùng, không cần root
+set -eu
+cd "$(dirname "$0")"
+
+PREFIX=/usr
+[ "${1:-}" = "--prefix" ] && PREFIX="$2"
+
+# Fedora và họ hàng để helper ở /usr/libexec; Debian/Arch ở /usr/lib.
+LIBEXECDIR=""
+[ -d /usr/libexec ] && [ "$PREFIX" = "/usr" ] && LIBEXECDIR=/usr/libexec/onikey
+export LIBEXECDIR
+
+if [ "$PREFIX" = "/usr" ] && [ "$(id -u)" != 0 ]; then
+  echo "Cài vào /usr cần quyền root: chạy lại với sudo," >&2
+  echo "hoặc cài riêng cho mình: ./install.sh --prefix ~/.local" >&2
+  exit 1
+fi
+
+sh scripts/install "$PREFIX"
+[ -x "$(command -v gtk-update-icon-cache)" ] &&
+  gtk-update-icon-cache -f "$PREFIX/share/icons/hicolor" >/dev/null 2>&1 || true
+[ -x "$(command -v update-desktop-database)" ] &&
+  update-desktop-database "$PREFIX/share/applications" >/dev/null 2>&1 || true
+
+echo
+echo "Đã cài Onikey vào $PREFIX."
+if [ "$(id -u)" = 0 ] && [ -n "${SUDO_USER:-}" ]; then
+  # Đánh thức IBus trong phiên của NGƯỜI DÙNG, không phải phiên root.
+  runuser -u "$SUDO_USER" -- sh -c \
+    'XDG_RUNTIME_DIR=/run/user/$(id -u) DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus '"$PREFIX"'/bin/onikey-enable' \
+    >/dev/null 2>&1 || true
+fi
+echo "Bấm Super+Space để chuyển sang Onikey và gõ tiếng Việt."
+echo "Chưa thấy? Đăng xuất rồi đăng nhập lại một lần."
+EOF
+chmod +x "$STAGE/install.sh"
+
+echo "==> Nén"
+tar -czf "$NAME.tar.gz" -C "$WORK" "$NAME"
+sha256sum "$NAME.tar.gz" > "$NAME.tar.gz.sha256"
+echo "    $PWD/$NAME.tar.gz ($(du -h "$NAME.tar.gz" | cut -f1))"
+echo "    $PWD/$NAME.tar.gz.sha256"
