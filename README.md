@@ -27,15 +27,23 @@ Xong — bấm <kbd>Super</kbd>+<kbd>Space</kbd> là gõ được tiếng Việt
 đánh thức IBus và tự thêm nguồn nhập vào cuối danh sách; không cần đăng xuất,
 không cần vào Settings.
 
-**Từ mã nguồn:**
+**Từ mã nguồn** — Ubuntu/Debian:
 ```sh
 sudo apt install -y golang cargo gcc make pkg-config libgtk-3-dev libxtst-dev libx11-dev
 git clone https://github.com/Crust92/Onikey.git
 cd Onikey && make && sudo make install PREFIX=/usr && ibus restart
 ```
+
+Fedora (helper nằm ở `/usr/libexec` nên phải truyền `LIBEXECDIR`):
+```sh
+sudo dnf install -y golang rust cargo gcc make pkgconf-pkg-config gtk3-devel libXtst-devel libX11-devel
+git clone https://github.com/Crust92/Onikey.git
+cd Onikey && make && sudo make install PREFIX=/usr LIBEXECDIR=/usr/libexec/onikey && ibus restart
+```
+
 Chọn bộ gõ trong *Settings → Keyboard → Input Sources → + → Vietnamese →
-Onikey*. Gỡ bằng `sudo make uninstall`. Cài ra ngoài `/usr` thì truyền
-`PREFIX=`; Fedora thêm `LIBEXECDIR=/usr/libexec/onikey`.
+Onikey*. Gỡ bằng `sudo make uninstall` (kèm đúng biến đã cài). Cài ra ngoài
+`/usr` thì truyền `PREFIX=`.
 
 ## Chức năng
 
