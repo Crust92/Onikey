@@ -130,6 +130,15 @@ func SaveConfig(c *Config, engineName string) {
 		return
 	}
 
+	// Tạo thư mục trước khi ghi. Chỉ engine Go gọi initConfigFiles; hộp thoại
+	// cấu hình (cmd/onikey-config) thì không, mà máy chạy engine Rust cũng
+	// chẳng ai tạo ~/.config/onikey. Thiếu thư mục thì WriteFile hỏng và ta chỉ
+	// log — người dùng đổi tuỳ chọn, tưởng đã lưu, khởi động lại là mất sạch.
+	if err := os.MkdirAll(GetConfigDir(engineName), 0755); err != nil {
+		log.Println(err)
+		return
+	}
+
 	err = ioutil.WriteFile(fmt.Sprintf(configFile, GetConfigDir(engineName), engineName), data, 0644)
 	if err != nil {
 		log.Println(err)
