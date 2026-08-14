@@ -184,14 +184,62 @@ pub fn save_number(key: &str, value: u32) -> std::io::Result<()> {
 }
 
 fn rewrite_value(key: &str, new_raw: &str) -> std::io::Result<()> {
-    let path = config_path();
-    let data = std::fs::read_to_string(&path)?;
+    rewrite_value_at(&config_path(), key, new_raw)
+}
+
+/// Tạo tệp cấu hình RỖNG nếu chưa có. Bản Rust chỉ SỬA GIÁ TRỊ TẠI CHỖ, nên
+/// không có tệp là không lưu được gì: người dùng đổi tuỳ chọn, dùng ngon trong
+/// phiên, khởi động lại là mất sạch. Máy mới cài — chưa từng mở hộp thoại cấu
+/// hình nên chưa ai tạo tệp — rơi đúng vào cảnh đó.
+///
+/// CỐ Ý ghi `{}` chứ không đổ sẵn mặc định của bản Rust vào: tệp này bản Go
+/// đọc chung mà hai bên có mặc định KHÁC nhau (IBflags của Go còn kèm kiểm tra
+/// chính tả, workaround WPS...). Đổ mặc định Rust vào tức là lẳng lặng đổi
+/// hành vi bản Go. Khoá nào chưa có thì mỗi engine tự lấy mặc định của mình —
+/// cả hai đều khởi tạo từ mặc định rồi mới đè giá trị đọc được.
+fn ensure_file_at(path: &std::path::Path) -> std::io::Result<()> {
+    if path.exists() {
+        return Ok(());
+    }
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir)?;
+    }
+    std::fs::write(path, "{\n}\n")
+}
+
+/// Chèn khoá chưa có vào đầu object, giữ nguyên phần còn lại của tệp. Tệp do
+/// bản cũ ghi có thể thiếu khoá mới; báo lỗi ở đây đồng nghĩa tuỳ chọn mới
+/// KHÔNG BAO GIỜ lưu được.
+fn insert_value_at(
+    path: &std::path::Path,
+    data: &str,
+    key: &str,
+    new_raw: &str,
+) -> std::io::Result<()> {
+    let Some(open) = data.find('{') else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            "cấu hình không phải JSON object",
+        ));
+    };
+    let sep = if data[open + 1..].trim_start().starts_with('}') {
+        ""
+    } else {
+        ","
+    };
+    let mut out = String::with_capacity(data.len() + 64);
+    out.push_str(&data[..=open]);
+    out.push_str(&format!("\n  \"{key}\": {new_raw}{sep}"));
+    out.push_str(&data[open + 1..]);
+    std::fs::write(path, out)
+}
+
+fn rewrite_value_at(path: &std::path::Path, key: &str, new_raw: &str) -> std::io::Result<()> {
+    ensure_file_at(path)?;
+    let data = std::fs::read_to_string(path)?;
     let pat = format!("\"{key}\"");
     let Some(i) = data.find(&pat) else {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::NotFound,
-            format!("không thấy khoá {key}"),
-        ));
+        return insert_value_at(path, &data, key, new_raw);
     };
     let after_key = i + pat.len();
     let Some(colon) = data[after_key..].find(':') else {
@@ -213,7 +261,7 @@ fn rewrite_value(key: &str, new_raw: &str) -> std::io::Result<()> {
     out.push_str(&data[..vstart]);
     out.push_str(new_raw);
     out.push_str(&data[vstart + vlen..]);
-    std::fs::write(&path, out)
+    std::fs::write(path, out)
 }
 
 #[cfg(test)]
@@ -256,5 +304,43 @@ mod tests {
         std::env::remove_var("XDG_CONFIG_HOME");
         let c = load();
         assert_eq!(c.input_method, "Telex 2");
+    }
+
+    /// Máy mới cài chưa có tệp cấu hình: đổi tuỳ chọn phải TẠO tệp rồi lưu
+    /// được. Trước đây rewrite_value trả lỗi NotFound ở bước đọc tệp, nên tuỳ
+    /// chọn chỉ sống trong phiên — khởi động lại là mất.
+    #[test]
+    fn thieu_tep_thi_van_luu_duoc_tuy_chon() {
+        let dir = std::env::temp_dir().join("onikey-test-luu-khi-thieu-tep");
+        let _ = std::fs::remove_dir_all(&dir);
+        let path = dir.join("onikey/onikey.config.json");
+
+        rewrite_value_at(&path, "DefaultInputMode", "2").unwrap();
+
+        let data = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(json_number(&data, "DefaultInputMode").unwrap(), 2);
+        // Chỉ khoá vừa đổi được ghi: các khoá khác vắng mặt để mỗi engine giữ
+        // mặc định của mình (Go và Rust không cùng mặc định IBflags).
+        assert!(json_number(&data, "IBflags").is_none());
+        assert!(json_string(&data, "InputMethod").is_none());
+        // đọc lại qua load() thì khoá vắng vẫn ra mặc định Rust
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// Tệp do bản cũ ghi thiếu khoá mới thì chèn thêm, không bỏ qua im lặng.
+    #[test]
+    fn thieu_khoa_thi_chen_them() {
+        let dir = std::env::temp_dir().join("onikey-test-chen-khoa-thieu");
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("onikey.config.json");
+        std::fs::write(&path, "{\n  \"InputMethod\": \"Telex 2\"\n}\n").unwrap();
+
+        rewrite_value_at(&path, "DefaultInputMode", "2").unwrap();
+
+        let data = std::fs::read_to_string(&path).unwrap();
+        assert_eq!(json_number(&data, "DefaultInputMode").unwrap(), 2);
+        assert_eq!(json_string(&data, "InputMethod").unwrap(), "Telex 2");
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
