@@ -57,9 +57,15 @@ impl Default for Config {
             // Máy CHƯA TỪNG cấu hình phải có hành vi chuẩn: tự khôi phục tiếng
             // Anh + dd viết tắt + tự viết hoa macro. ib_flags=0 từng làm addon
             // Fcitx5 trên máy mới gõ "expression" thành "ẽpresion".
+            //
+            // URL_NO_UNDERLINE bật sẵn: mặc định máy mới là Pre-edit (tin cậy
+            // nhất khi máy lag) nhưng RIÊNG ô địa chỉ trình duyệt bỏ gạch chân,
+            // vì pre-edit ở đó phá danh sách gợi ý. Đây là cấu hình dùng hằng
+            // ngày nên để người dùng phải tự đi bật là thừa một bước.
             ib_flags: ibflag::AUTO_NON_VN_RESTORE
                 | ibflag::DD_FREE_STYLE
-                | ibflag::AUTO_CAPITALIZE_MACRO,
+                | ibflag::AUTO_CAPITALIZE_MACRO
+                | ibflag::URL_NO_UNDERLINE,
             shortcuts: [1, 126, 0, 0, 0, 0, 0, 0, 5, 117],
             default_input_mode: 1,
         }
