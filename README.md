@@ -49,13 +49,25 @@ git clone https://github.com/Crust92/Onikey.git
 cd Onikey && make && sudo make install PREFIX=/usr LIBEXECDIR=/usr/libexec/onikey && ibus restart
 ```
 
-Fedora Silverblue/Kinoite và các bản atomic khác (cài từ COPR, không cần
-build):
+Fedora thường, cài từ COPR (không cần build):
 ```sh
 sudo dnf copr enable xatomic/onikey
-rpm-ostree install onikey        # bản thường: sudo dnf install onikey
+sudo dnf install onikey
+```
+
+Fedora Silverblue/Kinoite và các bản atomic khác. Host **không có `dnf`** nên
+không chạy được `dnf copr enable`; lấy thẳng tệp `.repo` của COPR rồi layer:
+```sh
+fv=$(rpm -E %fedora)
+sudo curl -fsSL -o /etc/yum.repos.d/_copr_xatomic-onikey.repo \
+  "https://copr.fedorainfracloud.org/coprs/xatomic/onikey/repo/fedora-$fv/xatomic-onikey-fedora-$fv.repo"
+sudo rpm-ostree install onikey
 systemctl reboot
 ```
+Cập nhật sau này theo `sudo rpm-ostree upgrade`, gỡ bằng
+`sudo rpm-ostree uninstall onikey`. Đừng dùng `make install` trên bản atomic:
+`/usr` chỉ đọc, mà IBus của host chỉ quét `/usr/share/ibus/component`, nên
+engine bắt buộc vào hệ thống qua một gói RPM.
 
 Chọn bộ gõ trong *Settings → Keyboard → Input Sources → + → Vietnamese →
 Onikey*. Gỡ bằng `sudo make uninstall` (kèm đúng biến đã cài). Cài ra ngoài
