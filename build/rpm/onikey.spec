@@ -7,7 +7,7 @@
 
 Name:           onikey
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Bộ gõ tiếng Việt cho IBus (engine Rust)
 
 License:        GPL-3.0-or-later
@@ -63,6 +63,17 @@ make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 %config(noreplace) /etc/xdg/autostart/onikey-startup-fix.desktop
 
 %changelog
+* Fri Aug 14 2026 Crust92 <xtczone000000@gmail.com> - 1.0.2-2
+- Sửa: bật "bỏ gạch chân" mà chữ vẫn mọc gạch chân giữa chừng. Chromium lật
+  capabilities qua lại trên cùng một ô nhập (một phiên gõ đo được 28 lần rơi
+  mất bit surrounding text rồi lấy lại) làm engine lùi về Pre-edit; giữ bit
+  đó dính trong một lần focus
+- Sửa: tuỳ chọn không lưu được trên máy chưa có ~/.config/onikey — cả đường
+  ghi của engine Rust lẫn của hộp thoại cấu hình đều hỏng im lặng, nên đổi
+  tuỳ chọn xong khởi động lại là mất sạch
+- Máy mới cài mặc định Pre-edit + ô địa chỉ trình duyệt tự bỏ gạch chân
+- README: host Fedora atomic không có dnf nên không chạy được dnf copr enable
+
 * Tue Aug 11 2026 Crust92 <xtczone000000@gmail.com> - 1.0.2-1
 - Gộp các bản vá trong ngày: icon hộp thoại cấu hình, app-id để cửa sổ
   khớp tệp .desktop, gói đóng ra dist/, dọn mã nguồn đã chết
