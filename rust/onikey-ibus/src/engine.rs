@@ -521,6 +521,11 @@ impl OnikeyEngine {
                 st.pending_purpose = None;
                 st.delete_evidence = None;
                 st.rewrite_broken = false;
+                // Ô mới phải tự khai lại surrounding text: set_capabilities giữ
+                // bit này dính để chống chập chờn, nên phải xoá ở đây, không thì
+                // một ô có hỗ trợ sẽ khiến ô sau (terminal, GTK cũ) bị tưởng là
+                // có luôn.
+                st.capabilities &= !IBUS_CAP_SURROUNDING_TEXT;
             }
             st.purpose_stale = true;
             st.reload_config_if_changed();
@@ -561,6 +566,17 @@ impl OnikeyEngine {
 
     async fn set_capabilities(&self, caps: u32) {
         let mut st = self.state.lock().unwrap();
+        // Chromium/GNOME lật capabilities qua lại trên CÙNG một input context:
+        // đo trong một phiên gõ thấy 28 lần rơi mất bit surrounding text rồi
+        // lấy lại (đi kèm churn blur–refocus quanh mỗi lần ta ghi/xoá). Mỗi lần
+        // rơi mất, no_underline() trả false và chữ đang gõ bỗng mọc gạch chân
+        // giữa chừng, dù người dùng đang bật chế độ không gạch chân.
+        //
+        // Giữ bit đó DÍNH cho tới lần focus THẬT (focus_in không phải churn sẽ
+        // xoá đi để ô mới tự khai lại). Ô nào thực sự nuốt lệnh xoá thì đã có
+        // rewrite_broken lo — đó mới là lá chắn đúng chỗ, chứ không phải cái
+        // capability chập chờn này.
+        let caps = caps | (st.capabilities & IBUS_CAP_SURROUNDING_TEXT);
         if st.capabilities != caps {
             crate::debug::log(format_args!(
                 "capabilities: {:#x} -> {:#x}",
