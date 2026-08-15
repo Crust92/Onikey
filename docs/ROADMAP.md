@@ -110,9 +110,14 @@ sinh ra từ bản Go, mà chưa đụng gì tới bản đang dùng.
       Wayland), chọn nguồn nhập "Onikey (Rust, thử nghiệm)" rồi gõ `tieengs
       Vieejt` cho ra `tiếng Việt`. Đây là lần đầu toàn bộ đường đi chạy bằng
       Rust: phím → zbus → lõi Rust → chữ hiện ra.
-- [ ] Bê nguyên các bài học đã trả giá của bản Go: chế độ lai theo ô nhập, chốt
-      chế độ lúc focus, đồng bộ theo sự kiện cho Surrounding Text, không chặn
-      luồng xử lý phím bằng lời gọi đồng bộ ra ngoài.
+- [x] **Bê nguyên các bài học đã trả giá của bản Go — xong**: chế độ lai theo ô
+      nhập (chỉ ô địa chỉ bỏ gạch chân khi đang ở chế độ Pre-edit); **chốt chế
+      độ một lần cho cả từ** — `no_underline()` từng được tính lại ở MỖI phím
+      từ ba nguồn đổi được giữa chừng (capabilities, purpose, `rewrite_broken`),
+      mà hai chế độ giữ chữ ở hai chỗ khác nhau nên lật giữa từ là chữ nhân đôi
+      hoặc mọc gạch chân; đồng bộ theo sự kiện cho Surrounding Text (chờ ứng
+      dụng xác nhận `DeleteSurroundingText`, trần 60ms); và `decide()` thuần
+      đồng bộ — không `await`, không gọi ra ngoài trong đường xử lý phím.
 - [ ] Chạy song song: gói `.deb` cài cả hai, đổi qua lại bằng biến môi trường
       hoặc hai component XML khác tên, để lùi về bản Go được ngay khi hỏng.
 - [ ] Khi bản Rust chạy ổn định 2–3 tuần dùng thật → xoá mã Go.

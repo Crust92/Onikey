@@ -11,6 +11,11 @@
 //!     thức `SetContentType`. Thiếu nó thì engine mù, đúng như `goibus`.
 //!   - **Không gọi gì đồng bộ ra ngoài trong đường xử lý phím/focus.** Bản Go
 //!     từng mất 13ms mỗi lần focus chỉ vì hỏi gnome-shell một câu vô ích.
+//!   - **Chốt chế độ gạch chân một lần cho cả từ.** Bản Go chốt lúc FocusIn
+//!     (`updateNoUnderlineMode`) vì capability và kiểu ô nhập tới rải rác từ
+//!     nhiều input context. Ở đây chốt muộn hơn một nhịp — lúc BẮT ĐẦU từ,
+//!     sau khi ứng dụng đã kịp khai lại capabilities hậu FocusIn — nhưng cùng
+//!     một nguyên tắc: trong lúc đang gõ dở, chế độ không được đổi.
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
@@ -87,6 +92,16 @@ struct State {
     /// Mtime của tệp cấu hình lúc nạp — đổi thì nạp lại ở lần focus sau,
     /// người dùng chỉnh trong hộp thoại là ăn ngay, không cần ibus restart.
     cfg_mtime: Option<std::time::SystemTime>,
+    /// Chế độ gạch chân đã CHỐT cho từ đang gõ; `None` = chưa gõ từ nào.
+    ///
+    /// Hai chế độ giữ chữ ở hai chỗ khác nhau — Pre-edit giữ trong engine,
+    /// không-gạch-chân giữ thẳng trong ứng dụng (`committed`) — nên đổi chế độ
+    /// GIỮA TỪ là bỏ rơi một nửa chữ: đang không gạch chân mà lùi về Pre-edit
+    /// thì phần đã ghi nằm lại trong ô rồi pre-edit vẽ lại cả từ (chữ nhân
+    /// đôi); ngược lại thì `committed` rỗng nên `rewrite_to` ghi thêm cả từ
+    /// trong khi pre-edit vẫn treo. Chốt lúc bắt đầu từ và giữ nguyên tới khi
+    /// từ kết thúc, mặc kệ capabilities/purpose nhấp nháy giữa chừng.
+    mode_latch: Option<bool>,
 }
 
 fn config_mtime() -> Option<std::time::SystemTime> {
@@ -125,6 +140,7 @@ impl State {
         };
         self.cfg = cfg;
         self.committed.clear();
+        self.unlatch_mode();
     }
 
     /// Chuyển sang bảng mã đầu ra (TCVN3, VNI Windows…). Unicode trả nguyên.
@@ -167,12 +183,16 @@ impl State {
     fn finish_word(&mut self) -> Action {
         let s = self.display_string();
         self.core.reset();
+        // Đọc chốt của từ VỪA XONG (chữ đang nằm ở đâu là do nó quyết định),
+        // rồi nhả ngay để từ sau chốt lại theo ô nhập lúc đó.
+        let no_underline = self.no_underline();
+        self.unlatch_mode();
         // Gõ tắt: chuỗi vừa gõ trùng khoá -> thay bằng bản mở rộng. Tra bằng
         // chuỗi HIỂN THỊ: khoá thô ("btw") khớp nhờ khôi phục tiếng Anh, khoá
         // có dấu ("đc" gõ "ddc") khớp nhờ flatten — cả hai đường đều qua đây.
         if !self.macros.is_empty() {
             if let Some(expanded) = self.macros.expand(&s) {
-                let backspaces = if self.no_underline() {
+                let backspaces = if no_underline {
                     self.committed.chars().count() as u32
                 } else {
                     0
@@ -184,7 +204,7 @@ impl State {
                 };
             }
         }
-        if self.no_underline() {
+        if no_underline {
             self.committed.clear();
             return Action::Passthrough(None);
         }
@@ -196,13 +216,16 @@ impl State {
         })
     }
 
-    /// Có gõ được kiểu không gạch chân không? Điều kiện tiên quyết: ứng dụng
-    /// phải cung cấp surrounding text — thiếu thì thà gạch chân còn hơn nuốt
-    /// phím (bài học ô địa chỉ Edge). Đủ điều kiện thì:
+    /// Có gõ được kiểu không gạch chân không, theo trạng thái Ô NHẬP LÚC NÀY?
+    /// Chỉ được hỏi ở ranh giới từ — trong lúc gõ dở thì dùng `no_underline`.
+    ///
+    /// Điều kiện tiên quyết: ứng dụng phải cung cấp surrounding text — thiếu
+    /// thì thà gạch chân còn hơn nuốt phím (bài học ô địa chỉ Edge). Đủ điều
+    /// kiện thì:
     ///   - chế độ 2 trở lên: luôn không gạch chân;
     ///   - chế độ 1 (Pre-edit): riêng Ô ĐỊA CHỈ trình duyệt (purpose=URL) nếu
     ///     người dùng bật nút gạt — pre-edit phá gợi ý của thanh địa chỉ.
-    fn no_underline(&self) -> bool {
+    fn compute_no_underline(&self) -> bool {
         if self.capabilities & IBUS_CAP_SURROUNDING_TEXT == 0 {
             return false;
         }
@@ -214,6 +237,32 @@ impl State {
         }
         self.cfg.ib_flags & ibflag::URL_NO_UNDERLINE != 0
             && self.content_purpose == IBUS_INPUT_PURPOSE_URL
+    }
+
+    /// Chế độ của TỪ ĐANG GÕ. Chưa gõ từ nào thì chốt theo trạng thái hiện tại
+    /// của ô nhập rồi giữ nguyên cho tới hết từ — xem `mode_latch`.
+    fn no_underline(&mut self) -> bool {
+        match self.mode_latch {
+            Some(v) => v,
+            None => {
+                let v = self.compute_no_underline();
+                crate::debug::log(format_args!(
+                    "chốt chế độ cho từ mới: {} (cap={:#x} purpose={} broken={})",
+                    if v { "không gạch chân" } else { "Pre-edit" },
+                    self.capabilities,
+                    self.content_purpose,
+                    self.rewrite_broken
+                ));
+                self.mode_latch = Some(v);
+                v
+            }
+        }
+    }
+
+    /// Từ đã kết thúc (chốt chữ, đổi ô, Reset, đổi cấu hình) — từ sau chốt lại
+    /// chế độ từ đầu.
+    fn unlatch_mode(&mut self) {
+        self.mode_latch = None;
     }
 }
 
@@ -242,6 +291,7 @@ impl OnikeyEngine {
                 committed: String::new(),
                 english_mode: false,
                 cfg_mtime: config_mtime(),
+                mode_latch: None,
             }),
             st_confirm: tokio::sync::Notify::new(),
             awaiting_confirm: AtomicBool::new(false),
@@ -394,6 +444,7 @@ impl OnikeyEngine {
                 if st.core.get_processed_string(mode::VIETNAMESE).is_empty() {
                     // Không có gì đang gõ dở -> để ứng dụng tự xoá.
                     st.committed.clear();
+                    st.unlatch_mode();
                     return Action::Ignore;
                 }
                 st.core.remove_last_char(true);
@@ -507,6 +558,9 @@ impl OnikeyEngine {
                 }
                 st.core.reset();
                 st.committed.clear();
+                // Ô mới, chế độ phải chốt lại: capability của ô trước không
+                // nói gì về ô này.
+                st.unlatch_mode();
                 // Ô không khai ContentType (terminal, GTK cũ, Electron cũ)
                 // không gửi gì khi được focus — purpose của ô trước sẽ rò
                 // sang nếu cứ giữ. Ô có khai thì ibus-daemon gửi ContentType
@@ -558,6 +612,7 @@ impl OnikeyEngine {
             return;
         }
         st.core.reset();
+        st.unlatch_mode();
     }
 
     async fn enable(&self) {}
@@ -644,6 +699,13 @@ impl OnikeyEngine {
                     // gõ dạng pre-edit: từ đầu tiên cũng lành lặn.
                     let n_bs = (deleted.chars().count() + new.chars().count()) as u32;
                     st.committed.clear();
+                    // Ép chốt về Pre-edit NGAY GIỮA TỪ — đây là ngoại lệ duy
+                    // nhất được đổi chế độ khi đang gõ dở, và đổi được vì ta
+                    // vừa xoá sạch phần đã ghi bằng ForwardKeyEvent bên dưới:
+                    // chữ không còn nằm hai nơi nữa. Nhả chốt (`unlatch_mode`)
+                    // ở đây thì phím sau lại hỏi lại và ra `true` như cũ, sửa
+                    // xong lại hỏng ngay.
+                    st.mode_latch = Some(false);
                     crate::debug::log(format_args!(
                         "ô này NUỐT lệnh xoá (thấy {deleted:?} vẫn đứng trước {new:?}) — xoá bù {n_bs} phím, về Pre-edit đến khi đổi ô"
                     ));
@@ -697,6 +759,7 @@ impl OnikeyEngine {
                 st.cfg.input_method = im.to_string();
                 st.core = Core::new(parse_input_method(im), st.cfg.flags);
                 st.committed.clear();
+                st.unlatch_mode();
                 drop(st);
                 let _ = crate::config::save_string("InputMethod", im);
                 changed = true;
@@ -716,6 +779,8 @@ impl OnikeyEngine {
                 st.cfg.default_input_mode = m;
                 st.core.reset();
                 st.committed.clear();
+                // Người dùng vừa lật công tắc chế độ: chốt cũ hết hiệu lực.
+                st.unlatch_mode();
                 drop(st);
                 let _ = crate::config::save_number("DefaultInputMode", m);
                 changed = true; // vẽ lại menu: nút gạt ô địa chỉ hiện/ẩn theo chế độ
@@ -882,5 +947,105 @@ mod tests {
         assert_eq!(diff_tail("tiêng", "tiếng"), (3, "ếng".to_string()));
         // từ rỗng
         assert_eq!(diff_tail("", "t"), (0, "t".to_string()));
+    }
+
+    /// Ô nhập lý tưởng: có surrounding text, chưa gõ gì. `mode` chọn chế độ gõ
+    /// người dùng đặt trong hộp thoại (1 = Pre-edit, 2 = không gạch chân).
+    fn state_thu(mode: u32) -> State {
+        let cfg = Config {
+            default_input_mode: mode,
+            ..Config::default()
+        };
+        State {
+            core: Core::new(parse_input_method(&cfg.input_method), cfg.flags),
+            macros: crate::macros::MacroTable::default(),
+            cfg,
+            content_purpose: 0,
+            purpose_stale: true,
+            last_content_type: None,
+            last_key: None,
+            pending_purpose: None,
+            delete_evidence: None,
+            rewrite_broken: false,
+            capabilities: IBUS_CAP_SURROUNDING_TEXT,
+            committed: String::new(),
+            english_mode: false,
+            cfg_mtime: None,
+            mode_latch: None,
+        }
+    }
+
+    #[test]
+    fn capability_roi_giua_tu_khong_doi_duoc_che_do() {
+        let mut st = state_thu(2);
+        assert!(st.no_underline(), "đủ điều kiện -> không gạch chân");
+        // Churn blur–refocus của Chromium làm rơi bit surrounding text giữa
+        // chừng (đo được 28 lần trong một phiên gõ).
+        st.capabilities &= !IBUS_CAP_SURROUNDING_TEXT;
+        assert!(st.no_underline(), "đã chốt thì giữa từ không được đổi");
+        st.finish_word();
+        assert!(
+            !st.no_underline(),
+            "từ sau mới chốt lại: mất capability -> Pre-edit"
+        );
+    }
+
+    #[test]
+    fn o_dia_chi_chot_roi_giu_nguyen_du_purpose_nhap_nhay() {
+        // Chế độ 1 + nút gạt URL (bật sẵn trong Config mặc định) = chế độ lai:
+        // chỉ ô địa chỉ mới bỏ gạch chân.
+        let mut st = state_thu(1);
+        st.content_purpose = IBUS_INPUT_PURPOSE_URL;
+        assert!(st.no_underline(), "ô địa chỉ -> không gạch chân");
+        st.content_purpose = 0; // omnibox nháy 5 -> 0 giữa từ
+        assert!(st.no_underline(), "vẫn giữ chốt tới hết từ");
+        st.finish_word();
+        assert!(!st.no_underline(), "ô thường -> Pre-edit");
+    }
+
+    #[test]
+    fn ket_tu_theo_chot_cu_chu_khong_theo_trang_thai_moi() {
+        let mut st = state_thu(2);
+        // Đúng thứ tự của `decide`: gõ phím -> hỏi chế độ (chốt ở đây) -> ghi.
+        st.core.process_key('a', mode::VIETNAMESE);
+        let s = st.display_string();
+        assert!(st.no_underline());
+        st.rewrite_to(s); // "a" đã ghi thẳng vào ứng dụng
+        assert_eq!(st.committed, "a");
+        st.capabilities &= !IBUS_CAP_SURROUNDING_TEXT;
+        // Tính lại theo trạng thái mới sẽ ra Pre-edit, và Pre-edit thì kết từ
+        // bằng cách CHỐT chuỗi vào ứng dụng — trong khi "a" đã nằm sẵn trong
+        // đó. Chốt cũ phải thắng, không thì chữ nhân đôi.
+        assert!(
+            matches!(st.finish_word(), Action::Passthrough(None)),
+            "chữ đã nằm trong ô rồi, không được chốt lại lần nữa"
+        );
+        assert!(st.committed.is_empty());
+    }
+
+    #[test]
+    fn duong_sua_chua_ep_ve_preedit_va_giu_toi_het_tu() {
+        let mut st = state_thu(2);
+        assert!(st.no_underline());
+        // set_surrounding_text bắt quả tang ô nuốt lệnh xoá: xoá bù bằng phím
+        // BackSpace thật rồi ép phần còn lại của từ đi đường Pre-edit.
+        st.rewrite_broken = true;
+        st.mode_latch = Some(false);
+        assert!(!st.no_underline(), "phần còn lại của từ phải là Pre-edit");
+        st.finish_word();
+        assert!(
+            !st.no_underline(),
+            "rewrite_broken còn đó tới khi đổi ô -> từ sau vẫn Pre-edit"
+        );
+    }
+
+    #[test]
+    fn doi_o_thi_chot_lai_tu_dau() {
+        let mut st = state_thu(2);
+        assert!(st.no_underline());
+        // focus_in THẬT: ô mới phải tự khai lại surrounding text.
+        st.capabilities &= !IBUS_CAP_SURROUNDING_TEXT;
+        st.unlatch_mode();
+        assert!(!st.no_underline(), "ô mới chưa khai -> Pre-edit");
     }
 }
