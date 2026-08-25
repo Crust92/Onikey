@@ -32,6 +32,10 @@ sudo apt install onikey          # for IBus (GNOME)
 sudo apt install fcitx5-onikey   # for Fcitx5 (KDE)
 ```
 
+> **Installed from the APT repo before 2026-08-25?** The signing key changed
+> (the old one was lost with the old build machine), so `apt update` reports
+> `NO_PUBKEY`. Re-run the `curl ... keyring ...` line above to fix it.
+
 Done — press <kbd>Super</kbd>+<kbd>Space</kbd> and type Vietnamese. The package
 wakes IBus and appends the input source for you; no logout, no Settings digging.
 

@@ -31,6 +31,10 @@ sudo apt install onikey          # cho IBus (GNOME)
 sudo apt install fcitx5-onikey   # cho Fcitx5 (KDE)
 ```
 
+> **Đã cài theo kho APT trước 25/08/2026?** Khoá ký kho đã đổi (khoá cũ mất
+> theo máy phát hành cũ), nên `apt update` sẽ báo `NO_PUBKEY`. Chạy lại đúng
+> dòng `curl ... keyring ...` ở trên là xong.
+
 Xong — bấm <kbd>Super</kbd>+<kbd>Space</kbd> là gõ được tiếng Việt. Gói tự
 đánh thức IBus và tự thêm nguồn nhập vào cuối danh sách; không cần đăng xuất,
 không cần vào Settings.
