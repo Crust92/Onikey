@@ -6,7 +6,7 @@
 %global debug_package %{nil}
 
 Name:           onikey
-Version:        1.0.3
+Version:        1.0.4
 Release:        1%{?dist}
 Summary:        Bộ gõ tiếng Việt cho IBus (engine Rust)
 
@@ -63,6 +63,10 @@ make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 %config(noreplace) /etc/xdg/autostart/onikey-startup-fix.desktop
 
 %changelog
+* Mon Aug 25 2026 Crust92 <xtczone000000@gmail.com> - 1.0.4-1
+- Thêm gói binary cho máy ARM (aarch64) ở kênh GitHub Releases
+- Kho APT có lại gói addon Fcitx5 bản mới
+
 * Fri Aug 14 2026 Crust92 <xtczone000000@gmail.com> - 1.0.3-1
 - Sửa gõ lag theo tải hệ thống khi bật log gỡ rối: log mở–ghi–đóng tệp mỗi
   phím, tệp phình vài chục MB là mỗi lần mở phải chờ I/O. Nay giữ tệp mở sẵn

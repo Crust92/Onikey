@@ -1,7 +1,7 @@
 # Onikey
 ibus_e_name="onikey-engine"
 config_name="onikey-config"
-version="1.0.3"
+version="1.0.4"
 
 # PREFIX quyết định nơi engine đi tìm dữ liệu (icons, từ điển, emoji) khi chạy.
 # Không cắm cứng /usr: Fedora/FreeBSD/cài vào ~/.local đều khác nhau.

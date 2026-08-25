@@ -309,7 +309,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "onikey-core"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "flate2",
  "serde_json",
@@ -317,7 +317,7 @@ dependencies = [
 
 [[package]]
 name = "onikey-core-ffi"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "onikey-core",
  "onikey-userconfig",
@@ -325,7 +325,7 @@ dependencies = [
 
 [[package]]
 name = "onikey-ibus"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "onikey-core",
  "onikey-userconfig",
@@ -336,7 +336,7 @@ dependencies = [
 
 [[package]]
 name = "onikey-userconfig"
-version = "1.0.3"
+version = "1.0.4"
 dependencies = [
  "onikey-core",
 ]

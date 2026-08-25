@@ -5,7 +5,7 @@
 #
 # Yêu cầu libonikey_core.a đã build: (cd ../rust && cargo build --release)
 cmake_minimum_required(VERSION 3.16)
-project(fcitx5-onikey VERSION 1.0.3 LANGUAGES CXX)
+project(fcitx5-onikey VERSION 1.0.4 LANGUAGES CXX)
 
 find_package(Fcitx5Core REQUIRED)
 include(FeatureSummary)
