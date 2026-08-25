@@ -24,9 +24,26 @@ fn log_file() -> Option<&'static std::path::PathBuf> {
     .as_ref()
 }
 
+/// Tệp log MỞ SẴN. Bản trước mở–ghi–đóng lại MỖI PHÍM; tệp phình lên vài chục
+/// MB rồi máy tải nặng là mỗi lần mở phải chờ I/O — người gõ thấy chữ hiện trễ
+/// đúng theo tải hệ thống. Giữ một handle: còn đúng một lần write cho mỗi dòng.
+fn handle() -> Option<&'static std::sync::Mutex<std::fs::File>> {
+    static FILE: OnceLock<Option<std::sync::Mutex<std::fs::File>>> = OnceLock::new();
+    FILE.get_or_init(|| {
+        let path = log_file()?;
+        std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(path)
+            .ok()
+            .map(std::sync::Mutex::new)
+    })
+    .as_ref()
+}
+
 pub fn log(args: Arguments<'_>) {
-    let Some(path) = log_file() else { return };
-    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+    let Some(f) = handle() else { return };
+    if let Ok(mut f) = f.lock() {
         let _ = writeln!(f, "{args}");
     }
 }

@@ -84,6 +84,10 @@ struct State {
     /// Ô hiện tại bị bắt quả tang nuốt lệnh xoá → dùng Pre-edit đến khi đổi ô.
     rewrite_broken: bool,
     capabilities: u32,
+    /// Số lần xoá lùi liên tiếp KHÔNG được ứng dụng xác nhận trong hạn chờ.
+    /// Ô không xác nhận là ô ta không kiểm chứng được — hai lần liền thì coi
+    /// như không đáng tin và lùi về Pre-edit, thà gạch chân còn hơn chồng chữ.
+    delete_timeouts: u32,
     /// Chuỗi đã GHI RA ứng dụng ở chế độ không gạch chân — cần nhớ để biết
     /// phải xoá lùi bao nhiêu ký tự khi chữ thay đổi.
     committed: String,
@@ -288,6 +292,7 @@ impl OnikeyEngine {
                 delete_evidence: None,
                 rewrite_broken: false,
                 capabilities: 0,
+                delete_timeouts: 0,
                 committed: String::new(),
                 english_mode: false,
                 cfg_mtime: config_mtime(),
@@ -370,9 +375,30 @@ impl OnikeyEngine {
             .await
             .is_ok();
         self.awaiting_confirm.store(false, Ordering::SeqCst);
-        if !ok {
+        let mut st = self.state.lock().unwrap();
+        if ok {
+            st.delete_timeouts = 0;
+            return;
+        }
+        // Ô im lặng thì ta KHÔNG kiểm chứng được lệnh xoá có ăn hay không —
+        // đối chiếu bằng surrounding text (delete_evidence) cũng bó tay vì
+        // chẳng có surrounding text nào gửi về. Cửa sổ terminal/Electron kiểu
+        // này nuốt lệnh xoá và chữ chồng lên nhau ("gõ" -> "goõ").
+        // Một lần im lặng có thể chỉ là máy bận; hai lần liên tiếp thì coi như
+        // ô không đáng tin, lùi về Pre-edit tới khi đổi ô — thà gạch chân còn
+        // hơn chồng chữ.
+        st.delete_timeouts += 1;
+        crate::debug::log(format_args!(
+            "xoá {backspaces}: KHÔNG có xác nhận trong 60ms (lần {})",
+            st.delete_timeouts
+        ));
+        if st.delete_timeouts >= 2 && !st.rewrite_broken {
+            st.rewrite_broken = true;
+            st.core.reset();
+            st.committed.clear();
+            st.unlatch_mode();
             crate::debug::log(format_args!(
-                "xoá {backspaces}: KHÔNG có xác nhận trong 60ms"
+                "ô này không xác nhận lệnh xoá hai lần liền — lùi về Pre-edit đến khi đổi ô"
             ));
         }
     }
@@ -575,6 +601,7 @@ impl OnikeyEngine {
                 st.pending_purpose = None;
                 st.delete_evidence = None;
                 st.rewrite_broken = false;
+                st.delete_timeouts = 0;
                 // Ô mới phải tự khai lại surrounding text: set_capabilities giữ
                 // bit này dính để chống chập chờn, nên phải xoá ở đây, không thì
                 // một ô có hỗ trợ sẽ khiến ô sau (terminal, GTK cũ) bị tưởng là
@@ -967,6 +994,7 @@ mod tests {
             pending_purpose: None,
             delete_evidence: None,
             rewrite_broken: false,
+            delete_timeouts: 0,
             capabilities: IBUS_CAP_SURROUNDING_TEXT,
             committed: String::new(),
             english_mode: false,
