@@ -6,8 +6,8 @@
 %global debug_package %{nil}
 
 Name:           onikey
-Version:        1.0.2
-Release:        2%{?dist}
+Version:        1.0.3
+Release:        1%{?dist}
 Summary:        Bộ gõ tiếng Việt cho IBus (engine Rust)
 
 License:        GPL-3.0-or-later
@@ -63,6 +63,13 @@ make install PREFIX=%{_prefix} LIBEXECDIR=%{engine_lib_dir} DESTDIR=%{buildroot}
 %config(noreplace) /etc/xdg/autostart/onikey-startup-fix.desktop
 
 %changelog
+* Fri Aug 14 2026 Crust92 <xtczone000000@gmail.com> - 1.0.3-1
+- Sửa gõ lag theo tải hệ thống khi bật log gỡ rối: log mở–ghi–đóng tệp mỗi
+  phím, tệp phình vài chục MB là mỗi lần mở phải chờ I/O. Nay giữ tệp mở sẵn
+- Chế độ bỏ gạch chân: ô KHÔNG xác nhận lệnh xoá hai lần liên tiếp thì lùi
+  về Pre-edit — cửa sổ terminal/Electron im lặng nên cơ chế đối chiếu
+  surrounding text cũ không bao giờ bắt được, chữ cứ chồng lên nhau
+
 * Fri Aug 14 2026 Crust92 <xtczone000000@gmail.com> - 1.0.2-2
 - Sửa: bật "bỏ gạch chân" mà chữ vẫn mọc gạch chân giữa chừng. Chromium lật
   capabilities qua lại trên cùng một ô nhập (một phiên gõ đo được 28 lần rơi
