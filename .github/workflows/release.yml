@@ -15,11 +15,23 @@ permissions:
 
 jobs:
   tarball:
-    name: Gói binary (x86_64)
+    name: Gói binary (${{ matrix.arch }})
     # CỐ Ý dùng runner cũ: binary liên kết glibc của máy dựng, dựng trên bản
     # mới thì máy người dùng đời cũ chạy không nổi ("GLIBC_2.xx not found").
     # 22.04 mang glibc 2.35 — thấp hơn Debian stable lẫn Ubuntu LTS đang dùng.
-    runs-on: ubuntu-22.04
+    #
+    # Dựng NGAY TRÊN máy ARM chứ không cross-compile: phần Go dùng cgo (GTK,
+    # X11) nên cross-compile phải kéo theo cả bộ sysroot ARM — dễ gãy và khó
+    # kiểm hơn nhiều so với chạy thẳng trên runner ARM.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runs-on: ubuntu-22.04
+          - arch: aarch64
+            runs-on: ubuntu-22.04-arm
+    runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -34,14 +46,15 @@ jobs:
         run: |
           set -e
           VER=$(grep -m1 '^version=' Makefile | cut -d= -f2)
-          tar xzf dist/onikey-$VER-linux-x86_64.tar.gz -C /tmp
-          XDG_CONFIG_HOME=/tmp/cfg /tmp/onikey-$VER-linux-x86_64/install.sh --prefix /tmp/root
+          A=${{ matrix.arch }}
+          tar xzf dist/onikey-$VER-linux-$A.tar.gz -C /tmp
+          XDG_CONFIG_HOME=/tmp/cfg /tmp/onikey-$VER-linux-$A/install.sh --prefix /tmp/root
           test -x /tmp/root/lib/onikey/onikey-engine-rs
           test -f /tmp/root/share/ibus/component/onikey.xml
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            dist/onikey-*-linux-x86_64.tar.gz
-            dist/onikey-*-linux-x86_64.tar.gz.sha256
+            dist/onikey-*-linux-${{ matrix.arch }}.tar.gz
+            dist/onikey-*-linux-${{ matrix.arch }}.tar.gz.sha256
           fail_on_unmatched_files: true
