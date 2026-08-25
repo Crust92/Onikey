@@ -553,3 +553,23 @@ Description: Onikey - Vietnamese input method, no preedit underline (fork of oni
  Vietnamese input method tuned for typing without the preedit underline on
  GNOME Wayland. Ships 'onikey-update' to update to the latest GitHub build.
 
+Package: onikey
+Version: 1.0.3+git20260825205634.c4dd122
+Architecture: amd64
+Maintainer: Crust92 <xtczone000000@gmail.com>
+Depends: ibus, libgtk-3-0, libx11-6, libxtst6
+Conflicts: ibus-bamboo
+Replaces: ibus-bamboo
+Provides: ibus-bamboo
+Filename: pool/main/onikey_1.0.3+git20260825205634.c4dd122_amd64.deb
+Size: 2751512
+MD5sum: 3e6e003c99967f45d46900f6d930c0dc
+SHA1: 4c25a02a7c0e5ebca9daf4e901ec469e4bdd10b9
+SHA256: dfe3a9dd500fee0c051ca5fdbaaa41d75f10aad8a62719118a6d7a462c5f762c
+Section: utils
+Priority: optional
+Homepage: https://github.com/Crust92/Onikey
+Description: Onikey - Vietnamese input method, no preedit underline (fork of onikey)
+ Vietnamese input method tuned for typing without the preedit underline on
+ GNOME Wayland. Ships 'onikey-update' to update to the latest GitHub build.
+
